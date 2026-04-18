@@ -44,7 +44,12 @@ Before the Gateway executes FHIR tagging, it must forcefully ensure the payload 
 * **Parameter Sanitization:** It scrubs URL search parameters to ensure developers haven't illegally injected malicious FHIR queries (e.g., wiping out `_security` constraints).
 * **Strict Schema:** If the request payload fails basic FHIR structure validation at the edge, it returns a `400 Bad Request`, sparing HealthLake the computational overhead of rejecting the invalid payload itself.
 
-### 4. Graceful Degradation & Intelligent Error Handling
+### 5. Automated Pagination Handling
+To support massive clinical networks querying thousands of patient records, the Gateway seamlessly handles pagination formatting to improve developer ergonomics.
+* **Cursor-Based Pagination:** The Gateway intercepts HealthLake's native FHIR `_getpages` continuation tokens and transforms them into standard, developer-friendly `next_cursor` properties.
+* **Header Interception:** It automatically appends standard HTTP headers like `Link: <https://api.clinikapi.com/v1/patients?cursor=...>; rel="next"` to align with modern REST standards, ensuring developers don't have to parse deeply nested FHIR search bundles just to retrieve the next page of results.
+
+### 6. Graceful Degradation & Intelligent Error Handling
 A premier developer platform must never return cryptic cloud-provider stack traces to the end developer. The Gateway acts as a translation layer for all failure scenarios.
 * **AWS Error Masking:** If HealthLake goes down or returns a raw AWS XML `502 Bad Gateway` error, the Hono gateway intercepts the error, masks the internal AWS stack trace, and gracefully degrades to return a standardized, human-readable JSON error (e.g., `"code": "datastore_unavailable"`).
 * **Network Fallbacks:** If the primary HealthLake Region experiences an outage, the Gateway has the logic to temporarily queue requests in a "dead-letter queue" (DLQ) rather than permanently dropping the patient data.
