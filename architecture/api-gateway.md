@@ -24,4 +24,28 @@ We run the Hono.js gateway on **AWS Lambda** rather than Cloudflare Workers for 
 ## Why We Chose This
 * **Developer Experience:** Supabase allows us to build the developer dashboard, billing integration, and analytics UI 10x faster than writing custom AWS AppSync resolvers.
 * **0ms Latency Penalty:** By syncing keys to DynamoDB, our core FHIR engine never has to wait on an external database to validate an API key.
-* **Path to Scale:** Because the keys already live in DynamoDB, migrating the entire developer portal to pure AWS in the future requires zero downtime for the actual API layer.
+## Core Gateway Responsibilities
+
+To protect the underlying AWS HealthLake infrastructure and ensure enterprise reliability, the Hono.js Edge Gateway serves as a "Zero-Trust" protective boundary. It is strictly responsible for executing the following operations before any traffic is passed to the clinical datastore:
+
+### 1. Rate Limiting & Quota Management
+The Gateway prevents DDoS and runaway developer scripts from ballooning AWS HealthLake costs by enforcing distributed rate limits at the edge.
+* **Throttle Limits:** Enforced via `upstash/redis` or DynamoDB. If a developer exceeds their Stripe tier limits (e.g., >100 requests/second on the Pro plan), the gateway immediately drops the request with a `429 Too Many Requests`.
+* **Cost Protection:** This guarantees a rogue script never triggers an unexpected $10,000 AWS bill.
+
+### 2. Idempotency (Safe Retries)
+Clinical APIs must guarantee that retrying a dropped connection doesn't accidentally double-bill a patient or schedule two identical appointments.
+* **Idempotency Keys:** The Gateway strictly parses the `Idempotency-Key` HTTP header for all `POST` and `PATCH` operations.
+* **Deduplication:** If a slow network causes the SDK to retry a `POST /Encounter`, the Gateway checks the Redis idempotency cache. If the key exists, it returns the previously cached `200 OK` response without executing a duplicate write on HealthLake.
+
+### 3. Request Sanitization & Schema Validation
+Before the Gateway executes FHIR tagging, it must forcefully ensure the payload is clean and non-malicious.
+* **Payload Trimming:** The gateway explicitly strips unknown or deeply nested recursive JSON fields to prevent buffer overflow attacks.
+* **Parameter Sanitization:** It scrubs URL search parameters to ensure developers haven't illegally injected malicious FHIR queries (e.g., wiping out `_security` constraints).
+* **Strict Schema:** If the request payload fails basic FHIR structure validation at the edge, it returns a `400 Bad Request`, sparing HealthLake the computational overhead of rejecting the invalid payload itself.
+
+### 4. Graceful Degradation & Intelligent Error Handling
+A premier developer platform must never return cryptic cloud-provider stack traces to the end developer. The Gateway acts as a translation layer for all failure scenarios.
+* **AWS Error Masking:** If HealthLake goes down or returns a raw AWS XML `502 Bad Gateway` error, the Hono gateway intercepts the error, masks the internal AWS stack trace, and gracefully degrades to return a standardized, human-readable JSON error (e.g., `"code": "datastore_unavailable"`).
+* **Network Fallbacks:** If the primary HealthLake Region experiences an outage, the Gateway has the logic to temporarily queue requests in a "dead-letter queue" (DLQ) rather than permanently dropping the patient data.
+* **Granular Developer Feedback:** When a developer submits a malformed FHIR payload, the Gateway parses the complex HealthLake rejection error and transforms it into a clean, Stripe-like error message (e.g., `"message": "The 'Patient' resource is missing the required 'name' array."`), ensuring incredible developer ergonomics.
