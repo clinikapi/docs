@@ -18,7 +18,7 @@ The ClinikAPI monorepo provides shared logic and UI components through the `pack
 - **Core Components**:
     - `PatientDashboard`: Fully managed view of a patient resource.
     - `ClinicalProvider`: Context provider for managing authentication and API state.
-- **Styling**: Uses `@clinikehr/tailwind-config` (shared) to ensure design consistency.
+- **Styling**: Uses `@clinikapi/tailwind-config` (shared) to ensure design consistency.
 
 ## 3. Shared Configs
 - **Tailwind Config**: Centralized tokens for colors, typography, and shadows.

@@ -5,7 +5,7 @@ ClinikAPI manages multiple high-fidelity packages within a monorepo. We use a hy
 ## 1. Distribution Strategy
 
 Our packages are distributed across two channels:
-*   **NPM Registry (@clinikehr/sdk, @clinikehr/react):** The primary consumption point for developers.
+*   **NPM Registry (@clinikapi/sdk, @clinikapi/react):** The primary consumption point for developers.
 *   **Public GitHub (clinik-sdk-public):** A read-only mirror of the `packages/` directory for transparency and open-source contribution.
 
 ---
@@ -62,5 +62,5 @@ To keep our public SDK repository in sync with the private monorepo, we use the 
 ## 5. Security & Secrets
 
 The following secrets must be maintained in the GitHub Repository:
-*   `NPM_TOKEN`: A granular automation token for publishing to the `@clinikehr` scope.
+*   `NPM_TOKEN`: A granular automation token for publishing to the `@clinikapi` scope.
 *   `API_TOKEN_GITHUB`: A PAT with repo scope to allow syncing to the public mirror.

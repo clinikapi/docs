@@ -27,4 +27,4 @@ To maximize profit margins while offering maximum compliance guarantees, ClinikA
 * **Cost Factor:** The high enterprise subscription fee ($1,500+/month) easily absorbs the fixed ~$400/month AWS HealthLake penalty.
 * **Use Case:** Designed for massive hospital networks and heavily regulated state entities that require physical data siloing and federated interoperability.
 
-**The SDK Magic:** Because this routing logic is entirely handled at the Hono Edge Gateway, developers using the `@clinikehr/sdk` experience zero friction. If an organization upgrades from Pro to Enterprise, the backend automatically migrations their data to a physical vault, and their existing SDK code (`clinik.patients.create()`) continues working without a single code change.
+**The SDK Magic:** Because this routing logic is entirely handled at the Hono Edge Gateway, developers using the `@clinikapi/sdk` experience zero friction. If an organization upgrades from Pro to Enterprise, the backend automatically migrations their data to a physical vault, and their existing SDK code (`clinik.patients.create()`) continues working without a single code change.

@@ -16,6 +16,6 @@ The marketing and landing page for ClinikAPI.
 ## Key Sections
 1. **Hero**: Visual representation of the "Healthcare OS".
 2. **Interactive Code Window**: Tabbed interface showing SDK vs FHIR REST comparisons.
-3. **Floating UI Widget**: Live demo of `@clinikehr/react` components.
+3. **Floating UI Widget**: Live demo of `@clinikapi/react` components.
 4. **Feature Grid**: Detailed breakdown of compliance and automation.
 5. **Developer CTA**: Terminal-style box with installation commands.

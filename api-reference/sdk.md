@@ -5,13 +5,13 @@ The official TypeScript SDK for interacting seamlessly with ClinikEHR's Managed 
 ## Installation
 
 ```bash
-npm install @clinikehr/sdk
+npm install @clinikapi/sdk
 ```
 
 ## Initialization
 
 ```typescript
-import { Clinik } from '@clinikehr/sdk';
+import { Clinik } from '@clinikapi/sdk';
 
 const clinik = new Clinik('your_live_api_key');
 ```
