@@ -1,0 +1,94 @@
+---
+title: Assessments
+description: Record clinical impressions, findings, and care plans.
+---
+
+# Assessments
+
+Assessments (FHIR ClinicalImpression) capture a clinician's overall evaluation of a patient — findings, diagnoses, and clinical summary. They're typically created during or after an encounter.
+
+## Create an Assessment
+
+```ts
+const { data: assessment } = await clinik.assessments.create({
+  status: 'completed',
+  patientId: 'pt_abc123',
+  encounterId: 'enc_xyz789',
+  practitionerId: 'prac_def456',
+  description: 'Annual wellness assessment',
+  summary: 'Patient presents with well-controlled hypertension and type 2 diabetes. '
+    + 'No signs of end-organ damage. Continue current medication regimen. '
+    + 'Recommend dietary counseling and increased physical activity.',
+  findings: [
+    { code: 'I10', text: 'Essential hypertension — well controlled on lisinopril 10mg' },
+    { code: 'E11.9', text: 'Type 2 diabetes mellitus — HbA1c 6.8%, at goal' },
+    { text: 'BMI 28.5 — overweight, recommend weight management' },
+    { text: 'No peripheral neuropathy on exam' },
+  ],
+  note: 'Follow up in 3 months. Order HbA1c and CMP at next visit.',
+  effectiveDateTime: '2025-01-15T10:00:00Z',
+});
+```
+
+## Findings
+
+Findings can include coded diagnoses (ICD-10, SNOMED) and/or free-text descriptions:
+
+```ts
+findings: [
+  // Coded finding
+  { code: 'I10', text: 'Essential hypertension' },
+  // Free-text only
+  { text: 'Patient reports improved energy levels' },
+  // SNOMED coded
+  { code: '44054006', text: 'Type 2 diabetes mellitus' },
+]
+```
+
+## Status Values
+
+| Status | Description |
+|--------|-------------|
+| `in-progress` | Assessment is being conducted |
+| `completed` | Assessment is finalized |
+
+## Update an Assessment
+
+```ts
+await clinik.assessments.update('assess_abc123', {
+  status: 'completed',
+  summary: 'Updated summary with additional findings...',
+  findings: [
+    { code: 'I10', text: 'Essential hypertension — well controlled' },
+    { code: 'E11.9', text: 'Type 2 diabetes — at goal' },
+    { text: 'New finding: mild vitamin D deficiency' },
+  ],
+  note: 'Added vitamin D supplementation to plan.',
+});
+```
+
+## Search Assessments
+
+```ts
+// All assessments for a patient
+const { data } = await clinik.assessments.search({
+  patientId: 'pt_abc123',
+  status: 'completed',
+  sort: '-date',
+});
+
+// Assessments by a specific practitioner
+const { data: byDoc } = await clinik.assessments.search({
+  practitionerId: 'prac_def456',
+  dateFrom: '2025-01-01',
+});
+```
+
+## Assessments vs Notes
+
+| Resource | Purpose |
+|----------|---------|
+| Assessment (ClinicalImpression) | Structured clinical evaluation with coded findings |
+| Note (DocumentReference) | Narrative documentation (SOAP notes, discharge summaries) |
+
+Use assessments for structured clinical reasoning. Use notes for narrative documentation. They often complement each other — an encounter might have both a progress note and a clinical assessment.

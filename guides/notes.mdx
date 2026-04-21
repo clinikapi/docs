@@ -1,0 +1,95 @@
+---
+title: Notes
+description: Create and manage clinical notes — progress notes, discharge summaries, and more.
+---
+
+# Notes
+
+Notes (FHIR DocumentReference) represent clinical documentation — progress notes, discharge summaries, consultation notes, operative notes, and other narrative records.
+
+## Create a Note
+
+```ts
+const { data: note } = await clinik.notes.create({
+  patientId: 'pt_abc123',
+  authorId: 'prac_def456',
+  encounterId: 'enc_xyz789',
+  type: 'progress-note',
+  title: 'Follow-up Visit - Hypertension Management',
+  content: `## Subjective
+Patient reports compliance with lisinopril 10mg daily. No dizziness, cough, or swelling.
+Home BP readings averaging 128/82.
+
+## Objective
+BP: 130/84 mmHg, HR: 72 bpm, Weight: 165 lbs
+No peripheral edema. Heart sounds regular, no murmurs.
+
+## Assessment
+Essential hypertension — improving but not at goal (<130/80).
+
+## Plan
+- Increase lisinopril to 20mg daily
+- Continue low-sodium diet
+- Recheck BP in 4 weeks
+- Order BMP to monitor renal function`,
+  contentType: 'text/markdown',
+  docStatus: 'final',
+  category: 'cardiology',
+  date: '2025-01-15',
+});
+```
+
+## Note Types
+
+| Type | Description |
+|------|-------------|
+| `progress-note` | Standard visit documentation |
+| `discharge-summary` | Hospital discharge summary |
+| `consultation-note` | Specialist consultation |
+| `history-and-physical` | H&P documentation |
+| `operative-note` | Surgical procedure note |
+| `procedure-note` | Non-surgical procedure note |
+| `referral-note` | Referral documentation |
+| `transfer-summary` | Patient transfer summary |
+| `other` | Other note types |
+
+## Document Status
+
+| Status | Description |
+|--------|-------------|
+| `preliminary` | Draft — still being written |
+| `final` | Completed and signed |
+| `amended` | Modified after finalization |
+
+## Update a Note
+
+```ts
+// Amend a finalized note
+await clinik.notes.update('note_abc123', {
+  docStatus: 'amended',
+  content: '... updated content with addendum ...',
+});
+```
+
+## Search Notes
+
+```ts
+// All progress notes for a patient
+const { data } = await clinik.notes.search({
+  patientId: 'pt_abc123',
+  type: 'progress-note',
+  sort: '-date',
+});
+
+// Notes by a specific author
+const { data: byAuthor } = await clinik.notes.search({
+  authorId: 'prac_def456',
+  dateFrom: '2025-01-01',
+  dateTo: '2025-03-31',
+});
+
+// Notes from a specific encounter
+const { data: fromEncounter } = await clinik.notes.search({
+  encounterId: 'enc_xyz789',
+});
+```

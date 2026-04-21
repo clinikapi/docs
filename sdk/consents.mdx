@@ -1,0 +1,134 @@
+---
+title: Consents
+description: SDK reference for consent operations.
+---
+
+# clinik.consents
+
+Consents represent patient agreements to privacy policies, treatment plans, research participation, and other healthcare directives.
+
+## sign
+
+```ts
+const { data, meta } = await clinik.consents.sign(request: ConsentSignRequest): Promise<ApiResponse<Consent>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `patientId` | `string` | Yes | Patient reference |
+| `status` | `string` | No | draft, proposed, active, rejected, inactive |
+| `scope` | `string` | Yes | patient-privacy, research, treatment, adr |
+| `category` | `string \| string[]` | Yes | Consent category (e.g. "hipaa-notice") |
+| `dateTime` | `string` | No | When consent was given |
+| `performerId` | `string` | No | Who is agreeing (practitioner, patient) |
+| `organizationId` | `string` | No | Custodian organization |
+| `policyUri` | `string` | No | Policy URI the consent references |
+| `verification` | `object` | No | Verification details |
+| `provision` | `object` | No | Provision rules (permit/deny) |
+
+### Examples
+
+```ts
+// HIPAA privacy notice consent
+const { data: hipaa } = await clinik.consents.sign({
+  patientId: 'pt_abc123',
+  status: 'active',
+  scope: 'patient-privacy',
+  category: 'hipaa-notice',
+  policyUri: 'https://clinic.com/hipaa-notice',
+  verification: {
+    verified: true,
+    verifiedWith: 'pt_abc123',
+    verificationDate: '2025-01-15T10:00:00Z',
+  },
+});
+
+// Treatment consent with provisions
+const { data: treatment } = await clinik.consents.sign({
+  patientId: 'pt_abc123',
+  status: 'active',
+  scope: 'treatment',
+  category: ['treatment-consent', 'surgical-consent'],
+  performerId: 'prac_def456',
+  organizationId: 'org_ghi789',
+  provision: {
+    type: 'permit',
+    period: {
+      start: '2025-01-15',
+      end: '2025-07-15',
+    },
+    purpose: [
+      { system: 'http://terminology.hl7.org/CodeSystem/v3-ActReason', code: 'TREAT', display: 'Treatment' },
+    ],
+  },
+});
+
+// Research consent — denied
+const { data: research } = await clinik.consents.sign({
+  patientId: 'pt_abc123',
+  status: 'rejected',
+  scope: 'research',
+  category: 'research-participation',
+  provision: {
+    type: 'deny',
+  },
+});
+```
+
+## read
+
+```ts
+const { data, meta } = await clinik.consents.read(id: string): Promise<ApiResponse<Consent>>
+```
+
+## update
+
+```ts
+const { data, meta } = await clinik.consents.update(id: string, request: ConsentUpdateRequest): Promise<ApiResponse<Consent>>
+```
+
+```ts
+// Revoke a consent
+await clinik.consents.update('consent_abc123', {
+  status: 'inactive',
+});
+
+// Update verification
+await clinik.consents.update('consent_abc123', {
+  verification: {
+    verified: true,
+    verifiedWith: 'pt_abc123',
+    verificationDate: new Date().toISOString(),
+  },
+});
+```
+
+## delete
+
+```ts
+const { data, meta } = await clinik.consents.delete(id: string): Promise<ApiResponse<void>>
+```
+
+## search
+
+```ts
+const { data, meta } = await clinik.consents.search(params?: ResourceSearchParams): Promise<ApiResponse<PaginatedResponse<Consent>>>
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `patientId` | `string` | Filter by patient |
+| `status` | `string` | Filter by status |
+| `dateFrom` | `string` | Start date filter |
+| `dateTo` | `string` | End date filter |
+| `count` | `number` | Results per page (max: 100) |
+| `cursor` | `string` | Pagination cursor |
+
+### Consent Scopes
+
+| Scope | Description |
+|-------|-------------|
+| `patient-privacy` | Privacy and data sharing (HIPAA notices) |
+| `research` | Research participation |
+| `treatment` | Treatment consent |
+| `adr` | Advance directive |

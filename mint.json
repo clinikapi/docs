@@ -1,0 +1,280 @@
+{
+  "name": "ClinikAPI",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#635BFF",
+    "light": "#8079FF",
+    "dark": "#4A44CC",
+    "anchors": {
+      "from": "#635BFF",
+      "to": "#ff52af"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Dashboard",
+      "url": "https://dashboard.clinikapi.com"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get API Key",
+    "url": "https://dashboard.clinikapi.com"
+  },
+  "tabs": [
+    { "name": "API Reference", "url": "api-reference" },
+    { "name": "SDK", "url": "sdk" },
+    { "name": "Components", "url": "components" }
+  ],
+  "anchors": [
+    { "name": "GitHub", "icon": "github", "url": "https://github.com/clinikapi" },
+    { "name": "Status", "icon": "signal", "url": "https://status.clinikapi.com" }
+  ],
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": ["introduction", "quickstart", "authentication", "errors"]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/patients",
+        "guides/practitioners",
+        "guides/practitioner-roles",
+        "guides/encounters",
+        "guides/observations",
+        "guides/medications",
+        "guides/prescriptions",
+        "guides/appointments",
+        "guides/intakes",
+        "guides/consents",
+        "guides/labs",
+        "guides/notes",
+        "guides/assessments",
+        "guides/documents",
+        "guides/webhooks",
+        "guides/bulk-operations",
+        "guides/raw-fhir"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": ["api-reference/overview"]
+    },
+    {
+      "group": "Patients",
+      "pages": [
+        "api-reference/patients/create",
+        "api-reference/patients/read",
+        "api-reference/patients/update",
+        "api-reference/patients/delete",
+        "api-reference/patients/search"
+      ]
+    },
+    {
+      "group": "Practitioners",
+      "pages": [
+        "api-reference/practitioners/create",
+        "api-reference/practitioners/read",
+        "api-reference/practitioners/update",
+        "api-reference/practitioners/delete",
+        "api-reference/practitioners/search"
+      ]
+    },
+    {
+      "group": "Practitioner Roles",
+      "pages": [
+        "api-reference/practitioner-roles/create",
+        "api-reference/practitioner-roles/read",
+        "api-reference/practitioner-roles/update",
+        "api-reference/practitioner-roles/delete",
+        "api-reference/practitioner-roles/search"
+      ]
+    },
+    {
+      "group": "Encounters",
+      "pages": [
+        "api-reference/encounters/create",
+        "api-reference/encounters/read",
+        "api-reference/encounters/update",
+        "api-reference/encounters/delete",
+        "api-reference/encounters/search"
+      ]
+    },
+    {
+      "group": "Observations",
+      "pages": [
+        "api-reference/observations/create",
+        "api-reference/observations/read",
+        "api-reference/observations/update",
+        "api-reference/observations/delete",
+        "api-reference/observations/search"
+      ]
+    },
+    {
+      "group": "Medications",
+      "pages": [
+        "api-reference/medications/create",
+        "api-reference/medications/read",
+        "api-reference/medications/update",
+        "api-reference/medications/delete",
+        "api-reference/medications/search"
+      ]
+    },
+    {
+      "group": "Appointments",
+      "pages": [
+        "api-reference/appointments/create",
+        "api-reference/appointments/read",
+        "api-reference/appointments/update",
+        "api-reference/appointments/delete",
+        "api-reference/appointments/search"
+      ]
+    },
+    {
+      "group": "Prescriptions",
+      "pages": [
+        "api-reference/prescriptions/create",
+        "api-reference/prescriptions/read",
+        "api-reference/prescriptions/update",
+        "api-reference/prescriptions/delete",
+        "api-reference/prescriptions/search"
+      ]
+    },
+    {
+      "group": "Intakes",
+      "pages": [
+        "api-reference/intakes/create",
+        "api-reference/intakes/read",
+        "api-reference/intakes/update",
+        "api-reference/intakes/delete",
+        "api-reference/intakes/search"
+      ]
+    },
+    {
+      "group": "Consents",
+      "pages": [
+        "api-reference/consents/create",
+        "api-reference/consents/read",
+        "api-reference/consents/update",
+        "api-reference/consents/delete",
+        "api-reference/consents/search"
+      ]
+    },
+    {
+      "group": "Labs",
+      "pages": [
+        "api-reference/labs/create",
+        "api-reference/labs/read",
+        "api-reference/labs/update",
+        "api-reference/labs/delete",
+        "api-reference/labs/search"
+      ]
+    },
+    {
+      "group": "Notes",
+      "pages": [
+        "api-reference/notes/create",
+        "api-reference/notes/read",
+        "api-reference/notes/update",
+        "api-reference/notes/delete",
+        "api-reference/notes/search"
+      ]
+    },
+    {
+      "group": "Assessments",
+      "pages": [
+        "api-reference/assessments/create",
+        "api-reference/assessments/read",
+        "api-reference/assessments/update",
+        "api-reference/assessments/delete",
+        "api-reference/assessments/search"
+      ]
+    },
+    {
+      "group": "Documents",
+      "pages": [
+        "api-reference/documents/create",
+        "api-reference/documents/read",
+        "api-reference/documents/update",
+        "api-reference/documents/delete",
+        "api-reference/documents/search"
+      ]
+    },
+    {
+      "group": "Bulk Operations",
+      "pages": [
+        "api-reference/bulk/export",
+        "api-reference/bulk/import",
+        "api-reference/bulk/job-status"
+      ]
+    },
+    {
+      "group": "FHIR Passthrough",
+      "pages": [
+        "api-reference/fhir/overview",
+        "api-reference/fhir/read",
+        "api-reference/fhir/create",
+        "api-reference/fhir/patch",
+        "api-reference/fhir/delete"
+      ]
+    },
+    {
+      "group": "SDK Reference",
+      "pages": [
+        "sdk/installation",
+        "sdk/client",
+        "sdk/patients",
+        "sdk/practitioners",
+        "sdk/practitioner-roles",
+        "sdk/encounters",
+        "sdk/observations",
+        "sdk/medications",
+        "sdk/appointments",
+        "sdk/prescriptions",
+        "sdk/intakes",
+        "sdk/consents",
+        "sdk/labs",
+        "sdk/notes",
+        "sdk/assessments",
+        "sdk/documents",
+        "sdk/fhir-passthrough",
+        "sdk/error-handling"
+      ]
+    },
+    {
+      "group": "React Components",
+      "pages": [
+        "components/overview",
+        "components/patient-dashboard",
+        "components/appointment-scheduler",
+        "components/prescription-form",
+        "components/note-editor",
+        "components/intake-form",
+        "components/consent-manager",
+        "components/vitals-widget",
+        "components/lab-results",
+        "components/prescription-widget"
+      ]
+    },
+    {
+      "group": "Legal",
+      "pages": ["legal/baa", "legal/privacy", "legal/terms"]
+    }
+  ],
+  "openapi": "api-reference/openapi.yaml",
+  "api": {
+    "baseUrl": "https://api.clinikehr.com",
+    "auth": {
+      "method": "key",
+      "name": "x-api-key"
+    }
+  },
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true
+  }
+}

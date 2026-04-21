@@ -1,0 +1,54 @@
+---
+title: Assessments
+description: SDK reference for clinical assessment (ClinicalImpression) operations.
+---
+
+# clinik.assessments
+
+## create
+
+```ts
+const { data, meta } = await clinik.assessments.create(request: AssessmentCreateRequest): Promise<ApiResponse<ClinicalImpression>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | in-progress, completed |
+| `patientId` | `string` | Yes | Patient reference |
+| `encounterId` | `string` | No | Encounter reference |
+| `practitionerId` | `string` | No | Assessor reference |
+| `description` | `string` | No | Description of the assessment |
+| `summary` | `string` | Yes | Clinical summary |
+| `findings` | `Array<{ code?, text }>` | No | Clinical findings |
+| `note` | `string` | No | Additional notes |
+| `effectiveDateTime` | `string` | No | When assessment was made |
+
+## Example
+
+```ts
+const { data: assessment } = await clinik.assessments.create({
+  status: 'completed',
+  patientId: 'pt_abc123',
+  encounterId: 'enc_xyz789',
+  practitionerId: 'prac_def456',
+  summary: 'Patient presents with well-controlled hypertension. Continue current medication regimen.',
+  findings: [
+    { code: 'I10', text: 'Essential hypertension - well controlled' },
+    { text: 'No signs of end-organ damage' },
+  ],
+  note: 'Follow up in 3 months. Continue lisinopril 10mg daily.',
+});
+```
+
+## search
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `patientId` | `string` | Filter by patient |
+| `practitionerId` | `string` | Filter by assessor |
+| `status` | `string` | Filter by status |
+| `encounterId` | `string` | Filter by encounter |
+
+## read / update / delete
+
+Same pattern as other resources.

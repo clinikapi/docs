@@ -1,0 +1,62 @@
+---
+title: Notes
+description: SDK reference for clinical note (DocumentReference) operations.
+---
+
+# clinik.notes
+
+## create
+
+```ts
+const { data, meta } = await clinik.notes.create(request: NoteCreateRequest): Promise<ApiResponse<DocumentReference>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `patientId` | `string` | Yes | Patient reference |
+| `authorId` | `string` | No | Practitioner who authored the note |
+| `encounterId` | `string` | No | Encounter reference |
+| `type` | `NoteType` | No | Type of clinical note |
+| `title` | `string` | Yes | Note title |
+| `content` | `string` | Yes | Note content (plain text or markdown) |
+| `contentType` | `string` | No | MIME type (default: text/plain) |
+| `docStatus` | `string` | No | preliminary, final, amended |
+| `category` | `string` | No | Category tag |
+| `date` | `string` | No | Clinically relevant date |
+
+### Note Types
+
+| Type | Description |
+|------|-------------|
+| `progress-note` | Progress note |
+| `discharge-summary` | Discharge summary |
+| `consultation-note` | Consultation note |
+| `history-and-physical` | H&P |
+| `operative-note` | Operative note |
+| `procedure-note` | Procedure note |
+| `referral-note` | Referral note |
+| `transfer-summary` | Transfer summary |
+| `other` | Other |
+
+## search
+
+```ts
+const { data } = await clinik.notes.search({
+  patientId: 'pt_abc123',
+  type: 'progress-note',
+  authorId: 'prac_def456',
+});
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `patientId` | `string` | Filter by patient |
+| `authorId` | `string` | Filter by author |
+| `encounterId` | `string` | Filter by encounter |
+| `type` | `NoteType` | Filter by note type |
+| `category` | `string` | Filter by category |
+| `date` | `string` | Filter by date |
+
+## read / update / delete
+
+Same pattern as other resources.

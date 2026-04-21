@@ -1,0 +1,108 @@
+---
+title: Practitioners
+description: SDK reference for practitioner operations.
+---
+
+# clinik.practitioners
+
+Practitioners represent clinicians, physicians, nurses, and other healthcare providers.
+
+## create
+
+```ts
+const { data, meta } = await clinik.practitioners.create(request: PractitionerCreateRequest): Promise<ApiResponse<Practitioner>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `firstName` | `string` | Yes | First name |
+| `lastName` | `string` | Yes | Last name |
+| `prefix` | `string[]` | No | Name prefixes (e.g. "Dr.", "Prof.") |
+| `suffix` | `string[]` | No | Name suffixes (e.g. "MD", "PhD") |
+| `email` | `string` | No | Email address |
+| `phone` | `string` | No | Phone number |
+| `gender` | `'male' \| 'female' \| 'other' \| 'unknown'` | No | Administrative gender |
+| `birthDate` | `string` | No | Date of birth (YYYY-MM-DD) |
+| `npi` | `string` | No | National Provider Identifier (US) |
+| `specialty` | `string` | No | Primary specialty (e.g. "Cardiology") |
+| `qualifications` | `Array` | No | Licenses, certifications, board certs |
+| `languages` | `string[]` | No | Spoken languages (BCP-47 codes) |
+| `address` | `object` | No | Address with line, city, state, postalCode, country |
+
+### Qualifications
+
+```ts
+const { data } = await clinik.practitioners.create({
+  firstName: 'Sarah',
+  lastName: 'Chen',
+  prefix: ['Dr.'],
+  suffix: ['MD', 'FACC'],
+  email: 'dr.chen@clinic.com',
+  npi: '1234567890',
+  specialty: 'Cardiology',
+  qualifications: [
+    {
+      name: 'Doctor of Medicine',
+      issuer: 'Johns Hopkins University',
+      period: { start: '2010-05-15' },
+    },
+    {
+      name: 'Board Certified - Cardiovascular Disease',
+      issuer: 'American Board of Internal Medicine',
+      identifier: 'ABIM-12345',
+      period: { start: '2015-06-01', end: '2025-06-01' },
+    },
+  ],
+  languages: ['en', 'zh'],
+});
+```
+
+## read
+
+```ts
+const { data, meta } = await clinik.practitioners.read(id: string): Promise<ApiResponse<Practitioner>>
+```
+
+## update
+
+```ts
+const { data, meta } = await clinik.practitioners.update(id: string, request: PractitionerUpdateRequest): Promise<ApiResponse<Practitioner>>
+```
+
+Only send the fields you want to change:
+
+```ts
+await clinik.practitioners.update('prac_abc123', {
+  specialty: 'Interventional Cardiology',
+  active: false, // deactivate practitioner
+});
+```
+
+## delete
+
+```ts
+const { data, meta } = await clinik.practitioners.delete(id: string): Promise<ApiResponse<void>>
+```
+
+## search
+
+```ts
+const { data, meta } = await clinik.practitioners.search(params?: PractitionerSearchParams): Promise<ApiResponse<PaginatedResponse<Practitioner>>>
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | `string` | Search by name (partial match) |
+| `specialty` | `string` | Filter by specialty |
+| `npi` | `string` | Exact NPI match |
+| `active` | `boolean` | Filter by active status |
+| `count` | `number` | Results per page (max: 100) |
+| `cursor` | `string` | Pagination cursor |
+
+```ts
+const { data } = await clinik.practitioners.search({
+  specialty: 'Cardiology',
+  active: true,
+  count: 20,
+});
+```

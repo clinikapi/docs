@@ -1,0 +1,72 @@
+---
+title: FHIR Passthrough
+description: SDK reference for raw FHIR R4 requests.
+---
+
+# clinik.fhir
+
+The FHIR escape hatch lets you send raw FHIR R4 requests when the simplified SDK methods don't cover your use case.
+
+## request
+
+```ts
+const { data, meta } = await clinik.fhir.request<T>(
+  method: string,
+  path: string,
+  body?: unknown
+): Promise<ApiResponse<T>>
+```
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `method` | `string` | Yes | GET, POST, PUT, PATCH, DELETE |
+| `path` | `string` | Yes | FHIR resource path (e.g. `/Patient`, `/Observation/123`) |
+| `body` | `unknown` | No | Request body (for POST, PUT, PATCH) |
+
+<Info>
+  Do not include `/v1/` in the path — the SDK prepends it automatically.
+  Tenant isolation is enforced on all passthrough requests.
+</Info>
+
+## Examples
+
+```ts
+// Create a raw FHIR Patient
+const { data } = await clinik.fhir.request('POST', '/Patient', {
+  resourceType: 'Patient',
+  name: [{ family: 'Smith', given: ['John'] }],
+  gender: 'male',
+  birthDate: '1990-01-15',
+});
+
+// Search with custom FHIR parameters
+const { data: bundle } = await clinik.fhir.request(
+  'GET',
+  '/Observation?code=8867-4&date=ge2024-01-01&_sort=-date'
+);
+
+// Read a specific resource
+const { data: patient } = await clinik.fhir.request('GET', '/Patient/pt_abc123');
+
+// FHIR operation
+const { data: everything } = await clinik.fhir.request(
+  'GET',
+  '/Patient/pt_abc123/$everything'
+);
+
+// Delete
+await clinik.fhir.request('DELETE', '/Observation/obs_xyz789');
+```
+
+## When to Use
+
+- Custom FHIR search parameters not exposed in the simplified SDK
+- FHIR operations (`$everything`, `$validate`, etc.)
+- Resource types not yet simplified by ClinikAPI
+- Complex FHIR queries with chained parameters
+
+## Important Notes
+
+- Returns raw FHIR R4 resources, not the simplified format
+- Tenant tag injection and filtering is still enforced
+- Rate limits and authentication work the same as simplified endpoints

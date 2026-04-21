@@ -1,0 +1,88 @@
+---
+title: Documents
+description: SDK reference for structured document (Composition) operations.
+---
+
+# clinik.documents
+
+Compositions are structured clinical documents with sections — discharge summaries, referral letters, care plans, etc.
+
+## create
+
+```ts
+const { data, meta } = await clinik.documents.create(request: DocumentCreateRequest): Promise<ApiResponse<Composition>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | preliminary, final, amended |
+| `type` | `string` | Yes | Document type (e.g. "discharge-summary") |
+| `patientId` | `string` | Yes | Patient reference |
+| `encounterId` | `string` | No | Encounter reference |
+| `practitionerId` | `string` | Yes | Author reference |
+| `title` | `string` | Yes | Document title |
+| `date` | `string` | No | Document date |
+| `sections` | `Array` | Yes | Document sections |
+| `confidentiality` | `'N' \| 'R' \| 'V'` | No | Normal, Restricted, Very Restricted |
+
+### Section Structure
+
+```ts
+{
+  title: string;       // Section heading
+  code?: string;       // Section code
+  text: string;        // Section content
+  resourceIds?: string[]; // Referenced resources
+}
+```
+
+## Example
+
+```ts
+const { data: doc } = await clinik.documents.create({
+  status: 'final',
+  type: 'discharge-summary',
+  patientId: 'pt_abc123',
+  practitionerId: 'prac_def456',
+  title: 'Discharge Summary - Jane Doe',
+  date: '2025-01-20',
+  confidentiality: 'N',
+  sections: [
+    {
+      title: 'Chief Complaint',
+      code: 'chief-complaint',
+      text: 'Patient admitted for chest pain evaluation.',
+    },
+    {
+      title: 'Hospital Course',
+      code: 'hospital-course',
+      text: 'Cardiac workup negative. Discharged in stable condition.',
+    },
+    {
+      title: 'Discharge Medications',
+      code: 'medications',
+      text: 'Continue aspirin 81mg daily, atorvastatin 20mg daily.',
+      resourceIds: ['rx_med1', 'rx_med2'],
+    },
+    {
+      title: 'Follow-up',
+      code: 'follow-up',
+      text: 'Cardiology follow-up in 2 weeks.',
+    },
+  ],
+});
+```
+
+## search
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `patientId` | `string` | Filter by patient |
+| `practitionerId` | `string` | Filter by author |
+| `type` | `string` | Filter by document type |
+| `status` | `string` | Filter by status |
+| `date` | `string` | Filter by date |
+
+## read / update / delete
+
+Same pattern as other resources.

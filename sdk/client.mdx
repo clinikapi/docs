@@ -1,0 +1,104 @@
+---
+title: Client
+description: The Clinik client class and its configuration.
+---
+
+# Clinik Client
+
+The `Clinik` class is the entry point for all SDK operations. It manages authentication, retries, rate limit metadata, and request serialization.
+
+## Constructor
+
+```ts
+import { Clinik } from '@clinikapi/sdk';
+
+const clinik = new Clinik(apiKey: string, options?: ClinikOptions);
+```
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `apiKey` | `string` | Yes | Your secret API key (`clk_live_*` or `clk_test_*`) |
+| `options` | `ClinikOptions` | No | Configuration options |
+
+### ClinikOptions
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `baseUrl` | `string` | `https://api.clinikehr.com` | API base URL |
+| `timeout` | `number` | `30000` | Request timeout (ms) |
+| `retries` | `number` | `2` | Max retries on 5xx/429 |
+
+## Resource Namespaces
+
+The client exposes 14 resource namespaces:
+
+```ts
+clinik.patients          // Patient
+clinik.practitioners     // Practitioner
+clinik.practitionerRoles // PractitionerRole
+clinik.encounters        // Encounter
+clinik.observations      // Observation
+clinik.medications       // Medication
+clinik.prescriptions     // MedicationRequest
+clinik.appointments      // Appointment
+clinik.intakes           // QuestionnaireResponse
+clinik.consents          // Consent
+clinik.labs              // DiagnosticReport
+clinik.notes             // DocumentReference
+clinik.assessments       // ClinicalImpression
+clinik.documents         // Composition
+```
+
+Each namespace provides:
+
+| Method | Description |
+|--------|-------------|
+| `create(data)` | Create a new resource |
+| `read(id, options?)` | Read a resource by ID |
+| `update(id, data)` | Update a resource (JSON Patch) |
+| `delete(id)` | Delete a resource |
+| `search(params?)` | Search with pagination |
+
+## FHIR Escape Hatch
+
+For raw FHIR R4 requests:
+
+```ts
+clinik.fhir.request(method: string, path: string, body?: unknown)
+```
+
+See [FHIR Passthrough](/sdk/fhir-passthrough) for details.
+
+## Response Type
+
+Every method returns `ApiResponse<T>`:
+
+```ts
+interface ApiResponse<T> {
+  data: T;
+  meta: ResponseMeta;
+}
+
+interface ResponseMeta {
+  requestId: string;
+  timestamp: string;
+  status: number;
+  rateLimitTotal?: number;
+  rateLimitRemaining?: number;
+  rateLimitReset?: number;
+}
+```
+
+## Security Features
+
+The SDK includes built-in security protections:
+
+- **Browser detection** — warns if used in a browser environment
+- **HTTPS enforcement** — warns if `baseUrl` is not HTTPS
+- **Path traversal protection** — resource IDs are validated against `[a-zA-Z0-9\-_.]`
+- **FHIR include injection prevention** — `_include` values are validated
+- **Body size limits** — requests over 1MB are rejected before sending
+- **PHI sanitization** — error messages never contain patient data
+- **Jittered retries** — prevents thundering herd on failures

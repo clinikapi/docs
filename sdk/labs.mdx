@@ -1,0 +1,42 @@
+---
+title: Labs
+description: SDK reference for lab report (DiagnosticReport) operations.
+---
+
+# clinik.labs
+
+## create
+
+```ts
+const { data, meta } = await clinik.labs.create(request: LabCreateRequest): Promise<ApiResponse<DiagnosticReport>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | registered, partial, preliminary, final, amended, corrected, appended, cancelled |
+| `code` | `string \| { system?, code, display? }` | Yes | LOINC report type |
+| `patientId` | `string` | Yes | Patient reference |
+| `encounterId` | `string` | No | Encounter reference |
+| `effectiveDateTime` | `string` | No | Clinically relevant time |
+| `resultIds` | `string[]` | No | Observation IDs in this report |
+| `category` | `string` | No | LAB, RAD, PAT |
+| `conclusion` | `string` | No | Clinical conclusion text |
+| `conclusionCodes` | `Array<{ system?, code, display? }>` | No | SNOMED findings |
+| `performer` | `string` | No | Who performed the diagnostic |
+| `resultsInterpreter` | `string` | No | Who interpreted results |
+| `specimenIds` | `string[]` | No | Specimen references |
+| `presentedForm` | `Array<{ contentType, data?, url?, title? }>` | No | Attached documents |
+
+## read
+
+Supports `_include` for referenced observations:
+
+```ts
+const { data } = await clinik.labs.read('lab_abc123', {
+  include: ['Observation'],
+});
+```
+
+## update / delete / search
+
+Same pattern as other resources.

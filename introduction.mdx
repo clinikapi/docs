@@ -1,0 +1,84 @@
+---
+title: Introduction
+description: Healthcare infrastructure for developers. Build clinical apps without FHIR complexity.
+---
+
+# Welcome to ClinikAPI
+
+ClinikAPI is a managed healthcare infrastructure platform that lets you build clinical applications through a simple REST API and SDK — without dealing with FHIR R4 complexity, HIPAA compliance infrastructure, or AWS provisioning.
+
+## What ClinikAPI Does
+
+You send simplified JSON. We handle the rest:
+
+- **FHIR R4 transformation** — your payloads are automatically converted to strict FHIR R4 resources
+- **Tenant isolation** — every resource is tagged and filtered by your organization
+- **Secure storage** — data lives in AWS HealthLake with encryption at rest
+- **Compliance** — BAA-ready infrastructure with audit logging on every request
+
+```ts
+import { Clinik } from '@clinikapi/sdk';
+
+const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY);
+
+// Create a patient — ClinikAPI handles FHIR transformation + storage
+const { data: patient } = await clinik.patients.create({
+  firstName: 'Jane',
+  lastName: 'Doe',
+  email: 'jane@example.com',
+  gender: 'female',
+  birthDate: '1990-03-15',
+});
+
+console.log(patient.id); // "pt_abc123"
+```
+
+## 14 FHIR R4 Resources
+
+Full CRUD + search + pagination out of the box:
+
+| Resource | FHIR Type | SDK Namespace |
+|----------|-----------|---------------|
+| Patients | Patient | `clinik.patients` |
+| Practitioners | Practitioner | `clinik.practitioners` |
+| Practitioner Roles | PractitionerRole | `clinik.practitionerRoles` |
+| Encounters | Encounter | `clinik.encounters` |
+| Observations | Observation | `clinik.observations` |
+| Medications | Medication | `clinik.medications` |
+| Prescriptions | MedicationRequest | `clinik.prescriptions` |
+| Appointments | Appointment | `clinik.appointments` |
+| Intakes | QuestionnaireResponse | `clinik.intakes` |
+| Consents | Consent | `clinik.consents` |
+| Labs | DiagnosticReport | `clinik.labs` |
+| Notes | DocumentReference | `clinik.notes` |
+| Assessments | ClinicalImpression | `clinik.assessments` |
+| Documents | Composition | `clinik.documents` |
+
+## Architecture
+
+ClinikAPI is a **data API** — you bring your own auth (Supabase, Clerk, Auth0, etc.).
+
+```
+Your App → Your Backend → ClinikAPI SDK → ClinikAPI REST API → AWS HealthLake
+```
+
+- The SDK runs **server-side only** with a secret API key
+- React widgets use a **proxy pattern** — they talk to your backend, not directly to ClinikAPI
+- Test keys route to a shared test datastore; live keys route to production
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Get your first patient created in under 5 minutes.
+  </Card>
+  <Card title="Authentication" icon="key" href="/authentication">
+    Learn how API keys and tenant isolation work.
+  </Card>
+  <Card title="SDK Reference" icon="code" href="/sdk/installation">
+    Full TypeScript SDK documentation.
+  </Card>
+  <Card title="React Components" icon="react" href="/components/overview">
+    Drop-in clinical UI widgets for your frontend.
+  </Card>
+</CardGroup>

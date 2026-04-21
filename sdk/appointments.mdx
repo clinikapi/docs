@@ -1,0 +1,35 @@
+---
+title: Appointments
+description: SDK reference for appointment operations.
+---
+
+# clinik.appointments
+
+## create
+
+```ts
+const { data, meta } = await clinik.appointments.create(request: AppointmentCreateRequest): Promise<ApiResponse<Appointment>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | proposed, pending, booked, arrived, fulfilled, cancelled, noshow, checked-in, waitlist |
+| `patientId` | `string` | Yes | Patient reference |
+| `practitionerId` | `string` | No | Practitioner reference |
+| `start` | `string` | No | Start time (ISO 8601) |
+| `end` | `string` | No | End time (ISO 8601) |
+| `minutesDuration` | `number` | No | Duration in minutes |
+| `appointmentType` | `string` | No | routine, walkin, urgent, followup |
+| `serviceType` | `string` | No | Service being booked |
+| `serviceCategory` | `string` | No | Service category |
+| `specialty` | `string` | No | Required specialty |
+| `reasonCode` | `string` | No | Reason for appointment |
+| `priority` | `number` | No | 0 (routine) to 9 (urgent) |
+| `description` | `string` | No | Subject line |
+| `comment` | `string` | No | Additional comments |
+| `patientInstruction` | `string` | No | Instructions for patient |
+| `cancelationReason` | `string` | No | Reason for cancellation |
+
+## read / update / delete / search
+
+Same pattern as other resources. See [Encounters](/sdk/encounters) for the shared interface.

@@ -1,0 +1,35 @@
+---
+title: Observations
+description: SDK reference for observation operations.
+---
+
+# clinik.observations
+
+## create
+
+```ts
+const { data, meta } = await clinik.observations.create(request: ObservationCreateRequest): Promise<ApiResponse<Observation>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | registered, preliminary, final, amended, corrected, cancelled |
+| `code` | `string \| { system?, code, display? }` | Yes | LOINC code or text |
+| `patientId` | `string` | Yes | Patient reference |
+| `encounterId` | `string` | No | Encounter reference |
+| `performerId` | `string` | No | Who performed the observation |
+| `effectiveDateTime` | `string` | No | When clinically relevant |
+| `valueQuantity` | `{ value, unit?, system?, code? }` | No | Numeric value |
+| `valueString` | `string` | No | Text value |
+| `valueCodeableConcept` | `{ system?, code, display? }` | No | Coded value |
+| `component` | `Array` | No | Multi-component (e.g. blood pressure) |
+| `category` | `string` | No | vital-signs, laboratory, social-history, exam |
+| `interpretation` | `string` | No | H, L, N, A, HH, LL |
+| `referenceRange` | `{ low?, high?, text? }` | No | Normal range |
+| `bodySite` | `string` | No | Body site |
+| `method` | `string` | No | Method used |
+| `note` | `string` | No | Additional notes |
+
+## read / update / delete / search
+
+Same pattern as other resources. See [Encounters](/sdk/encounters) for the shared interface.

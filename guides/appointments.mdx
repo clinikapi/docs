@@ -1,0 +1,100 @@
+---
+title: Appointments
+description: Schedule, manage, and track patient appointments.
+---
+
+# Appointments
+
+Appointments represent scheduled clinical interactions between patients and practitioners.
+
+## Create an Appointment
+
+```ts
+const { data: appt } = await clinik.appointments.create({
+  status: 'booked',
+  patientId: 'pt_abc123',
+  practitionerId: 'prac_def456',
+  start: '2025-02-01T14:00:00Z',
+  end: '2025-02-01T14:30:00Z',
+  minutesDuration: 30,
+  appointmentType: 'followup',
+  serviceType: 'Cardiology consultation',
+  specialty: 'Cardiology',
+  reasonCode: 'Blood pressure follow-up',
+  description: 'Follow-up visit for hypertension management',
+  patientInstruction: 'Please bring your home BP log',
+});
+```
+
+## Status Lifecycle
+
+```
+proposed → pending → booked → checked-in → arrived → fulfilled
+                                                    ↘ cancelled / noshow
+```
+
+| Status | Description |
+|--------|-------------|
+| `proposed` | Suggested but not confirmed |
+| `pending` | Awaiting confirmation |
+| `booked` | Confirmed and scheduled |
+| `checked-in` | Patient has checked in |
+| `arrived` | Patient is at the facility |
+| `fulfilled` | Appointment completed |
+| `cancelled` | Cancelled before completion |
+| `noshow` | Patient did not attend |
+| `waitlist` | On a waitlist |
+
+## Update an Appointment
+
+```ts
+// Check in a patient
+await clinik.appointments.update('appt_xyz789', {
+  status: 'checked-in',
+});
+
+// Cancel with reason
+await clinik.appointments.update('appt_xyz789', {
+  status: 'cancelled',
+  cancelationReason: 'Patient requested reschedule',
+});
+
+// Reschedule
+await clinik.appointments.update('appt_xyz789', {
+  start: '2025-02-03T10:00:00Z',
+  end: '2025-02-03T10:30:00Z',
+  comment: 'Rescheduled from Feb 1 per patient request',
+});
+```
+
+## Search Appointments
+
+```ts
+// Upcoming appointments for a patient
+const { data: upcoming } = await clinik.appointments.search({
+  patientId: 'pt_abc123',
+  status: 'booked',
+  dateFrom: new Date().toISOString().split('T')[0],
+  sort: 'date',
+  count: 10,
+});
+
+// All appointments for a practitioner today
+const today = new Date().toISOString().split('T')[0];
+const { data: schedule } = await clinik.appointments.search({
+  dateFrom: today,
+  dateTo: today,
+  sort: 'date',
+});
+```
+
+## Priority
+
+Priority is an integer from 0-9:
+
+| Value | Meaning |
+|-------|---------|
+| `0` | Routine (default) |
+| `1-3` | Low urgency |
+| `4-6` | Medium urgency |
+| `7-9` | High urgency |

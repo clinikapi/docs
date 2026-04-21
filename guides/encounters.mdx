@@ -1,0 +1,101 @@
+---
+title: Encounters
+description: Track clinical visits, admissions, and telehealth sessions.
+---
+
+# Encounters
+
+An encounter represents a clinical interaction — an office visit, hospital admission, telehealth session, or emergency room visit.
+
+## Create an Encounter
+
+```ts
+const { data: encounter } = await clinik.encounters.create({
+  status: 'in-progress',
+  class: 'AMB', // ambulatory
+  patientId: 'pt_abc123',
+  practitionerId: 'prac_def456',
+  type: 'Annual wellness visit',
+  serviceType: 'General Practice',
+  reasonCode: 'Routine health maintenance',
+  period: {
+    start: '2025-01-15T09:00:00Z',
+  },
+  location: 'Main Clinic - Room 204',
+  diagnosis: [
+    { condition: 'Essential hypertension', use: 'AD', rank: 1 },
+    { condition: 'Type 2 diabetes mellitus', use: 'DD', rank: 2 },
+  ],
+});
+```
+
+### Encounter Classes
+
+| Code | Description |
+|------|-------------|
+| `AMB` | Ambulatory (outpatient visit) |
+| `IMP` | Inpatient (hospital admission) |
+| `EMER` | Emergency |
+| `HH` | Home health |
+| `VR` | Virtual / telehealth |
+
+### Status Values
+
+`planned` → `arrived` → `triaged` → `in-progress` → `onleave` → `finished` / `cancelled`
+
+## Read an Encounter
+
+```ts
+const { data: encounter } = await clinik.encounters.read('enc_xyz789');
+```
+
+## Update an Encounter
+
+```ts
+const { data: updated } = await clinik.encounters.update('enc_xyz789', {
+  status: 'finished',
+  period: {
+    start: '2025-01-15T09:00:00Z',
+    end: '2025-01-15T09:45:00Z',
+  },
+  lengthMinutes: 45,
+});
+```
+
+## Search Encounters
+
+```ts
+const { data: results } = await clinik.encounters.search({
+  patientId: 'pt_abc123',
+  status: 'finished',
+  dateFrom: '2025-01-01',
+  dateTo: '2025-03-31',
+  sort: '-date', // newest first
+  count: 20,
+});
+```
+
+## Linking Resources to Encounters
+
+Most clinical resources reference an encounter:
+
+```ts
+// Observation during an encounter
+await clinik.observations.create({
+  status: 'final',
+  code: { system: 'http://loinc.org', code: '8867-4', display: 'Heart rate' },
+  patientId: 'pt_abc123',
+  encounterId: 'enc_xyz789',
+  valueQuantity: { value: 72, unit: 'beats/minute' },
+});
+
+// Note from the encounter
+await clinik.notes.create({
+  patientId: 'pt_abc123',
+  encounterId: 'enc_xyz789',
+  authorId: 'prac_def456',
+  title: 'Visit Summary',
+  content: 'Patient presents for annual wellness visit...',
+  type: 'progress-note',
+});
+```

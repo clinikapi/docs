@@ -1,0 +1,49 @@
+---
+title: AppointmentScheduler
+description: Book and manage patient appointments.
+---
+
+# AppointmentScheduler
+
+A scheduling widget for creating and managing patient appointments.
+
+## Usage
+
+```tsx
+import { AppointmentScheduler } from '@clinikapi/react';
+
+<AppointmentScheduler
+  proxyUrl="/api/clinik/appointments"
+  onError={(err) => console.error(err)}
+/>
+```
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `proxyUrl` | `string` | Yes | Backend proxy URL for appointment CRUD |
+| `className` | `string` | No | CSS class name |
+| `onError` | `(error: Error) => void` | No | Error callback |
+
+## Proxy Endpoint
+
+Your proxy should handle GET (search) and POST (create):
+
+```ts
+// GET: search appointments
+// POST: create appointment
+export async function GET(req: Request) {
+  const { data } = await clinik.appointments.search({
+    dateFrom: new Date().toISOString().split('T')[0],
+    sort: 'date',
+  });
+  return Response.json(data);
+}
+
+export async function POST(req: Request) {
+  const body = await req.json();
+  const { data } = await clinik.appointments.create(body);
+  return Response.json(data);
+}
+```

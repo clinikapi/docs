@@ -1,0 +1,38 @@
+---
+title: FHIR Passthrough
+description: Send raw FHIR R4 requests through the ClinikAPI gateway.
+---
+
+# FHIR Passthrough
+
+The `/v1/fhir/*` endpoint lets you send raw FHIR R4 requests directly to the ClinikAPI FHIR gateway. Tenant isolation is still enforced — tenant tags are injected on creates and filtered on searches.
+
+## Base Path
+
+```
+https://api.clinikehr.com/v1/fhir/{FhirResourcePath}
+```
+
+## Authentication
+
+Same as all other endpoints — `x-api-key` header required.
+
+## Supported Operations
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/v1/fhir/{Type}` | Search resources |
+| `GET` | `/v1/fhir/{Type}/{id}` | Read a resource |
+| `POST` | `/v1/fhir/{Type}` | Create a resource |
+| `PATCH` | `/v1/fhir/{Type}/{id}` | Update a resource |
+| `DELETE` | `/v1/fhir/{Type}/{id}` | Delete a resource |
+
+## Tenant Isolation
+
+Even in passthrough mode:
+
+- **Creates**: `meta.tag` with your tenant ID is automatically injected
+- **Searches**: `_tag` filter is automatically appended
+- **Reads/Updates/Deletes**: ownership is verified
+
+You cannot bypass tenant isolation.

@@ -1,0 +1,165 @@
+---
+title: Intakes
+description: SDK reference for intake form (QuestionnaireResponse) operations.
+---
+
+# clinik.intakes
+
+Intakes represent completed patient intake forms, stored as FHIR QuestionnaireResponse resources. Each intake contains structured question-answer pairs.
+
+## submit
+
+```ts
+const { data, meta } = await clinik.intakes.submit(request: IntakeSubmitRequest): Promise<ApiResponse<QuestionnaireResponse>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `patientId` | `string` | Yes | Patient reference |
+| `encounterId` | `string` | No | Encounter reference |
+| `authorId` | `string` | No | Who filled out the form |
+| `sourceId` | `string` | No | Who provided the answers |
+| `questionnaire` | `string` | No | Reference to Questionnaire definition |
+| `status` | `string` | No | in-progress, completed, amended, stopped |
+| `authored` | `string` | No | When answers were gathered |
+| `items` | `Array` | Yes | Question-answer pairs |
+
+### Item Structure
+
+Each item has a `linkId` (unique question identifier), optional `text`, and an array of `answer` values:
+
+```ts
+const { data } = await clinik.intakes.submit({
+  patientId: 'pt_abc123',
+  encounterId: 'enc_xyz789',
+  questionnaire: 'https://forms.clinikapi.com/new-patient-intake',
+  status: 'completed',
+  items: [
+    {
+      linkId: 'chief-complaint',
+      text: 'What is your primary reason for visiting today?',
+      answer: [{ valueString: 'Annual physical exam' }],
+    },
+    {
+      linkId: 'allergies',
+      text: 'Do you have any known allergies?',
+      answer: [{ valueBoolean: true }],
+    },
+    {
+      linkId: 'allergy-list',
+      text: 'Please list your allergies',
+      answer: [
+        { valueString: 'Penicillin' },
+        { valueString: 'Shellfish' },
+      ],
+    },
+    {
+      linkId: 'pain-level',
+      text: 'Rate your current pain level (0-10)',
+      answer: [{ valueInteger: 3 }],
+    },
+    {
+      linkId: 'last-visit-date',
+      text: 'When was your last doctor visit?',
+      answer: [{ valueDate: '2024-06-15' }],
+    },
+    {
+      linkId: 'smoking-status',
+      text: 'Smoking status',
+      answer: [{
+        valueCoding: {
+          system: 'http://snomed.info/sct',
+          code: '266919005',
+          display: 'Never smoker',
+        },
+      }],
+    },
+    {
+      linkId: 'vitals-group',
+      text: 'Vitals',
+      items: [
+        {
+          linkId: 'weight',
+          text: 'Weight',
+          answer: [{ valueInteger: 165 }],
+        },
+        {
+          linkId: 'height',
+          text: 'Height',
+          answer: [{ valueString: '5\'10"' }],
+        },
+      ],
+    },
+  ],
+});
+```
+
+### Answer Types
+
+| Field | Type | Use Case |
+|-------|------|----------|
+| `valueString` | `string` | Free text answers |
+| `valueBoolean` | `boolean` | Yes/no questions |
+| `valueInteger` | `number` | Whole numbers |
+| `valueDecimal` | `number` | Decimal numbers |
+| `valueDate` | `string` | Date answers (YYYY-MM-DD) |
+| `valueDateTime` | `string` | Date-time answers (ISO 8601) |
+| `valueCoding` | `{ system?, code, display? }` | Coded answers (SNOMED, ICD, etc.) |
+| `valueQuantity` | `{ value, unit? }` | Measurements |
+| `valueUri` | `string` | URI answers |
+
+## read
+
+```ts
+const { data, meta } = await clinik.intakes.read(id: string): Promise<ApiResponse<QuestionnaireResponse>>
+```
+
+## update
+
+```ts
+const { data, meta } = await clinik.intakes.update(id: string, request: IntakeUpdateRequest): Promise<ApiResponse<QuestionnaireResponse>>
+```
+
+```ts
+// Amend a completed intake
+await clinik.intakes.update('intake_abc123', {
+  status: 'amended',
+  items: [
+    {
+      linkId: 'allergies',
+      text: 'Do you have any known allergies?',
+      answer: [{ valueBoolean: true }],
+    },
+    {
+      linkId: 'allergy-list',
+      text: 'Please list your allergies',
+      answer: [
+        { valueString: 'Penicillin' },
+        { valueString: 'Shellfish' },
+        { valueString: 'Latex' }, // newly reported
+      ],
+    },
+  ],
+});
+```
+
+## delete
+
+```ts
+const { data, meta } = await clinik.intakes.delete(id: string): Promise<ApiResponse<void>>
+```
+
+## search
+
+```ts
+const { data, meta } = await clinik.intakes.search(params?: ResourceSearchParams): Promise<ApiResponse<PaginatedResponse<QuestionnaireResponse>>>
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `patientId` | `string` | Filter by patient |
+| `status` | `string` | Filter by status |
+| `dateFrom` | `string` | Start date filter |
+| `dateTo` | `string` | End date filter |
+| `count` | `number` | Results per page (max: 100) |
+| `cursor` | `string` | Pagination cursor |

@@ -1,0 +1,14 @@
+---
+title: Delete (FHIR)
+description: Delete a FHIR R4 resource.
+openapi: delete /v1/fhir/{type}/{id}
+---
+
+## Delete a FHIR Resource
+
+```bash
+curl -X DELETE https://api.clinikehr.com/v1/fhir/Observation/obs_xyz789 \
+  -H "x-api-key: clk_live_abc123"
+```
+
+Returns `204 No Content` on success. Ownership is verified — you can only delete resources belonging to your tenant.

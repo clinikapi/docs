@@ -1,0 +1,34 @@
+---
+title: Prescriptions
+description: SDK reference for prescription (MedicationRequest) operations.
+---
+
+# clinik.prescriptions
+
+## create
+
+```ts
+const { data, meta } = await clinik.prescriptions.create(request: PrescriptionCreateRequest): Promise<ApiResponse<MedicationRequest>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `patientId` | `string` | Yes | Patient reference |
+| `prescriberId` | `string` | Yes | Prescribing practitioner |
+| `encounterId` | `string` | No | Encounter reference |
+| `medication` | `string \| { system?, code, display? }` | Yes | RxNorm code or name |
+| `intent` | `string` | No | proposal, plan, order (default), original-order |
+| `status` | `string` | No | active (default), on-hold, cancelled, completed, draft |
+| `priority` | `string` | No | routine, urgent, asap, stat |
+| `dosageText` | `string` | No | Human-readable dosage |
+| `dosage` | `object` | No | Structured dosage (dose, frequency, period, route) |
+| `refills` | `number` | No | Number of refills (0-99) |
+| `quantity` | `{ value, unit }` | No | Quantity to dispense |
+| `supplyDays` | `number` | No | Expected supply duration |
+| `substitutionAllowed` | `boolean` | No | Allow generic substitution |
+| `reason` | `string` | No | Clinical reason |
+| `note` | `string` | No | Pharmacist notes |
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `patientId`, `prescriberId`, `status`, and `medication` filters.

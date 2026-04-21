@@ -1,0 +1,1745 @@
+openapi: 3.1.0
+info:
+  title: ClinikAPI
+  version: 1.0.0
+  description: |
+    ClinikAPI is a managed healthcare infrastructure platform providing a developer-friendly REST API
+    for storing, querying, and managing clinical data using the FHIR R4 standard on AWS HealthLake.
+
+    ## Authentication
+    All endpoints (except `/v1/metadata` and `/health`) require an API key via the `x-api-key` header.
+    - Production keys: `clk_live_*`
+    - Test/sandbox keys: `clk_test_*`
+
+    ## Response Format
+    All responses are wrapped in `{ data: T, meta: { requestId, timestamp, status, rateLimitTotal, rateLimitRemaining, rateLimitReset } }`.
+
+    ## Rate Limits
+    Rate limits are plan-based and returned in response headers:
+    - `X-RateLimit-Limit` — total requests allowed per window
+    - `X-RateLimit-Remaining` — requests remaining
+    - `X-RateLimit-Reset` — seconds until window resets
+
+    ## Overages
+    Requests beyond your plan limit are charged at $0.003/request.
+  contact:
+    name: ClinikAPI Support
+    email: support@clinikapi.com
+    url: https://clinikapi.com
+  license:
+    name: Proprietary
+servers:
+  - url: https://api.clinikapi.com
+    description: Production
+  - url: http://localhost:3000
+    description: Local development
+
+security:
+  - ApiKeyAuth: []
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your ClinikAPI secret key (clk_live_* or clk_test_*)
+
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        data:
+          description: The resource or result payload
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+
+    ResponseMeta:
+      type: object
+      properties:
+        requestId:
+          type: string
+          example: req_k8f3a7x2
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          example: 200
+        rateLimitTotal:
+          type: integer
+        rateLimitRemaining:
+          type: integer
+        rateLimitReset:
+          type: integer
+
+    PaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items: {}
+        total:
+          type: integer
+        cursor:
+          type: string
+        hasMore:
+          type: boolean
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+        requestId:
+          type: string
+        issues:
+          type: array
+          items:
+            type: object
+            properties:
+              severity:
+                type: string
+              code:
+                type: string
+              diagnostics:
+                type: string
+
+    PatientCreate:
+      type: object
+      required: [firstName, lastName]
+      properties:
+        firstName:
+          type: string
+          maxLength: 100
+        lastName:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          maxLength: 20
+        gender:
+          type: string
+          enum: [male, female, other, unknown]
+        birthDate:
+          type: string
+          pattern: '^\d{4}(-\d{2}(-\d{2})?)?$'
+        address:
+          type: object
+          properties:
+            line:
+              type: array
+              items:
+                type: string
+            city:
+              type: string
+            state:
+              type: string
+            postalCode:
+              type: string
+            country:
+              type: string
+
+    EncounterCreate:
+      type: object
+      required: [status, class, patientId]
+      properties:
+        status:
+          type: string
+          enum: [planned, arrived, triaged, in-progress, onleave, finished, cancelled]
+        class:
+          type: string
+          description: 'AMB (ambulatory), IMP (inpatient), EMER (emergency), HH (home health), VR (virtual)'
+        patientId:
+          type: string
+        practitionerId:
+          type: string
+        type:
+          type: string
+          maxLength: 200
+        serviceType:
+          type: string
+          maxLength: 200
+        priority:
+          type: string
+          maxLength: 50
+        reasonCode:
+          type: string
+          maxLength: 500
+        period:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date-time
+            end:
+              type: string
+              format: date-time
+        lengthMinutes:
+          type: integer
+          maximum: 10080
+        location:
+          type: string
+        serviceProvider:
+          type: string
+        diagnosis:
+          type: array
+          maxItems: 20
+          items:
+            type: object
+            properties:
+              condition:
+                type: string
+              use:
+                type: string
+              rank:
+                type: integer
+
+    ObservationCreate:
+      type: object
+      required: [status, code, patientId]
+      properties:
+        status:
+          type: string
+          enum: [registered, preliminary, final, amended, corrected, cancelled]
+        code:
+          oneOf:
+            - type: string
+            - type: object
+              properties:
+                system:
+                  type: string
+                code:
+                  type: string
+                display:
+                  type: string
+        patientId:
+          type: string
+        encounterId:
+          type: string
+        performerId:
+          type: string
+        effectiveDateTime:
+          type: string
+          format: date-time
+        valueQuantity:
+          type: object
+          properties:
+            value:
+              type: number
+            unit:
+              type: string
+        valueString:
+          type: string
+          maxLength: 2000
+        category:
+          type: string
+          description: 'vital-signs, laboratory, social-history, exam'
+        interpretation:
+          type: string
+          description: 'H (high), L (low), N (normal), A (abnormal)'
+          maxLength: 10
+        note:
+          type: string
+          maxLength: 2000
+
+    AppointmentCreate:
+      type: object
+      required: [status, patientId]
+      properties:
+        status:
+          type: string
+          enum: [proposed, pending, booked, arrived, fulfilled, cancelled, noshow, checked-in, waitlist]
+        patientId:
+          type: string
+        practitionerId:
+          type: string
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        minutesDuration:
+          type: integer
+          maximum: 1440
+        appointmentType:
+          type: string
+        serviceType:
+          type: string
+        specialty:
+          type: string
+        reasonCode:
+          type: string
+          maxLength: 500
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 9
+        description:
+          type: string
+          maxLength: 2000
+        comment:
+          type: string
+          maxLength: 2000
+        patientInstruction:
+          type: string
+          maxLength: 2000
+
+    PrescriptionCreate:
+      type: object
+      required: [patientId, prescriberId, medication]
+      properties:
+        patientId:
+          type: string
+        prescriberId:
+          type: string
+        encounterId:
+          type: string
+        medication:
+          oneOf:
+            - type: string
+            - type: object
+              properties:
+                system:
+                  type: string
+                code:
+                  type: string
+                display:
+                  type: string
+        intent:
+          type: string
+          enum: [proposal, plan, order, original-order]
+          default: order
+        status:
+          type: string
+          enum: [active, on-hold, cancelled, completed, draft]
+          default: active
+        priority:
+          type: string
+          enum: [routine, urgent, asap, stat]
+        dosageText:
+          type: string
+          maxLength: 1000
+        refills:
+          type: integer
+          minimum: 0
+          maximum: 99
+        quantity:
+          type: object
+          properties:
+            value:
+              type: number
+            unit:
+              type: string
+        supplyDays:
+          type: integer
+        note:
+          type: string
+          maxLength: 2000
+
+  parameters:
+    PathId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Resource ID
+    QueryCount:
+      name: count
+      in: query
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+    QueryCursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
+    QueryPatientId:
+      name: patientId
+      in: query
+      schema:
+        type: string
+    QueryStatus:
+      name: status
+      in: query
+      schema:
+        type: string
+    QueryDateFrom:
+      name: dateFrom
+      in: query
+      schema:
+        type: string
+        format: date
+    QueryDateTo:
+      name: dateTo
+      in: query
+      schema:
+        type: string
+        format: date
+    QuerySort:
+      name: sort
+      in: query
+      schema:
+        type: string
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      security: []
+      tags: [System]
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /v1/metadata:
+    get:
+      summary: FHIR CapabilityStatement
+      operationId: getMetadata
+      security: []
+      tags: [System]
+      description: Returns a FHIR R4 CapabilityStatement describing supported resources and operations.
+      responses:
+        '200':
+          description: FHIR CapabilityStatement
+          content:
+            application/fhir+json:
+              schema:
+                type: object
+
+  # --- Patients ---
+  /v1/patients:
+    post:
+      summary: Create patient
+      operationId: createPatient
+      tags: [Patients]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientCreate'
+      responses:
+        '201':
+          description: Patient created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      summary: Search patients
+      operationId: searchPatients
+      tags: [Patients]
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+        - name: email
+          in: query
+          schema:
+            type: string
+        - name: gender
+          in: query
+          schema:
+            type: string
+        - $ref: '#/components/parameters/QueryCount'
+        - $ref: '#/components/parameters/QueryCursor'
+      responses:
+        '200':
+          description: Paginated patient list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /v1/patients/{id}:
+    get:
+      summary: Read patient
+      operationId: readPatient
+      tags: [Patients]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+        - name: _revinclude
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          description: 'Include related resources (e.g. Encounter:subject, Observation:subject)'
+      responses:
+        '200':
+          description: Patient with optional included resources
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    patch:
+      summary: Update patient
+      operationId: updatePatient
+      tags: [Patients]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Patient updated
+    delete:
+      summary: Delete patient
+      operationId: deletePatient
+      tags: [Patients]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Patient deleted
+
+  # --- Generic Resource Pattern (repeated for each resource) ---
+  /v1/encounters:
+    post:
+      summary: Create encounter
+      operationId: createEncounter
+      tags: [Encounters]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EncounterCreate'
+      responses:
+        '201':
+          description: Encounter created
+    get:
+      summary: Search encounters
+      operationId: searchEncounters
+      tags: [Encounters]
+      parameters:
+        - $ref: '#/components/parameters/QueryPatientId'
+        - $ref: '#/components/parameters/QueryStatus'
+        - $ref: '#/components/parameters/QueryDateFrom'
+        - $ref: '#/components/parameters/QueryDateTo'
+        - $ref: '#/components/parameters/QuerySort'
+        - $ref: '#/components/parameters/QueryCount'
+        - $ref: '#/components/parameters/QueryCursor'
+      responses:
+        '200':
+          description: Paginated encounter list
+
+  /v1/encounters/{id}:
+    get:
+      summary: Read encounter
+      operationId: readEncounter
+      tags: [Encounters]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Encounter details
+    patch:
+      summary: Update encounter
+      operationId: updateEncounter
+      tags: [Encounters]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Encounter updated
+    delete:
+      summary: Delete encounter
+      operationId: deleteEncounter
+      tags: [Encounters]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Encounter deleted
+
+  /v1/observations:
+    post:
+      summary: Create observation
+      operationId: createObservation
+      tags: [Observations]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObservationCreate'
+      responses:
+        '201':
+          description: Observation created
+    get:
+      summary: Search observations
+      operationId: searchObservations
+      tags: [Observations]
+      parameters:
+        - $ref: '#/components/parameters/QueryPatientId'
+        - $ref: '#/components/parameters/QueryStatus'
+        - $ref: '#/components/parameters/QueryDateFrom'
+        - $ref: '#/components/parameters/QueryDateTo'
+        - $ref: '#/components/parameters/QueryCount'
+        - $ref: '#/components/parameters/QueryCursor'
+      responses:
+        '200':
+          description: Paginated observation list
+
+  /v1/observations/{id}:
+    get:
+      summary: Read observation
+      operationId: readObservation
+      tags: [Observations]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Observation details
+    patch:
+      summary: Update observation
+      operationId: updateObservation
+      tags: [Observations]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Observation updated
+    delete:
+      summary: Delete observation
+      operationId: deleteObservation
+      tags: [Observations]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Observation deleted
+
+  /v1/appointments:
+    post:
+      summary: Create appointment
+      operationId: createAppointment
+      tags: [Appointments]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppointmentCreate'
+      responses:
+        '201':
+          description: Appointment created
+    get:
+      summary: Search appointments
+      operationId: searchAppointments
+      tags: [Appointments]
+      parameters:
+        - $ref: '#/components/parameters/QueryPatientId'
+        - $ref: '#/components/parameters/QueryStatus'
+        - $ref: '#/components/parameters/QueryDateFrom'
+        - $ref: '#/components/parameters/QueryDateTo'
+        - $ref: '#/components/parameters/QueryCount'
+        - $ref: '#/components/parameters/QueryCursor'
+      responses:
+        '200':
+          description: Paginated appointment list
+
+  /v1/appointments/{id}:
+    get:
+      summary: Read appointment
+      operationId: readAppointment
+      tags: [Appointments]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Appointment details
+    patch:
+      summary: Update appointment
+      operationId: updateAppointment
+      tags: [Appointments]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Appointment updated
+    delete:
+      summary: Delete appointment
+      operationId: deleteAppointment
+      tags: [Appointments]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Appointment deleted
+
+  /v1/prescriptions:
+    post:
+      summary: Create prescription
+      operationId: createPrescription
+      tags: [Prescriptions]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrescriptionCreate'
+      responses:
+        '201':
+          description: Prescription created
+    get:
+      summary: Search prescriptions
+      operationId: searchPrescriptions
+      tags: [Prescriptions]
+      parameters:
+        - $ref: '#/components/parameters/QueryPatientId'
+        - $ref: '#/components/parameters/QueryStatus'
+        - $ref: '#/components/parameters/QueryCount'
+        - $ref: '#/components/parameters/QueryCursor'
+      responses:
+        '200':
+          description: Paginated prescription list
+
+  /v1/prescriptions/{id}:
+    get:
+      summary: Read prescription
+      operationId: readPrescription
+      tags: [Prescriptions]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Prescription details
+    patch:
+      summary: Update prescription
+      operationId: updatePrescription
+      tags: [Prescriptions]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Prescription updated
+    delete:
+      summary: Delete prescription
+      operationId: deletePrescription
+      tags: [Prescriptions]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Prescription deleted
+
+  # --- Bulk Operations ---
+  /v1/bulk/export:
+    post:
+      summary: Start bulk export
+      operationId: bulkExport
+      tags: [Bulk]
+      description: Export tenant data as NDJSON. Returns a job ID for status polling.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resourceTypes]
+              properties:
+                resourceTypes:
+                  type: array
+                  items:
+                    type: string
+                  description: FHIR resource types to export
+                since:
+                  type: string
+                  format: date-time
+                  description: Only export resources modified after this date
+      responses:
+        '202':
+          description: Export job started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      jobId:
+                        type: string
+                      status:
+                        type: string
+                      message:
+                        type: string
+
+  /v1/bulk/import:
+    post:
+      summary: Start bulk import
+      operationId: bulkImport
+      tags: [Bulk]
+      description: Import NDJSON data. Max 10,000 records per batch.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resourceType, data]
+              properties:
+                resourceType:
+                  type: string
+                data:
+                  type: string
+                  description: NDJSON content (one JSON resource per line)
+                  maxLength: 104857600
+      responses:
+        '202':
+          description: Import job started
+
+  /v1/bulk/jobs/{jobId}:
+    get:
+      summary: Get bulk job status
+      operationId: getBulkJobStatus
+      tags: [Bulk]
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: string
+                        enum: [import, export]
+                      status:
+                        type: string
+                        enum: [pending, processing, completed, failed]
+                      totalRecords:
+                        type: integer
+                      processedRecords:
+                        type: integer
+                      downloadUrl:
+                        type: string
+                      errors:
+                        type: array
+                        items:
+                          type: string
+
+  # --- Medications ---
+  /v1/medications:
+    post:
+      summary: Create medication
+      operationId: createMedication
+      tags: [Medications]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  oneOf:
+                    - type: string
+                    - type: object
+                      properties:
+                        system: { type: string }
+                        code: { type: string }
+                        display: { type: string }
+                status:
+                  type: string
+                  enum: [active, inactive]
+                form:
+                  type: string
+      responses:
+        '201':
+          description: Medication created
+    get:
+      summary: Search medications
+      operationId: searchMedications
+      tags: [Medications]
+      parameters:
+        - $ref: '#/components/parameters/QueryStatus'
+        - $ref: '#/components/parameters/QueryCount'
+        - $ref: '#/components/parameters/QueryCursor'
+      responses:
+        '200':
+          description: Paginated medication list
+
+  /v1/medications/{id}:
+    get:
+      summary: Read medication
+      operationId: readMedication
+      tags: [Medications]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Medication details
+    patch:
+      summary: Update medication
+      operationId: updateMedication
+      tags: [Medications]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Medication updated
+    delete:
+      summary: Delete medication
+      operationId: deleteMedication
+      tags: [Medications]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Medication deleted
+
+  # --- Intakes (QuestionnaireResponse) ---
+  /v1/intakes:
+    post:
+      summary: Submit intake form
+      operationId: submitIntake
+      tags: [Intakes]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [patientId, items]
+              properties:
+                patientId: { type: string }
+                encounterId: { type: string }
+                authorId: { type: string }
+                questionnaire: { type: string }
+                status:
+                  type: string
+                  enum: [in-progress, completed, amended, stopped]
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required: [linkId]
+                    properties:
+                      linkId: { type: string }
+                      text: { type: string }
+                      answer:
+                        type: array
+                        items:
+                          type: object
+      responses:
+        '201':
+          description: Intake submitted
+    get:
+      summary: Search intakes
+      operationId: searchIntakes
+      tags: [Intakes]
+      parameters:
+        - $ref: '#/components/parameters/QueryPatientId'
+        - $ref: '#/components/parameters/QueryStatus'
+        - $ref: '#/components/parameters/QueryCount'
+        - $ref: '#/components/parameters/QueryCursor'
+      responses:
+        '200':
+          description: Paginated intake list
+
+  /v1/intakes/{id}:
+    get:
+      summary: Read intake
+      operationId: readIntake
+      tags: [Intakes]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Intake details
+    patch:
+      summary: Update intake
+      operationId: updateIntake
+      tags: [Intakes]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Intake updated
+    delete:
+      summary: Delete intake
+      operationId: deleteIntake
+      tags: [Intakes]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Intake deleted
+
+  # --- Consents ---
+  /v1/consents:
+    post:
+      summary: Sign consent
+      operationId: signConsent
+      tags: [Consents]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [patientId, scope, category]
+              properties:
+                patientId: { type: string }
+                scope: { type: string, description: 'patient-privacy, research, treatment, adr' }
+                category:
+                  oneOf:
+                    - type: string
+                    - type: array
+                      items: { type: string }
+                status:
+                  type: string
+                  enum: [draft, proposed, active, rejected, inactive]
+                policyUri: { type: string }
+                performerId: { type: string }
+                organizationId: { type: string }
+      responses:
+        '201':
+          description: Consent signed
+    get:
+      summary: Search consents
+      operationId: searchConsents
+      tags: [Consents]
+      parameters:
+        - $ref: '#/components/parameters/QueryPatientId'
+        - $ref: '#/components/parameters/QueryStatus'
+        - $ref: '#/components/parameters/QueryCount'
+        - $ref: '#/components/parameters/QueryCursor'
+      responses:
+        '200':
+          description: Paginated consent list
+
+  /v1/consents/{id}:
+    get:
+      summary: Read consent
+      operationId: readConsent
+      tags: [Consents]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Consent details
+    patch:
+      summary: Update consent
+      operationId: updateConsent
+      tags: [Consents]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Consent updated
+    delete:
+      summary: Delete consent
+      operationId: deleteConsent
+      tags: [Consents]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Consent deleted
+
+  # --- Labs (DiagnosticReport) ---
+  /v1/labs:
+    post:
+      summary: Create lab report
+      operationId: createLab
+      tags: [Labs]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status, code, patientId]
+              properties:
+                status:
+                  type: string
+                  enum: [registered, partial, preliminary, final, amended, corrected, appended, cancelled]
+                code:
+                  oneOf:
+                    - type: string
+                    - type: object
+                      properties:
+                        system: { type: string }
+                        code: { type: string }
+                        display: { type: string }
+                patientId: { type: string }
+                encounterId: { type: string }
+                conclusion: { type: string, maxLength: 5000 }
+                performer: { type: string }
+                resultIds:
+                  type: array
+                  items: { type: string }
+      responses:
+        '201':
+          description: Lab report created
+    get:
+      summary: Search labs
+      operationId: searchLabs
+      tags: [Labs]
+      parameters:
+        - $ref: '#/components/parameters/QueryPatientId'
+        - $ref: '#/components/parameters/QueryStatus'
+        - $ref: '#/components/parameters/QueryDateFrom'
+        - $ref: '#/components/parameters/QueryDateTo'
+        - $ref: '#/components/parameters/QueryCount'
+        - $ref: '#/components/parameters/QueryCursor'
+      responses:
+        '200':
+          description: Paginated lab list
+
+  /v1/labs/{id}:
+    get:
+      summary: Read lab report
+      operationId: readLab
+      tags: [Labs]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Lab report details
+    patch:
+      summary: Update lab report
+      operationId: updateLab
+      tags: [Labs]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Lab report updated
+    delete:
+      summary: Delete lab report
+      operationId: deleteLab
+      tags: [Labs]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Lab report deleted
+
+  # --- Practitioners ---
+  /v1/practitioners:
+    post:
+      summary: Create practitioner
+      operationId: createPractitioner
+      tags: [Practitioners]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [firstName, lastName]
+              properties:
+                firstName: { type: string, maxLength: 100 }
+                lastName: { type: string, maxLength: 100 }
+                email: { type: string, format: email }
+                phone: { type: string }
+                gender: { type: string, enum: [male, female, other, unknown] }
+                birthDate: { type: string }
+                npi: { type: string, description: National Provider Identifier }
+                specialty: { type: string }
+      responses:
+        '201':
+          description: Practitioner created
+    get:
+      summary: Search practitioners
+      operationId: searchPractitioners
+      tags: [Practitioners]
+      parameters:
+        - name: name
+          in: query
+          schema: { type: string }
+        - name: specialty
+          in: query
+          schema: { type: string }
+        - name: npi
+          in: query
+          schema: { type: string }
+        - $ref: '#/components/parameters/QueryCount'
+        - $ref: '#/components/parameters/QueryCursor'
+      responses:
+        '200':
+          description: Paginated practitioner list
+
+  /v1/practitioners/{id}:
+    get:
+      summary: Read practitioner
+      operationId: readPractitioner
+      tags: [Practitioners]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Practitioner details
+    patch:
+      summary: Update practitioner
+      operationId: updatePractitioner
+      tags: [Practitioners]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Practitioner updated
+    delete:
+      summary: Delete practitioner
+      operationId: deletePractitioner
+      tags: [Practitioners]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Practitioner deleted
+
+  # --- Practitioner Roles ---
+  /v1/practitioner-roles:
+    post:
+      summary: Create practitioner role
+      operationId: createPractitionerRole
+      tags: [PractitionerRoles]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [practitionerId, role]
+              properties:
+                practitionerId: { type: string }
+                role: { type: string, description: 'doctor, nurse, pharmacist, etc.' }
+                organizationName: { type: string }
+                specialty:
+                  type: array
+                  items: { type: string }
+                locationName: { type: string }
+                phone: { type: string }
+                email: { type: string, format: email }
+                availableDays:
+                  type: array
+                  items: { type: string, enum: [mon, tue, wed, thu, fri, sat, sun] }
+                availableStartTime: { type: string, pattern: '^\d{2}:\d{2}:\d{2}$' }
+                availableEndTime: { type: string, pattern: '^\d{2}:\d{2}:\d{2}$' }
+      responses:
+        '201':
+          description: Practitioner role created
+    get:
+      summary: Search practitioner roles
+      operationId: searchPractitionerRoles
+      tags: [PractitionerRoles]
+      parameters:
+        - $ref: '#/components/parameters/QueryPatientId'
+        - $ref: '#/components/parameters/QueryCount'
+        - $ref: '#/components/parameters/QueryCursor'
+      responses:
+        '200':
+          description: Paginated practitioner role list
+
+  /v1/practitioner-roles/{id}:
+    get:
+      summary: Read practitioner role
+      operationId: readPractitionerRole
+      tags: [PractitionerRoles]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Practitioner role details
+    patch:
+      summary: Update practitioner role
+      operationId: updatePractitionerRole
+      tags: [PractitionerRoles]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Practitioner role updated
+    delete:
+      summary: Delete practitioner role
+      operationId: deletePractitionerRole
+      tags: [PractitionerRoles]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Practitioner role deleted
+
+  # --- Notes (DocumentReference) ---
+  /v1/notes:
+    post:
+      summary: Create clinical note
+      operationId: createNote
+      tags: [Notes]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [patientId, title, content]
+              properties:
+                patientId: { type: string }
+                authorId: { type: string }
+                encounterId: { type: string }
+                type:
+                  type: string
+                  enum: [progress-note, discharge-summary, consultation-note, history-and-physical, operative-note, procedure-note, referral-note, transfer-summary, other]
+                title: { type: string, maxLength: 500 }
+                content: { type: string, maxLength: 100000 }
+                contentType: { type: string, default: 'text/plain' }
+                docStatus: { type: string, enum: [preliminary, final, amended] }
+                category: { type: string }
+      responses:
+        '201':
+          description: Note created
+    get:
+      summary: Search notes
+      operationId: searchNotes
+      tags: [Notes]
+      parameters:
+        - $ref: '#/components/parameters/QueryPatientId'
+        - name: type
+          in: query
+          schema: { type: string }
+        - name: authorId
+          in: query
+          schema: { type: string }
+        - $ref: '#/components/parameters/QueryDateFrom'
+        - $ref: '#/components/parameters/QueryDateTo'
+        - $ref: '#/components/parameters/QueryCount'
+        - $ref: '#/components/parameters/QueryCursor'
+      responses:
+        '200':
+          description: Paginated note list
+
+  /v1/notes/{id}:
+    get:
+      summary: Read note
+      operationId: readNote
+      tags: [Notes]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Note details
+    patch:
+      summary: Update note
+      operationId: updateNote
+      tags: [Notes]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Note updated
+    delete:
+      summary: Delete note
+      operationId: deleteNote
+      tags: [Notes]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Note deleted
+
+  # --- Assessments (ClinicalImpression) ---
+  /v1/assessments:
+    post:
+      summary: Create assessment
+      operationId: createAssessment
+      tags: [Assessments]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status, patientId, summary]
+              properties:
+                status: { type: string, enum: [in-progress, completed] }
+                patientId: { type: string }
+                encounterId: { type: string }
+                practitionerId: { type: string }
+                description: { type: string, maxLength: 2000 }
+                summary: { type: string, maxLength: 5000 }
+                findings:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      code: { type: string }
+                      text: { type: string }
+                note: { type: string, maxLength: 2000 }
+                effectiveDateTime: { type: string, format: date-time }
+      responses:
+        '201':
+          description: Assessment created
+    get:
+      summary: Search assessments
+      operationId: searchAssessments
+      tags: [Assessments]
+      parameters:
+        - $ref: '#/components/parameters/QueryPatientId'
+        - $ref: '#/components/parameters/QueryStatus'
+        - $ref: '#/components/parameters/QueryDateFrom'
+        - $ref: '#/components/parameters/QueryDateTo'
+        - $ref: '#/components/parameters/QueryCount'
+        - $ref: '#/components/parameters/QueryCursor'
+      responses:
+        '200':
+          description: Paginated assessment list
+
+  /v1/assessments/{id}:
+    get:
+      summary: Read assessment
+      operationId: readAssessment
+      tags: [Assessments]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Assessment details
+    patch:
+      summary: Update assessment
+      operationId: updateAssessment
+      tags: [Assessments]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Assessment updated
+    delete:
+      summary: Delete assessment
+      operationId: deleteAssessment
+      tags: [Assessments]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Assessment deleted
+
+  # --- Documents (Composition) ---
+  /v1/documents:
+    post:
+      summary: Create document
+      operationId: createDocument
+      tags: [Documents]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status, type, patientId, practitionerId, title, sections]
+              properties:
+                status: { type: string, enum: [preliminary, final, amended] }
+                type: { type: string, description: 'progress-note, discharge-summary, consultation-note, etc.' }
+                patientId: { type: string }
+                encounterId: { type: string }
+                practitionerId: { type: string }
+                title: { type: string, maxLength: 500 }
+                date: { type: string, format: date-time }
+                confidentiality: { type: string, enum: [N, R, V] }
+                sections:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [title, text]
+                    properties:
+                      title: { type: string }
+                      code: { type: string }
+                      text: { type: string, maxLength: 50000 }
+                      resourceIds:
+                        type: array
+                        items: { type: string }
+      responses:
+        '201':
+          description: Document created
+    get:
+      summary: Search documents
+      operationId: searchDocuments
+      tags: [Documents]
+      parameters:
+        - $ref: '#/components/parameters/QueryPatientId'
+        - name: type
+          in: query
+          schema: { type: string }
+        - $ref: '#/components/parameters/QueryStatus'
+        - $ref: '#/components/parameters/QueryDateFrom'
+        - $ref: '#/components/parameters/QueryDateTo'
+        - $ref: '#/components/parameters/QueryCount'
+        - $ref: '#/components/parameters/QueryCursor'
+      responses:
+        '200':
+          description: Paginated document list
+
+  /v1/documents/{id}:
+    get:
+      summary: Read document
+      operationId: readDocument
+      tags: [Documents]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Document details
+    patch:
+      summary: Update document
+      operationId: updateDocument
+      tags: [Documents]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Document updated
+    delete:
+      summary: Delete document
+      operationId: deleteDocument
+      tags: [Documents]
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Document deleted
+
+  # --- Raw FHIR Passthrough ---
+  /v1/fhir/{path}:
+    get:
+      summary: Raw FHIR read/search
+      operationId: fhirGet
+      tags: [FHIR Passthrough]
+      description: Direct FHIR R4 read or search with automatic tenant isolation.
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 'FHIR path (e.g. Patient/123, Observation?code=8867-4)'
+      responses:
+        '200':
+          description: FHIR resource or Bundle
+    post:
+      summary: Raw FHIR create
+      operationId: fhirPost
+      tags: [FHIR Passthrough]
+      description: Create a raw FHIR R4 resource. Tenant tag is injected automatically.
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Resource created
+    patch:
+      summary: Raw FHIR patch
+      operationId: fhirPatch
+      tags: [FHIR Passthrough]
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  op:
+                    type: string
+                    enum: [add, remove, replace, move, copy, test]
+                  path:
+                    type: string
+                  value: {}
+      responses:
+        '200':
+          description: Resource patched
+    delete:
+      summary: Raw FHIR delete
+      operationId: fhirDelete
+      tags: [FHIR Passthrough]
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Resource deleted
+
+tags:
+  - name: System
+    description: Health check and metadata
+  - name: Patients
+    description: Patient demographics and records
+  - name: Practitioners
+    description: Healthcare providers and clinicians
+  - name: PractitionerRoles
+    description: Practitioner roles, specialties, and availability
+  - name: Encounters
+    description: Clinical visits and interactions
+  - name: Observations
+    description: Vitals, lab values, and clinical measurements
+  - name: Medications
+    description: Drug catalog entries
+  - name: Appointments
+    description: Scheduling and booking
+  - name: Prescriptions
+    description: Medication orders (MedicationRequest)
+  - name: Intakes
+    description: Questionnaire responses and intake forms
+  - name: Consents
+    description: Privacy and treatment consent directives
+  - name: Labs
+    description: Diagnostic reports and lab results
+  - name: Notes
+    description: Clinical notes and documents (DocumentReference)
+  - name: Assessments
+    description: Clinical impressions and evaluations
+  - name: Documents
+    description: Structured clinical documents (Composition)
+  - name: Bulk
+    description: Bulk import and export operations
+  - name: FHIR Passthrough
+    description: Raw FHIR R4 access with tenant isolation

@@ -1,0 +1,35 @@
+---
+title: PrescriptionForm
+description: Create and edit medication prescriptions.
+---
+
+# PrescriptionForm
+
+A form widget for creating and editing medication prescriptions with dosage instructions.
+
+## Usage
+
+```tsx
+import { PrescriptionForm } from '@clinikapi/react';
+
+<PrescriptionForm
+  proxyUrl="/api/clinik/prescriptions"
+  onError={(err) => console.error(err)}
+/>
+```
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `proxyUrl` | `string` | Yes | Backend proxy URL for prescription CRUD |
+| `className` | `string` | No | CSS class name |
+| `onError` | `(error: Error) => void` | No | Error callback |
+
+## Features
+
+- Medication search with RxNorm codes
+- Structured dosage input (dose, frequency, route)
+- Refill and quantity fields
+- Substitution toggle
+- Pharmacist notes

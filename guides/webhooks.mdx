@@ -1,0 +1,126 @@
+---
+title: Webhooks
+description: Get real-time notifications when resources are created, updated, or deleted.
+---
+
+# Webhooks
+
+Webhooks notify your application in real-time when resources change. Every webhook payload is HMAC-SHA256 signed for security.
+
+## Setting Up Webhooks
+
+1. Go to **Webhooks** in the [Developer Dashboard](https://dashboard.clinikapi.com)
+2. Click **Create Webhook**
+3. Enter your endpoint URL (must be HTTPS)
+4. Select which events to subscribe to
+5. Save — you'll receive a webhook secret for signature verification
+
+## Event Format
+
+Events follow the pattern `{resource}.{action}`:
+
+```
+patient.created
+encounter.updated
+prescription.deleted
+```
+
+## Payload Structure
+
+```json
+{
+  "id": "evt_lx8f3a7x2_k9m2n4",
+  "event": "patient.created",
+  "timestamp": "2025-01-15T09:15:00.000Z",
+  "data": {
+    "resourceType": "patient",
+    "resourceId": "pt_abc123",
+    "action": "created",
+    "tenantId": "org_def456"
+  }
+}
+```
+
+## Headers
+
+| Header | Description |
+|--------|-------------|
+| `X-Clinik-Signature` | HMAC-SHA256 hex signature of the payload |
+| `X-Clinik-Timestamp` | Unix timestamp (seconds) when the webhook was sent |
+| `X-Clinik-Event` | Event type (e.g. `patient.created`) |
+| `X-Clinik-Delivery-Id` | Unique delivery ID for deduplication |
+
+## Verifying Signatures
+
+Always verify the signature before processing a webhook:
+
+```ts
+import crypto from 'crypto';
+
+function verifyWebhook(payload: string, signature: string, secret: string): boolean {
+  const expected = crypto
+    .createHmac('sha256', secret)
+    .update(payload)
+    .digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+}
+
+// In your webhook handler
+app.post('/webhooks/clinikapi', (req, res) => {
+  const signature = req.headers['x-clinik-signature'];
+  const isValid = verifyWebhook(req.body, signature, process.env.CLINIK_WEBHOOK_SECRET);
+
+  if (!isValid) {
+    return res.status(401).send('Invalid signature');
+  }
+
+  const event = JSON.parse(req.body);
+  switch (event.event) {
+    case 'patient.created':
+      // Handle new patient
+      break;
+    case 'appointment.updated':
+      // Handle appointment change
+      break;
+  }
+
+  res.status(200).send('OK');
+});
+```
+
+## Event Subscription
+
+You can subscribe to:
+
+| Pattern | Description |
+|---------|-------------|
+| `*` | All events |
+| `patient.*` | All patient events (created, updated, deleted) |
+| `patient.created` | Only patient creation |
+
+### Available Events
+
+All 14 resource types support `.created`, `.updated`, and `.deleted`:
+
+`patient`, `encounter`, `observation`, `medication`, `appointment`, `intake`, `consent`, `lab`, `prescription`, `note`, `assessment`, `document`, `practitioner`, `practitioner-role`
+
+## Retry Policy
+
+Failed deliveries are retried with exponential backoff:
+
+| Attempt | Delay |
+|---------|-------|
+| 1 | 30 seconds |
+| 2 | 2 minutes |
+| 3 | 8 minutes |
+| 4 | 32 minutes |
+| 5 | 2 hours |
+
+After 5 failed attempts, the delivery is marked as failed. You can view delivery logs in the Dashboard under **Analytics > Webhook Logs**.
+
+## Best Practices
+
+- Always return `200` quickly — process events asynchronously
+- Use the `X-Clinik-Delivery-Id` header for idempotency
+- Verify signatures on every request
+- Use specific event subscriptions instead of `*` when possible

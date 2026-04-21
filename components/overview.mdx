@@ -1,0 +1,85 @@
+---
+title: React Components
+description: Drop-in clinical UI widgets for your frontend using the proxy pattern.
+---
+
+# React Components
+
+`@clinikapi/react` provides 9 pre-built clinical UI widgets that communicate through your backend proxy — never directly to ClinikAPI.
+
+```bash
+npm install @clinikapi/react
+```
+
+## The Proxy Pattern
+
+React widgets run in the browser and cannot use the SDK directly (that would expose your API key). Instead, they talk to your backend through a `proxyUrl`:
+
+```
+Browser Widget → Your Backend Proxy → ClinikAPI SDK → ClinikAPI
+```
+
+### Setting Up a Proxy
+
+```ts
+// Your backend (e.g. Next.js API route)
+import { Clinik } from '@clinikapi/sdk';
+
+const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!);
+
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const patientId = url.searchParams.get('patientId');
+
+  const { data } = await clinik.patients.read(patientId!, {
+    include: ['Encounter', 'Observation', 'MedicationRequest'],
+  });
+
+  return Response.json(data);
+}
+```
+
+### Using a Widget
+
+```tsx
+import { PatientDashboard } from '@clinikapi/react';
+
+export default function PatientPage({ patientId }: { patientId: string }) {
+  return (
+    <PatientDashboard
+      proxyUrl={`/api/clinik/patients/${patientId}`}
+    />
+  );
+}
+```
+
+## Available Widgets
+
+| Widget | Description |
+|--------|-------------|
+| [PatientDashboard](/components/patient-dashboard) | Full patient overview with encounters, vitals, meds |
+| [AppointmentScheduler](/components/appointment-scheduler) | Book and manage appointments |
+| [PrescriptionForm](/components/prescription-form) | Create and edit prescriptions |
+| [NoteEditor](/components/note-editor) | Rich clinical note editor |
+| [IntakeForm](/components/intake-form) | Patient intake questionnaire |
+| [ConsentManager](/components/consent-manager) | Consent signing and management |
+| [VitalsWidget](/components/vitals-widget) | Vital signs display with charts |
+| [LabResultsWidget](/components/lab-results) | Lab report viewer |
+| [PrescriptionWidget](/components/prescription-widget) | Prescription list and details |
+
+## Common Props
+
+All widgets accept:
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `proxyUrl` | `string` | Yes | Your backend proxy endpoint |
+| `className` | `string` | No | CSS class name |
+| `onError` | `(error: Error) => void` | No | Error callback |
+
+## Security
+
+- Widgets never receive your API key
+- All data flows through your backend proxy
+- You control authentication and authorization on your proxy
+- `proxyUrl` is validated to prevent open redirect attacks

@@ -1,0 +1,86 @@
+---
+title: Practitioner Roles
+description: SDK reference for practitioner role operations.
+---
+
+# clinik.practitionerRoles
+
+PractitionerRole defines the role a practitioner plays at a specific organization or location — their specialty, availability, and contact info in that context.
+
+A single practitioner can have multiple roles (e.g. cardiologist at Hospital A, consultant at Clinic B).
+
+## create
+
+```ts
+const { data, meta } = await clinik.practitionerRoles.create(request: PractitionerRoleCreateRequest): Promise<ApiResponse<PractitionerRole>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `practitionerId` | `string` | Yes | Reference to the Practitioner |
+| `organizationName` | `string` | No | Organization name |
+| `role` | `string` | Yes | Role code (e.g. "doctor", "nurse", "admin") |
+| `specialty` | `string[]` | No | Specialties in this role |
+| `locationName` | `string` | No | Location/facility name |
+| `phone` | `string` | No | Contact phone for this role |
+| `email` | `string` | No | Contact email for this role |
+| `availableDays` | `string[]` | No | Days available (mon, tue, wed, thu, fri, sat, sun) |
+| `availableStartTime` | `string` | No | Start time (HH:mm) |
+| `availableEndTime` | `string` | No | End time (HH:mm) |
+
+### Example
+
+```ts
+const { data } = await clinik.practitionerRoles.create({
+  practitionerId: 'prac_abc123',
+  organizationName: 'Austin Heart Clinic',
+  role: 'doctor',
+  specialty: ['Cardiology', 'Interventional Cardiology'],
+  locationName: 'Main Campus - Building A',
+  phone: '+1-555-0100',
+  email: 'dr.chen@austinheart.com',
+  availableDays: ['mon', 'tue', 'wed', 'thu', 'fri'],
+  availableStartTime: '08:00',
+  availableEndTime: '17:00',
+});
+```
+
+## read
+
+```ts
+const { data, meta } = await clinik.practitionerRoles.read(id: string): Promise<ApiResponse<PractitionerRole>>
+```
+
+## update
+
+```ts
+const { data, meta } = await clinik.practitionerRoles.update(id: string, request: PractitionerRoleUpdateRequest): Promise<ApiResponse<PractitionerRole>>
+```
+
+```ts
+await clinik.practitionerRoles.update('role_xyz789', {
+  availableDays: ['mon', 'wed', 'fri'],
+  availableStartTime: '09:00',
+  availableEndTime: '16:00',
+  active: false, // deactivate this role
+});
+```
+
+## delete
+
+```ts
+const { data, meta } = await clinik.practitionerRoles.delete(id: string): Promise<ApiResponse<void>>
+```
+
+## search
+
+```ts
+const { data, meta } = await clinik.practitionerRoles.search(params?: ResourceSearchParams): Promise<ApiResponse<PaginatedResponse<PractitionerRole>>>
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `patientId` | `string` | Not applicable — use other filters |
+| `status` | `string` | Filter by active status |
+| `count` | `number` | Results per page (max: 100) |
+| `cursor` | `string` | Pagination cursor |

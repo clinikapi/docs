@@ -1,0 +1,72 @@
+---
+title: Patients
+description: SDK reference for patient operations.
+---
+
+# clinik.patients
+
+## create
+
+```ts
+const { data, meta } = await clinik.patients.create(request: PatientCreateRequest): Promise<ApiResponse<Patient>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `firstName` | `string` | Yes | Patient's first name |
+| `lastName` | `string` | Yes | Patient's last name |
+| `email` | `string` | No | Email address |
+| `phone` | `string` | No | Phone number |
+| `gender` | `'male' \| 'female' \| 'other' \| 'unknown'` | No | Administrative gender |
+| `birthDate` | `string` | No | Date of birth (YYYY-MM-DD) |
+| `address` | `object` | No | Address with line, city, state, postalCode, country |
+
+## read
+
+```ts
+const { data, meta } = await clinik.patients.read(id: string, options?: ReadOptions): Promise<ApiResponse<PatientReadResponse>>
+```
+
+The `include` option fetches related resources in a single call:
+
+```ts
+const { data } = await clinik.patients.read('pt_abc123', {
+  include: ['Encounter', 'Observation', 'MedicationRequest'],
+});
+
+data.patient;       // Patient
+data.encounters;    // Encounter[]
+data.observations;  // Observation[]
+data.prescriptions; // MedicationRequest[]
+```
+
+## update
+
+```ts
+const { data, meta } = await clinik.patients.update(id: string, request: PatientUpdateRequest): Promise<ApiResponse<Patient>>
+```
+
+Only send the fields you want to change. Uses JSON Patch internally.
+
+## delete
+
+```ts
+const { data, meta } = await clinik.patients.delete(id: string): Promise<ApiResponse<void>>
+```
+
+## search
+
+```ts
+const { data, meta } = await clinik.patients.search(params?: PatientSearchParams): Promise<ApiResponse<PaginatedResponse<Patient>>>
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | `string` | Search by name (partial match) |
+| `email` | `string` | Exact email match |
+| `phone` | `string` | Exact phone match |
+| `birthDate` | `string` | Date of birth |
+| `gender` | `string` | Gender filter |
+| `active` | `boolean` | Active status |
+| `count` | `number` | Results per page (max: 100) |
+| `cursor` | `string` | Pagination cursor |

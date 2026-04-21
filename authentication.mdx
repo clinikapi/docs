@@ -1,0 +1,105 @@
+---
+title: Authentication
+description: API key authentication, tenant isolation, and multi-datastore routing.
+---
+
+# Authentication
+
+ClinikAPI uses API key authentication via the `x-api-key` header. Every request must include a valid key.
+
+## API Keys
+
+Keys are created in the [Developer Dashboard](https://dashboard.clinikapi.com) and follow this format:
+
+| Format | Environment | Use Case |
+|--------|-------------|----------|
+| `clk_test_*` | Test | Development, staging, CI/CD |
+| `clk_live_*` | Production | Live patient data |
+
+```bash
+curl -X GET https://api.clinikehr.com/v1/patients \
+  -H "x-api-key: clk_test_abc123def456"
+```
+
+```ts
+import { Clinik } from '@clinikapi/sdk';
+
+const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!);
+```
+
+## ClinikAPI is a Data API
+
+ClinikAPI does **not** handle end-user authentication. You bring your own auth provider (Supabase, Clerk, Auth0, Firebase, etc.) and use ClinikAPI purely for clinical data storage and retrieval.
+
+```
+Patient (browser) → Your Auth (Supabase/Clerk) → Your Backend → ClinikAPI SDK → ClinikAPI
+```
+
+The SDK runs on your server. Your backend authenticates the end user, then calls ClinikAPI with your secret key.
+
+## Tenant Isolation
+
+Every resource stored in ClinikAPI is tagged with your organization's tenant ID:
+
+```json
+{
+  "meta": {
+    "tag": [
+      {
+        "system": "https://clinikapi.com/tenant",
+        "code": "org_abc123"
+      }
+    ]
+  }
+}
+```
+
+- **On create**: the tenant tag is automatically injected
+- **On search**: a `_tag` filter is automatically applied — you can only see your own data
+- **On read/update/delete**: ownership is verified before the operation proceeds
+
+There is no way to access another tenant's data through the API.
+
+## Multi-Datastore Routing
+
+Requests are routed to different AWS HealthLake datastores based on your key and plan:
+
+| Key Type | Plan | Datastore |
+|----------|------|-----------|
+| `clk_test_*` | Any | Shared test datastore |
+| `clk_live_*` | Sandbox / Starter / Pro / Team | Shared production datastore |
+| `clk_live_*` | Enterprise | Dedicated datastore |
+
+Enterprise customers get a fully isolated HealthLake datastore provisioned in their preferred AWS region.
+
+## Key Validation Flow
+
+For zero cross-cloud latency, API keys are validated against an AWS RDS PostgreSQL database that mirrors your Supabase dashboard data:
+
+1. You create/revoke keys in the Dashboard (Supabase Postgres)
+2. A Supabase Edge Function syncs key changes to AWS RDS (same region as Lambda)
+3. The API validates keys against AWS RDS — no cross-cloud round trips
+
+Keys are cached for 60 seconds to minimize database lookups.
+
+## Key Scopes
+
+API keys can be scoped to specific permissions:
+
+- `read` — GET operations only
+- `write` — POST, PATCH, DELETE operations
+- `*` — full access (default)
+
+Scopes are set when creating the key in the Dashboard.
+
+## Security Best Practices
+
+<Warning>
+  Never expose your API key in client-side code, Git repositories, or logs.
+</Warning>
+
+- Store keys in environment variables (`CLINIKAPI_SECRET_KEY`)
+- Use `clk_test_*` keys for development — they route to an isolated test datastore
+- Rotate keys periodically from the Dashboard
+- Use scoped keys when possible (e.g., read-only for analytics services)
+- For client-side UI, use `@clinikapi/react` with the [proxy pattern](/components/overview)

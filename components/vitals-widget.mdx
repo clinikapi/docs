@@ -1,0 +1,54 @@
+---
+title: VitalsWidget
+description: Vital signs display with trend charts.
+---
+
+# VitalsWidget
+
+Displays patient vital signs with trend visualization.
+
+## Usage
+
+```tsx
+import { VitalsWidget } from '@clinikapi/react';
+
+<VitalsWidget
+  proxyUrl={`/api/clinik/patients/${patientId}/vitals`}
+  onError={(err) => console.error(err)}
+/>
+```
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `proxyUrl` | `string` | Yes | Backend proxy URL returning observations |
+| `className` | `string` | No | CSS class name |
+| `onError` | `(error: Error) => void` | No | Error callback |
+
+## Proxy Endpoint
+
+Return vital-signs observations for the patient:
+
+```ts
+export async function GET(req: Request, { params }: { params: { id: string } }) {
+  const { data } = await clinik.observations.search({
+    patientId: params.id,
+    status: 'final',
+    sort: '-date',
+    count: 50,
+  });
+  return Response.json(data);
+}
+```
+
+## Displayed Vitals
+
+- Heart rate (LOINC 8867-4)
+- Blood pressure (LOINC 85354-9)
+- Temperature (LOINC 8310-5)
+- Respiratory rate (LOINC 9279-1)
+- Oxygen saturation (LOINC 2708-6)
+- Weight (LOINC 29463-7)
+- Height (LOINC 8302-2)
+- BMI (LOINC 39156-5)

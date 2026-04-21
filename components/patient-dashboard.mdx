@@ -1,0 +1,53 @@
+---
+title: PatientDashboard
+description: Full patient overview widget with encounters, vitals, medications, and more.
+---
+
+# PatientDashboard
+
+A comprehensive patient overview displaying demographics, recent encounters, vitals, medications, and appointments.
+
+## Usage
+
+```tsx
+import { PatientDashboard } from '@clinikapi/react';
+
+<PatientDashboard
+  proxyUrl={`/api/clinik/patients/${patientId}`}
+  onError={(err) => console.error('Dashboard error:', err)}
+/>
+```
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `proxyUrl` | `string` | Yes | Backend proxy URL that returns `PatientReadResponse` |
+| `className` | `string` | No | CSS class name |
+| `onError` | `(error: Error) => void` | No | Error callback |
+
+## Proxy Endpoint
+
+Your proxy should return the patient with included resources:
+
+```ts
+// /api/clinik/patients/[id]/route.ts
+import { Clinik } from '@clinikapi/sdk';
+
+const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!);
+
+export async function GET(req: Request, { params }: { params: { id: string } }) {
+  const { data } = await clinik.patients.read(params.id, {
+    include: ['Encounter', 'Observation', 'MedicationRequest', 'Appointment'],
+  });
+  return Response.json(data);
+}
+```
+
+## What It Displays
+
+- Patient demographics (name, DOB, gender, contact info)
+- Recent encounters with status badges
+- Latest vital signs
+- Active medications
+- Upcoming appointments

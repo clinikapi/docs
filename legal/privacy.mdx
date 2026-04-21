@@ -1,0 +1,62 @@
+---
+title: Privacy Policy
+description: ClinikAPI privacy policy.
+---
+
+# Privacy Policy
+
+*Last updated: April 2026*
+
+## Overview
+
+ClinikAPI ("we", "us", "our") operates the ClinikAPI healthcare infrastructure platform. This privacy policy explains how we collect, use, and protect information when you use our services.
+
+## Information We Collect
+
+### Account Information
+- Name, email address, organization name
+- Billing information (processed by Stripe — we do not store card numbers)
+
+### Usage Data
+- API request logs (endpoint, timestamp, response code, request ID)
+- Dashboard usage analytics (via PostHog)
+- Error logs for debugging
+
+### Clinical Data (PHI)
+- Clinical data is stored in AWS HealthLake on behalf of our customers
+- We act as a Business Associate under HIPAA
+- We do not access, use, or disclose PHI except as necessary to provide the service
+- PHI is encrypted at rest (AES-256) and in transit (TLS 1.2+)
+
+## How We Use Information
+
+- To provide and maintain the ClinikAPI service
+- To process billing and subscriptions
+- To send service-related communications
+- To monitor and improve service reliability
+- To comply with legal obligations
+
+## Data Retention
+
+- Account data: retained while your account is active, deleted within 30 days of account closure
+- API request logs: retained for 90 days
+- Clinical data (PHI): retained until you delete it or close your account; deleted within 30 days of account closure per BAA terms
+
+## Data Security
+
+- All data encrypted at rest and in transit
+- API key authentication with tenant isolation
+- Audit logging on every request
+- Regular security assessments
+- SOC 2 Type II compliance (in progress)
+
+## Your Rights
+
+- Access your data via the API or Dashboard
+- Export your data via bulk export
+- Delete your data via the API or by contacting support
+- Close your account at any time
+
+## Contact
+
+For privacy questions: [privacy@clinikapi.com](mailto:privacy@clinikapi.com)

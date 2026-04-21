@@ -1,0 +1,83 @@
+---
+title: Medications
+description: Manage medication definitions, ingredients, and batch information.
+---
+
+# Medications
+
+Medications represent drug definitions — the medication itself, not a prescription. For medication orders, see [Prescriptions](/guides/prescriptions).
+
+## Create a Medication
+
+```ts
+// Simple — free-text name
+const { data: med } = await clinik.medications.create({
+  code: 'Amoxicillin 500mg Capsule',
+  status: 'active',
+  form: 'capsule',
+});
+
+// Coded — RxNorm with ingredients
+const { data: coded } = await clinik.medications.create({
+  code: {
+    system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+    code: '308182',
+    display: 'Amoxicillin 500 MG Oral Capsule',
+  },
+  status: 'active',
+  form: 'capsule',
+  ingredient: [
+    {
+      item: {
+        system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+        code: '723',
+        display: 'Amoxicillin',
+      },
+      isActive: true,
+      strength: {
+        numerator: { value: 500, unit: 'mg' },
+        denominator: { value: 1, unit: 'capsule' },
+      },
+    },
+  ],
+  batch: {
+    lotNumber: 'LOT-2025-A001',
+    expirationDate: '2026-12-31',
+  },
+});
+```
+
+## Coding Systems
+
+| System | Use Case | Example |
+|--------|----------|---------|
+| RxNorm | US drug codes | `197361` (Lisinopril 10mg) |
+| SNOMED CT | Clinical terms | `387207008` (Ibuprofen) |
+| Free text | When no code available | `"Custom compound cream"` |
+
+## Update a Medication
+
+```ts
+await clinik.medications.update('med_abc123', {
+  status: 'inactive',
+  batch: { expirationDate: '2025-06-30' },
+});
+```
+
+## Search Medications
+
+```ts
+const { data } = await clinik.medications.search({
+  status: 'active',
+  count: 50,
+});
+```
+
+## Medications vs Prescriptions
+
+| Resource | FHIR Type | Purpose |
+|----------|-----------|---------|
+| Medication | `Medication` | Drug definition (what the drug is) |
+| Prescription | `MedicationRequest` | Medication order (prescribe it to a patient) |
+
+A prescription references a medication. You can create prescriptions with inline medication codes without creating a separate Medication resource first.

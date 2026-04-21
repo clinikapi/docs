@@ -1,0 +1,34 @@
+---
+title: IntakeForm
+description: Patient intake questionnaire widget.
+---
+
+# IntakeForm
+
+A dynamic intake form that submits responses as FHIR QuestionnaireResponse resources.
+
+## Usage
+
+```tsx
+import { IntakeForm } from '@clinikapi/react';
+
+<IntakeForm
+  proxyUrl="/api/clinik/intakes"
+  onError={(err) => console.error(err)}
+/>
+```
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `proxyUrl` | `string` | Yes | Backend proxy URL for intake submission |
+| `className` | `string` | No | CSS class name |
+| `onError` | `(error: Error) => void` | No | Error callback |
+
+## Features
+
+- Dynamic question rendering based on questionnaire definition
+- Support for text, boolean, integer, date, and coded answer types
+- Nested question groups
+- Auto-save as `in-progress`, submit as `completed`

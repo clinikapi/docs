@@ -1,0 +1,99 @@
+---
+title: Observations
+description: Record vitals, lab values, and clinical measurements.
+---
+
+# Observations
+
+Observations capture clinical measurements — vital signs, lab results, social history, and exam findings.
+
+## Create a Vital Sign
+
+```ts
+// Heart rate
+const { data: heartRate } = await clinik.observations.create({
+  status: 'final',
+  code: { system: 'http://loinc.org', code: '8867-4', display: 'Heart rate' },
+  patientId: 'pt_abc123',
+  encounterId: 'enc_xyz789',
+  category: 'vital-signs',
+  effectiveDateTime: '2025-01-15T09:15:00Z',
+  valueQuantity: { value: 72, unit: 'beats/minute', system: 'http://unitsofmeasure.org', code: '/min' },
+  interpretation: 'N', // Normal
+});
+```
+
+## Blood Pressure (Multi-Component)
+
+Blood pressure uses the `component` field for systolic and diastolic values:
+
+```ts
+const { data: bp } = await clinik.observations.create({
+  status: 'final',
+  code: { system: 'http://loinc.org', code: '85354-9', display: 'Blood pressure panel' },
+  patientId: 'pt_abc123',
+  category: 'vital-signs',
+  effectiveDateTime: '2025-01-15T09:15:00Z',
+  component: [
+    {
+      code: { system: 'http://loinc.org', code: '8480-6', display: 'Systolic blood pressure' },
+      valueQuantity: { value: 120, unit: 'mmHg' },
+    },
+    {
+      code: { system: 'http://loinc.org', code: '8462-4', display: 'Diastolic blood pressure' },
+      valueQuantity: { value: 80, unit: 'mmHg' },
+    },
+  ],
+});
+```
+
+## Lab Result
+
+```ts
+const { data: glucose } = await clinik.observations.create({
+  status: 'final',
+  code: { system: 'http://loinc.org', code: '2339-0', display: 'Glucose [Mass/volume] in Blood' },
+  patientId: 'pt_abc123',
+  category: 'laboratory',
+  effectiveDateTime: '2025-01-15T10:00:00Z',
+  valueQuantity: { value: 95, unit: 'mg/dL' },
+  interpretation: 'N',
+  referenceRange: {
+    low: { value: 70, unit: 'mg/dL' },
+    high: { value: 100, unit: 'mg/dL' },
+    text: '70-100 mg/dL',
+  },
+});
+```
+
+## Categories
+
+| Category | Description | Examples |
+|----------|-------------|---------|
+| `vital-signs` | Vital sign measurements | Heart rate, BP, temperature, SpO2 |
+| `laboratory` | Lab test results | Glucose, CBC, metabolic panel |
+| `social-history` | Social/behavioral data | Smoking status, alcohol use |
+| `exam` | Physical exam findings | Lung sounds, reflexes |
+
+## Interpretation Codes
+
+| Code | Meaning |
+|------|---------|
+| `N` | Normal |
+| `H` | High |
+| `L` | Low |
+| `A` | Abnormal |
+| `HH` | Critically high |
+| `LL` | Critically low |
+
+## Search Observations
+
+```ts
+const { data: vitals } = await clinik.observations.search({
+  patientId: 'pt_abc123',
+  status: 'final',
+  dateFrom: '2025-01-01',
+  sort: '-date',
+  count: 50,
+});
+```

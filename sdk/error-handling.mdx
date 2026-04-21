@@ -1,0 +1,102 @@
+---
+title: Error Handling
+description: SDK error types, retry behavior, and best practices.
+---
+
+# Error Handling
+
+The SDK throws typed errors that you can catch and handle gracefully.
+
+## Error Types
+
+```ts
+try {
+  const { data } = await clinik.patients.create({ firstName: '', lastName: '' });
+} catch (err) {
+  if (err.name === 'ClinikValidationError') {
+    // 422 — request body failed validation
+    console.error('Issues:', err.issues);
+  } else if (err.name === 'ClinikRateLimitError') {
+    // 429 — rate limit exceeded
+    console.error('Retry after:', err.retryAfter, 'seconds');
+  } else if (err.name === 'ClinikNotFoundError') {
+    // 404 — resource not found
+    console.error('Not found:', err.message);
+  } else if (err.name === 'ClinikApiError') {
+    // Any other API error
+    console.error('Code:', err.code);
+    console.error('Status:', err.status);
+    console.error('Request ID:', err.requestId);
+  }
+}
+```
+
+## Error Properties
+
+All errors include:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `name` | `string` | Error class name |
+| `message` | `string` | Human-readable message |
+| `code` | `string` | Machine-readable error code |
+| `status` | `number` | HTTP status code |
+| `requestId` | `string` | Request ID for support |
+
+`ClinikValidationError` also includes:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `issues` | `Array` | Validation issue details |
+
+## Automatic Retries
+
+The SDK retries automatically on:
+
+- `5xx` server errors
+- `429` rate limit responses
+- Network failures
+
+Retry behavior uses **jittered exponential backoff** to prevent thundering herd:
+
+```
+Attempt 1: random(0, 2000ms)
+Attempt 2: random(0, 4000ms)
+Attempt 3: random(0, 8000ms)
+Cap: 10,000ms
+```
+
+Configure retries:
+
+```ts
+const clinik = new Clinik(key, {
+  retries: 3,      // default: 2
+  timeout: 15000,  // default: 30000ms
+});
+```
+
+Set `retries: 0` to disable automatic retries.
+
+## PHI Sanitization
+
+Error messages never contain Protected Health Information. Validation errors include field names and constraint descriptions, but never field values:
+
+```json
+{
+  "issues": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "diagnostics": "firstName: String must contain at least 1 character(s)"
+    }
+  ]
+}
+```
+
+## Best Practices
+
+- Always wrap SDK calls in try/catch
+- Log `requestId` for support tickets
+- Monitor `rateLimitRemaining` in `meta` to avoid hitting limits
+- Use `retries: 0` for idempotency-sensitive operations
+- Handle `ClinikValidationError` separately to show field-level errors to users

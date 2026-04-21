@@ -1,0 +1,99 @@
+---
+title: Medications
+description: SDK reference for medication operations.
+---
+
+# clinik.medications
+
+Medications represent drug definitions — the medication itself, not a prescription or administration. Use `clinik.prescriptions` for medication orders.
+
+## create
+
+```ts
+const { data, meta } = await clinik.medications.create(request: MedicationCreateRequest): Promise<ApiResponse<Medication>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `code` | `string \| { system?, code, display? }` | Yes | RxNorm, SNOMED CT, or free-text name |
+| `status` | `'active' \| 'inactive'` | No | Medication status (default: active) |
+| `form` | `string` | No | Dosage form (e.g. "tablet", "capsule", "injection") |
+| `ingredient` | `Array` | No | Active and inactive ingredients |
+| `batch` | `{ lotNumber?, expirationDate? }` | No | Batch/lot information |
+
+### Examples
+
+```ts
+// Simple — free-text name
+const { data } = await clinik.medications.create({
+  code: 'Lisinopril 10mg Oral Tablet',
+  status: 'active',
+  form: 'tablet',
+});
+
+// Coded — RxNorm
+const { data: coded } = await clinik.medications.create({
+  code: {
+    system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+    code: '197361',
+    display: 'Lisinopril 10 MG Oral Tablet',
+  },
+  status: 'active',
+  form: 'tablet',
+  ingredient: [
+    {
+      item: {
+        system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+        code: '29046',
+        display: 'Lisinopril',
+      },
+      isActive: true,
+      strength: {
+        numerator: { value: 10, unit: 'mg' },
+        denominator: { value: 1, unit: 'tablet' },
+      },
+    },
+  ],
+  batch: {
+    lotNumber: 'LOT-2025-001',
+    expirationDate: '2026-12-31',
+  },
+});
+```
+
+## read
+
+```ts
+const { data, meta } = await clinik.medications.read(id: string): Promise<ApiResponse<Medication>>
+```
+
+## update
+
+```ts
+const { data, meta } = await clinik.medications.update(id: string, request: MedicationUpdateRequest): Promise<ApiResponse<Medication>>
+```
+
+```ts
+await clinik.medications.update('med_abc123', {
+  status: 'inactive',
+  batch: { expirationDate: '2025-06-30' },
+});
+```
+
+## delete
+
+```ts
+const { data, meta } = await clinik.medications.delete(id: string): Promise<ApiResponse<void>>
+```
+
+## search
+
+```ts
+const { data, meta } = await clinik.medications.search(params?: ResourceSearchParams): Promise<ApiResponse<PaginatedResponse<Medication>>>
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `status` | `string` | Filter by active/inactive |
+| `count` | `number` | Results per page (max: 100) |
+| `cursor` | `string` | Pagination cursor |

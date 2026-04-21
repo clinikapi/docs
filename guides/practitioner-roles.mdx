@@ -1,0 +1,77 @@
+---
+title: Practitioner Roles
+description: Define where and when practitioners practice — roles, availability, and specialties.
+---
+
+# Practitioner Roles
+
+PractitionerRole defines the role a practitioner plays at a specific organization or location. A single practitioner can have multiple roles — cardiologist at one hospital, consultant at another clinic.
+
+## Create a Practitioner Role
+
+```ts
+const { data: role } = await clinik.practitionerRoles.create({
+  practitionerId: 'prac_abc123',
+  organizationName: 'Austin Heart Clinic',
+  role: 'doctor',
+  specialty: ['Cardiology', 'Interventional Cardiology'],
+  locationName: 'Main Campus - Building A',
+  phone: '+1-555-0100',
+  email: 'dr.chen@austinheart.com',
+  availableDays: ['mon', 'tue', 'wed', 'thu', 'fri'],
+  availableStartTime: '08:00',
+  availableEndTime: '17:00',
+});
+```
+
+## Availability
+
+Define when the practitioner is available in this role:
+
+```ts
+// Part-time consultant
+await clinik.practitionerRoles.create({
+  practitionerId: 'prac_abc123',
+  organizationName: "St. David's Medical Center",
+  role: 'consultant',
+  specialty: ['Cardiology'],
+  availableDays: ['tue', 'thu'],
+  availableStartTime: '13:00',
+  availableEndTime: '17:00',
+});
+```
+
+## Update Availability
+
+```ts
+await clinik.practitionerRoles.update('role_xyz789', {
+  availableDays: ['mon', 'wed', 'fri'],
+  availableStartTime: '09:00',
+  availableEndTime: '16:00',
+});
+```
+
+## Deactivate a Role
+
+```ts
+await clinik.practitionerRoles.update('role_xyz789', {
+  active: false,
+});
+```
+
+## Search Roles
+
+```ts
+const { data } = await clinik.practitionerRoles.search({
+  count: 50,
+});
+```
+
+## Practitioner vs PractitionerRole
+
+| Resource | Purpose |
+|----------|---------|
+| Practitioner | The person (name, NPI, qualifications) |
+| PractitionerRole | Where/when they practice (org, schedule, specialty in context) |
+
+A practitioner is created once. Roles are created for each organization/location they work at.

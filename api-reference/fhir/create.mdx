@@ -1,0 +1,21 @@
+---
+title: Create (FHIR)
+description: Create a raw FHIR R4 resource.
+openapi: post /v1/fhir/{type}
+---
+
+## Create a FHIR Resource
+
+```bash
+curl -X POST https://api.clinikehr.com/v1/fhir/Patient \
+  -H "x-api-key: clk_live_abc123" \
+  -H "Content-Type: application/fhir+json" \
+  -d '{
+    "resourceType": "Patient",
+    "name": [{ "family": "Smith", "given": ["John"] }],
+    "gender": "male",
+    "birthDate": "1985-06-20"
+  }'
+```
+
+Your tenant tag is automatically injected into `meta.tag`. You do not need to include it.

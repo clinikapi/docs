@@ -1,0 +1,52 @@
+---
+title: Business Associate Agreement
+description: HIPAA Business Associate Agreement for ClinikAPI customers.
+---
+
+# Business Associate Agreement
+
+ClinikAPI provides a HIPAA Business Associate Agreement (BAA) for all paid plans (Starter and above).
+
+## What is a BAA?
+
+A BAA is a legally binding contract required by HIPAA when a covered entity (your organization) shares Protected Health Information (PHI) with a business associate (ClinikAPI). It defines:
+
+- How PHI may be used and disclosed
+- Safeguards required to protect PHI
+- Breach notification procedures
+- Termination and data return obligations
+
+## Requesting a BAA
+
+BAAs are available on all paid plans:
+
+| Plan | BAA Available |
+|------|---------------|
+| Sandbox (free) | No |
+| Starter ($49/mo) | Yes |
+| Pro ($499/mo) | Yes |
+| Team ($1,999/mo) | Yes |
+| Enterprise (custom) | Yes (custom terms) |
+
+To request a BAA:
+
+1. Upgrade to a paid plan in the [Dashboard](https://dashboard.clinikapi.com)
+2. Navigate to **Settings > Compliance**
+3. Review and sign the BAA electronically
+
+Enterprise customers receive a customized BAA with additional terms.
+
+## Technical Safeguards
+
+ClinikAPI implements the following safeguards as documented in the BAA:
+
+- **Encryption at rest**: AES-256 via AWS HealthLake (AWS-owned KMS keys)
+- **Encryption in transit**: TLS 1.2+ on all API endpoints
+- **Access controls**: API key authentication with tenant isolation
+- **Audit logging**: Every API request logged with FHIR resource context
+- **Data isolation**: Tenant-tagged resources with enforced `_tag` filtering
+- **Breach notification**: Within 60 days of discovery per HIPAA requirements
+
+## Contact
+
+For BAA questions or custom enterprise agreements, contact [compliance@clinikapi.com](mailto:compliance@clinikapi.com).

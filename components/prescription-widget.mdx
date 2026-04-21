@@ -1,0 +1,48 @@
+---
+title: PrescriptionWidget
+description: Prescription list and detail viewer.
+---
+
+# PrescriptionWidget
+
+Displays a patient's prescriptions with dosage details, refill status, and medication information.
+
+## Usage
+
+```tsx
+import { PrescriptionWidget } from '@clinikapi/react';
+
+<PrescriptionWidget
+  proxyUrl={`/api/clinik/patients/${patientId}/prescriptions`}
+  onError={(err) => console.error(err)}
+/>
+```
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `proxyUrl` | `string` | Yes | Backend proxy URL returning prescriptions |
+| `className` | `string` | No | CSS class name |
+| `onError` | `(error: Error) => void` | No | Error callback |
+
+## Proxy Endpoint
+
+```ts
+export async function GET(req: Request, { params }: { params: { id: string } }) {
+  const { data } = await clinik.prescriptions.search({
+    patientId: params.id,
+    sort: '-date',
+  });
+  return Response.json(data);
+}
+```
+
+## Features
+
+- Active/inactive prescription filtering
+- Medication name and code display
+- Dosage instructions (text and structured)
+- Refill count and supply duration
+- Prescriber information
+- Status badges (active, on-hold, completed, cancelled)

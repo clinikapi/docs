@@ -1,0 +1,87 @@
+---
+title: Raw FHIR Passthrough
+description: Send raw FHIR R4 requests when the simplified API doesn't cover your use case.
+---
+
+# Raw FHIR Passthrough
+
+The simplified SDK covers the most common use cases, but sometimes you need to send raw FHIR R4 requests — custom search parameters, FHIR operations, or resource types we haven't simplified yet.
+
+The FHIR passthrough routes requests directly to the ClinikAPI FHIR gateway with your tenant context automatically applied.
+
+## SDK Usage
+
+```ts
+// Create a raw FHIR resource
+const { data } = await clinik.fhir.request('POST', '/Patient', {
+  resourceType: 'Patient',
+  name: [{ family: 'Smith', given: ['John'] }],
+  gender: 'male',
+  birthDate: '1990-01-15',
+});
+
+// Search with custom FHIR parameters
+const { data: bundle } = await clinik.fhir.request(
+  'GET',
+  '/Observation?code=8867-4&date=ge2024-01-01&_sort=-date&_count=50'
+);
+
+// Read a specific resource
+const { data: patient } = await clinik.fhir.request('GET', '/Patient/pt_abc123');
+
+// Delete a resource
+await clinik.fhir.request('DELETE', '/Observation/obs_xyz789');
+```
+
+## REST API
+
+```bash
+# Create
+curl -X POST https://api.clinikehr.com/v1/fhir/Patient \
+  -H "x-api-key: clk_live_abc123" \
+  -H "Content-Type: application/fhir+json" \
+  -d '{"resourceType":"Patient","name":[{"family":"Smith"}]}'
+
+# Search
+curl "https://api.clinikehr.com/v1/fhir/Observation?code=8867-4&_count=10" \
+  -H "x-api-key: clk_live_abc123"
+
+# Read
+curl https://api.clinikehr.com/v1/fhir/Patient/pt_abc123 \
+  -H "x-api-key: clk_live_abc123"
+```
+
+## Tenant Isolation
+
+Even in passthrough mode, tenant isolation is enforced:
+
+- **Creates**: your tenant tag is automatically injected into `meta.tag`
+- **Searches**: a `_tag` filter is automatically appended
+- **Reads/Updates/Deletes**: ownership is verified
+
+You cannot bypass tenant isolation through the FHIR passthrough.
+
+## FHIR CapabilityStatement
+
+The `/v1/metadata` endpoint returns a FHIR R4 CapabilityStatement (no auth required):
+
+```bash
+curl https://api.clinikehr.com/v1/metadata
+```
+
+This describes all supported resource types, search parameters, and operations.
+
+## When to Use Passthrough
+
+| Use Case | Recommended Approach |
+|----------|---------------------|
+| Standard CRUD operations | Use the simplified SDK methods |
+| Custom FHIR search parameters | Use `clinik.fhir.request('GET', ...)` |
+| FHIR operations (`$everything`, `$validate`) | Use `clinik.fhir.request('POST', ...)` |
+| Resource types not in the SDK | Use `clinik.fhir.request(...)` |
+| Complex FHIR queries | Use `clinik.fhir.request('GET', ...)` |
+
+<Info>
+  The passthrough returns raw FHIR R4 resources — not the simplified format used by the SDK methods.
+  You'll need to work with FHIR resource structures directly.
+</Info>

@@ -1,0 +1,133 @@
+---
+title: Documents
+description: Create structured clinical documents with sections — discharge summaries, care plans, referral letters.
+---
+
+# Documents
+
+Documents (FHIR Composition) are structured clinical documents with titled sections. They're used for discharge summaries, referral letters, care plans, and other multi-section clinical documents.
+
+## Create a Document
+
+```ts
+const { data: doc } = await clinik.documents.create({
+  status: 'final',
+  type: 'discharge-summary',
+  patientId: 'pt_abc123',
+  encounterId: 'enc_xyz789',
+  practitionerId: 'prac_def456',
+  title: 'Discharge Summary - Jane Doe - Jan 15, 2025',
+  date: '2025-01-15',
+  confidentiality: 'N',
+  sections: [
+    {
+      title: 'Chief Complaint',
+      code: 'chief-complaint',
+      text: 'Patient admitted for evaluation of acute chest pain.',
+    },
+    {
+      title: 'History of Present Illness',
+      code: 'hpi',
+      text: 'Patient is a 55-year-old female presenting with substernal chest pain '
+        + 'radiating to the left arm, onset 3 hours prior to admission. '
+        + 'Associated with diaphoresis and shortness of breath.',
+    },
+    {
+      title: 'Hospital Course',
+      code: 'hospital-course',
+      text: 'Troponin levels negative x3. ECG showed no ST changes. '
+        + 'Stress test negative for ischemia. Cardiac catheterization not indicated. '
+        + 'Pain attributed to musculoskeletal cause.',
+    },
+    {
+      title: 'Discharge Medications',
+      code: 'medications',
+      text: 'Continue aspirin 81mg daily, atorvastatin 20mg daily. '
+        + 'New: naproxen 500mg twice daily as needed for chest wall pain.',
+      resourceIds: ['rx_aspirin', 'rx_statin', 'rx_naproxen'],
+    },
+    {
+      title: 'Discharge Instructions',
+      code: 'instructions',
+      text: 'Return to ER if chest pain recurs, worsens, or is associated with '
+        + 'shortness of breath, dizziness, or syncope. '
+        + 'Follow up with PCP in 1 week. Cardiology follow-up in 4 weeks.',
+    },
+    {
+      title: 'Follow-up',
+      code: 'follow-up',
+      text: 'PCP: 1 week. Cardiology: 4 weeks. Repeat lipid panel in 3 months.',
+    },
+  ],
+});
+```
+
+## Document Types
+
+Common document types:
+
+| Type | Description |
+|------|-------------|
+| `discharge-summary` | Hospital discharge documentation |
+| `referral-letter` | Referral to another provider |
+| `care-plan` | Patient care plan |
+| `operative-report` | Surgical operation report |
+| `transfer-summary` | Patient transfer documentation |
+| `consultation-report` | Specialist consultation report |
+
+## Confidentiality Levels
+
+| Code | Level | Description |
+|------|-------|-------------|
+| `N` | Normal | Standard clinical document |
+| `R` | Restricted | Limited access |
+| `V` | Very Restricted | Highly sensitive (e.g. mental health, substance abuse) |
+
+## Sections with Resource References
+
+Sections can reference other FHIR resources by ID:
+
+```ts
+{
+  title: 'Relevant Lab Results',
+  code: 'lab-results',
+  text: 'CMP and CBC within normal limits. See attached reports.',
+  resourceIds: ['lab_cmp_001', 'lab_cbc_001'],
+}
+```
+
+## Update a Document
+
+```ts
+await clinik.documents.update('doc_abc123', {
+  status: 'amended',
+  sections: [
+    {
+      title: 'Addendum',
+      code: 'addendum',
+      text: 'Patient called post-discharge reporting mild nausea with naproxen. '
+        + 'Advised to take with food. If persists, switch to acetaminophen.',
+    },
+  ],
+});
+```
+
+## Search Documents
+
+```ts
+const { data } = await clinik.documents.search({
+  patientId: 'pt_abc123',
+  type: 'discharge-summary',
+  status: 'final',
+  sort: '-date',
+});
+```
+
+## Documents vs Notes
+
+| Resource | FHIR Type | Structure | Use Case |
+|----------|-----------|-----------|----------|
+| Note | DocumentReference | Single content block | Progress notes, SOAP notes |
+| Document | Composition | Multiple titled sections | Discharge summaries, care plans |
+
+Use notes for single-block narrative. Use documents when you need structured sections with headings.

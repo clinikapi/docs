@@ -1,0 +1,62 @@
+---
+title: Encounters
+description: SDK reference for encounter operations.
+---
+
+# clinik.encounters
+
+## create
+
+```ts
+const { data, meta } = await clinik.encounters.create(request: EncounterCreateRequest): Promise<ApiResponse<Encounter>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | planned, arrived, triaged, in-progress, onleave, finished, cancelled |
+| `class` | `string` | Yes | AMB, IMP, EMER, HH, VR |
+| `patientId` | `string` | Yes | Patient reference |
+| `practitionerId` | `string` | No | Practitioner reference |
+| `type` | `string` | No | Encounter type |
+| `serviceType` | `string` | No | Service type |
+| `priority` | `string` | No | Priority |
+| `reasonCode` | `string` | No | Reason for encounter |
+| `period` | `{ start?, end? }` | No | Time period |
+| `lengthMinutes` | `number` | No | Duration in minutes |
+| `location` | `string` | No | Location name |
+| `serviceProvider` | `string` | No | Organization name |
+| `diagnosis` | `Array<{ condition, use?, rank? }>` | No | Diagnoses |
+
+## read
+
+```ts
+const { data, meta } = await clinik.encounters.read(id: string, options?: ReadOptions): Promise<ApiResponse<Encounter>>
+```
+
+## update
+
+```ts
+const { data, meta } = await clinik.encounters.update(id: string, request: EncounterUpdateRequest): Promise<ApiResponse<Encounter>>
+```
+
+## delete
+
+```ts
+const { data, meta } = await clinik.encounters.delete(id: string): Promise<ApiResponse<void>>
+```
+
+## search
+
+```ts
+const { data, meta } = await clinik.encounters.search(params?: ResourceSearchParams): Promise<ApiResponse<PaginatedResponse<Encounter>>>
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `patientId` | `string` | Filter by patient |
+| `status` | `string` | Filter by status |
+| `dateFrom` | `string` | Start date filter |
+| `dateTo` | `string` | End date filter |
+| `sort` | `string` | Sort field (prefix with `-` for descending) |
+| `count` | `number` | Results per page |
+| `cursor` | `string` | Pagination cursor |

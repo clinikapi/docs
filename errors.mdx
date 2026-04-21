@@ -1,0 +1,114 @@
+---
+title: Errors
+description: Error codes, response format, and handling strategies.
+---
+
+# Errors
+
+ClinikAPI uses standard HTTP status codes and returns structured error responses.
+
+## Error Response Format
+
+```json
+{
+  "error": "Validation Error",
+  "code": "VALIDATION_ERROR",
+  "requestId": "req_k8f3a7x2",
+  "issues": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "diagnostics": "firstName: Required"
+    }
+  ]
+}
+```
+
+## HTTP Status Codes
+
+| Status | Meaning |
+|--------|---------|
+| `400` | Bad Request — malformed JSON or invalid parameters |
+| `401` | Unauthorized — missing or invalid API key |
+| `403` | Forbidden — key doesn't have required scope |
+| `404` | Not Found — resource doesn't exist or belongs to another tenant |
+| `409` | Conflict — resource version conflict |
+| `422` | Validation Error — request body failed Zod validation |
+| `429` | Rate Limited — too many requests for your plan |
+| `500` | Internal Error — something went wrong on our end |
+
+## Error Codes
+
+| Code | Description |
+|------|-------------|
+| `UNAUTHORIZED` | Missing `x-api-key` header |
+| `INVALID_KEY_FORMAT` | Key doesn't match `clk_live_*` or `clk_test_*` pattern |
+| `INVALID_KEY` | Key not found in the database |
+| `KEY_REVOKED` | Key has been revoked |
+| `KEY_EXPIRED` | Key has passed its expiration date |
+| `VALIDATION_ERROR` | Request body failed schema validation |
+| `RATE_LIMITED` | Plan request limit exceeded |
+| `NOT_FOUND` | Resource not found |
+| `INTERNAL_ERROR` | Unexpected server error |
+
+## SDK Error Handling
+
+The SDK throws typed errors that you can catch:
+
+```ts
+import { Clinik } from '@clinikapi/sdk';
+
+const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!);
+
+try {
+  const { data } = await clinik.patients.create({
+    firstName: 'Jane',
+    lastName: 'Doe',
+  });
+} catch (err) {
+  if (err.name === 'ClinikValidationError') {
+    console.error('Validation issues:', err.issues);
+  } else if (err.name === 'ClinikRateLimitError') {
+    console.error('Rate limited. Retry after:', err.retryAfter, 'seconds');
+  } else if (err.name === 'ClinikApiError') {
+    console.error('API error:', err.code, err.message);
+    console.error('Request ID:', err.requestId);
+  }
+}
+```
+
+## Automatic Retries
+
+The SDK automatically retries on `5xx` errors and `429` (rate limit) responses with jittered exponential backoff:
+
+- Default: 2 retries
+- Backoff: random jitter up to `min(1000 * 2^attempt, 10000)` ms
+- Configurable via `retries` option:
+
+```ts
+const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!, {
+  retries: 3,      // max retry attempts
+  timeout: 15000,  // request timeout in ms
+});
+```
+
+## Rate Limits
+
+Rate limits are plan-based and returned in response headers:
+
+| Header | Description |
+|--------|-------------|
+| `X-RateLimit-Limit` | Total requests allowed per window |
+| `X-RateLimit-Remaining` | Requests remaining in current window |
+| `X-RateLimit-Reset` | Seconds until the window resets |
+
+The SDK exposes these in `meta`:
+
+```ts
+const { data, meta } = await clinik.patients.search();
+console.log(meta.rateLimitRemaining); // 498
+```
+
+## PHI Sanitization
+
+Error responses never contain Protected Health Information (PHI). Field values are stripped from validation error messages — only field names and constraint descriptions are included.

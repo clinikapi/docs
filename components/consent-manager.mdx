@@ -1,0 +1,35 @@
+---
+title: ConsentManager
+description: Consent signing and management widget.
+---
+
+# ConsentManager
+
+A widget for displaying, signing, and managing patient consent documents.
+
+## Usage
+
+```tsx
+import { ConsentManager } from '@clinikapi/react';
+
+<ConsentManager
+  proxyUrl="/api/clinik/consents"
+  onError={(err) => console.error(err)}
+/>
+```
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `proxyUrl` | `string` | Yes | Backend proxy URL for consent CRUD |
+| `className` | `string` | No | CSS class name |
+| `onError` | `(error: Error) => void` | No | Error callback |
+
+## Features
+
+- Consent document display with scope and category
+- Digital signature capture
+- Status tracking (draft → proposed → active → rejected)
+- Verification status display
+- Policy URI linking

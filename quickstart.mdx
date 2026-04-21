@@ -1,0 +1,108 @@
+---
+title: Quickstart
+description: Create your first patient in under 5 minutes.
+---
+
+# Quickstart
+
+Get up and running with ClinikAPI in three steps.
+
+## 1. Get Your API Key
+
+Sign up at [dashboard.clinikapi.com](https://dashboard.clinikapi.com) and create an organization. You'll get two keys:
+
+- `clk_test_*` — routes to the shared test datastore (safe to experiment with)
+- `clk_live_*` — routes to production (available on paid plans)
+
+## 2. Install the SDK
+
+```bash
+npm install @clinikapi/sdk
+```
+
+<Warning>
+  The SDK is **server-side only**. Never import it in client-side code — your API key would be exposed.
+  For frontend UI, use `@clinikapi/react` with the proxy pattern.
+</Warning>
+
+## 3. Create a Patient
+
+```ts
+import { Clinik } from '@clinikapi/sdk';
+
+const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!);
+
+async function main() {
+  // Create a patient
+  const { data: patient, meta } = await clinik.patients.create({
+    firstName: 'Jane',
+    lastName: 'Doe',
+    email: 'jane.doe@example.com',
+    gender: 'female',
+    birthDate: '1990-03-15',
+    address: {
+      line: ['123 Main St'],
+      city: 'Austin',
+      state: 'TX',
+      postalCode: '78701',
+      country: 'US',
+    },
+  });
+
+  console.log('Patient ID:', patient.id);
+  console.log('Request ID:', meta.requestId);
+  console.log('Rate limit remaining:', meta.rateLimitRemaining);
+
+  // Read the patient back with related resources
+  const { data: full } = await clinik.patients.read(patient.id!, {
+    include: ['Encounter', 'Observation'],
+  });
+
+  console.log('Encounters:', full.encounters.length);
+  console.log('Observations:', full.observations.length);
+
+  // Search patients
+  const { data: results } = await clinik.patients.search({
+    name: 'Doe',
+    count: 10,
+  });
+
+  console.log('Found:', results.data.length, 'patients');
+}
+
+main();
+```
+
+## Response Format
+
+Every SDK method returns `ApiResponse<T>`:
+
+```ts
+interface ApiResponse<T> {
+  data: T;          // The resource or result
+  meta: {
+    requestId: string;           // For support tickets
+    timestamp: string;           // ISO 8601
+    status: number;              // HTTP status
+    rateLimitTotal?: number;     // Requests allowed per window
+    rateLimitRemaining?: number; // Requests left
+    rateLimitReset?: number;     // Seconds until reset
+  };
+}
+```
+
+## Using Test vs Live Keys
+
+| Key Prefix | Environment | Datastore |
+|------------|-------------|-----------|
+| `clk_test_*` | Sandbox | Shared test HealthLake |
+| `clk_live_*` | Production | Shared prod (Free/Pro) or dedicated (Enterprise) |
+
+Test keys are available on all plans including Sandbox. Use them for development and testing — data is isolated from production.
+
+## Next Steps
+
+- [Authentication](/authentication) — how API keys and tenant isolation work
+- [Patients Guide](/guides/patients) — deep dive into patient operations
+- [Webhooks](/guides/webhooks) — get notified on resource changes
+- [Error Handling](/sdk/error-handling) — handle errors gracefully

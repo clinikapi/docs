@@ -1,0 +1,129 @@
+---
+title: Practitioners
+description: Manage clinicians, physicians, and healthcare providers.
+---
+
+# Practitioners
+
+Practitioners represent healthcare providers — physicians, nurses, therapists, and other clinicians. They are referenced by encounters, prescriptions, notes, and other clinical resources.
+
+## Create a Practitioner
+
+```ts
+const { data: doc } = await clinik.practitioners.create({
+  firstName: 'Sarah',
+  lastName: 'Chen',
+  prefix: ['Dr.'],
+  suffix: ['MD', 'FACC'],
+  email: 'dr.chen@austinheart.com',
+  phone: '+1-555-0100',
+  gender: 'female',
+  npi: '1234567890',
+  specialty: 'Cardiology',
+  qualifications: [
+    {
+      name: 'Doctor of Medicine',
+      issuer: 'Johns Hopkins University',
+      period: { start: '2010-05-15' },
+    },
+    {
+      name: 'Board Certified - Cardiovascular Disease',
+      issuer: 'American Board of Internal Medicine',
+      identifier: 'ABIM-12345',
+      period: { start: '2015-06-01', end: '2025-06-01' },
+    },
+  ],
+  languages: ['en', 'zh'],
+  address: {
+    line: ['100 Medical Center Blvd'],
+    city: 'Austin',
+    state: 'TX',
+    postalCode: '78701',
+  },
+});
+```
+
+## Practitioner Roles
+
+A practitioner can have multiple roles at different organizations. Use `clinik.practitionerRoles` to define where and when they practice:
+
+```ts
+// Dr. Chen is a cardiologist at Austin Heart Clinic
+await clinik.practitionerRoles.create({
+  practitionerId: doc.id!,
+  organizationName: 'Austin Heart Clinic',
+  role: 'doctor',
+  specialty: ['Cardiology', 'Interventional Cardiology'],
+  locationName: 'Main Campus',
+  availableDays: ['mon', 'tue', 'wed', 'thu', 'fri'],
+  availableStartTime: '08:00',
+  availableEndTime: '17:00',
+});
+
+// She also consults at St. David's Hospital on Thursdays
+await clinik.practitionerRoles.create({
+  practitionerId: doc.id!,
+  organizationName: "St. David's Medical Center",
+  role: 'consultant',
+  specialty: ['Cardiology'],
+  locationName: 'Cardiology Wing',
+  availableDays: ['thu'],
+  availableStartTime: '13:00',
+  availableEndTime: '17:00',
+});
+```
+
+## Referencing Practitioners
+
+Most clinical resources reference practitioners:
+
+```ts
+// Encounter with a practitioner
+await clinik.encounters.create({
+  status: 'in-progress',
+  class: 'AMB',
+  patientId: 'pt_abc123',
+  practitionerId: doc.id!,
+  type: 'Cardiology follow-up',
+});
+
+// Prescription by a practitioner
+await clinik.prescriptions.create({
+  patientId: 'pt_abc123',
+  prescriberId: doc.id!,
+  medication: 'Lisinopril 10mg',
+  intent: 'order',
+});
+
+// Clinical note by a practitioner
+await clinik.notes.create({
+  patientId: 'pt_abc123',
+  authorId: doc.id!,
+  title: 'Cardiology Consultation',
+  content: 'Patient presents with well-controlled hypertension...',
+  type: 'consultation-note',
+});
+```
+
+## Search Practitioners
+
+```ts
+// Find cardiologists
+const { data } = await clinik.practitioners.search({
+  specialty: 'Cardiology',
+  active: true,
+});
+
+// Search by NPI
+const { data: byNpi } = await clinik.practitioners.search({
+  npi: '1234567890',
+});
+```
+
+## Deactivate a Practitioner
+
+```ts
+await clinik.practitioners.update(doc.id!, {
+  active: false,
+});
+```

@@ -1,0 +1,19 @@
+---
+title: Patch (FHIR)
+description: Update a FHIR R4 resource using JSON Patch.
+openapi: patch /v1/fhir/{type}/{id}
+---
+
+## Patch a FHIR Resource
+
+```bash
+curl -X PATCH https://api.clinikehr.com/v1/fhir/Patient/pt_abc123 \
+  -H "x-api-key: clk_live_abc123" \
+  -H "Content-Type: application/json-patch+json" \
+  -d '[
+    { "op": "replace", "path": "/name/0/family", "value": "Johnson" },
+    { "op": "add", "path": "/telecom/-", "value": { "system": "phone", "value": "+1-555-0200" } }
+  ]'
+```
+
+Uses standard [JSON Patch (RFC 6902)](https://datatracker.ietf.org/doc/html/rfc6902) operations.

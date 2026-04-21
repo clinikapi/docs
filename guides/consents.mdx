@@ -1,0 +1,115 @@
+---
+title: Consents
+description: Manage patient consent documents for privacy, treatment, and research.
+---
+
+# Consents
+
+Consents track patient agreements to privacy policies, treatment plans, research participation, and advance directives.
+
+## Sign a Consent
+
+```ts
+// HIPAA privacy notice
+const { data: hipaa } = await clinik.consents.sign({
+  patientId: 'pt_abc123',
+  status: 'active',
+  scope: 'patient-privacy',
+  category: 'hipaa-notice',
+  policyUri: 'https://clinic.com/hipaa-notice',
+  verification: {
+    verified: true,
+    verifiedWith: 'pt_abc123',
+    verificationDate: '2025-01-15T10:00:00Z',
+  },
+});
+
+// Treatment consent with time-limited provision
+const { data: treatment } = await clinik.consents.sign({
+  patientId: 'pt_abc123',
+  status: 'active',
+  scope: 'treatment',
+  category: ['treatment-consent', 'surgical-consent'],
+  performerId: 'prac_def456',
+  organizationId: 'org_ghi789',
+  provision: {
+    type: 'permit',
+    period: {
+      start: '2025-01-15',
+      end: '2025-07-15',
+    },
+    purpose: [
+      { code: 'TREAT', display: 'Treatment' },
+    ],
+  },
+});
+```
+
+## Consent Scopes
+
+| Scope | Description | Examples |
+|-------|-------------|---------|
+| `patient-privacy` | Privacy and data sharing | HIPAA notice, data sharing agreement |
+| `treatment` | Treatment authorization | Surgical consent, procedure consent |
+| `research` | Research participation | Clinical trial enrollment |
+| `adr` | Advance directive | Living will, DNR |
+
+## Status Lifecycle
+
+```
+draft → proposed → active → inactive
+                 ↘ rejected
+```
+
+| Status | Description |
+|--------|-------------|
+| `draft` | Being prepared |
+| `proposed` | Presented to patient |
+| `active` | Patient has agreed |
+| `rejected` | Patient declined |
+| `inactive` | Withdrawn or expired |
+
+## Revoke a Consent
+
+```ts
+await clinik.consents.update('consent_abc123', {
+  status: 'inactive',
+});
+```
+
+## Provisions
+
+Provisions define what is permitted or denied:
+
+```ts
+// Permit data sharing for treatment purposes only
+provision: {
+  type: 'permit',
+  period: { start: '2025-01-01', end: '2025-12-31' },
+  purpose: [
+    { code: 'TREAT', display: 'Treatment' },
+    { code: 'HPAYMT', display: 'Healthcare Payment' },
+  ],
+  action: [
+    { code: 'access', display: 'Access' },
+    { code: 'use', display: 'Use' },
+  ],
+}
+
+// Deny research use of data
+provision: {
+  type: 'deny',
+  purpose: [
+    { code: 'HRESCH', display: 'Healthcare Research' },
+  ],
+}
+```
+
+## Search Consents
+
+```ts
+const { data } = await clinik.consents.search({
+  patientId: 'pt_abc123',
+  status: 'active',
+});
+```

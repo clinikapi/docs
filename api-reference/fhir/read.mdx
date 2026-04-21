@@ -1,0 +1,27 @@
+---
+title: Read (FHIR)
+description: Read a raw FHIR R4 resource by type and ID.
+openapi: get /v1/fhir/{type}/{id}
+---
+
+## Read a FHIR Resource
+
+```bash
+curl https://api.clinikehr.com/v1/fhir/Patient/pt_abc123 \
+  -H "x-api-key: clk_live_abc123"
+```
+
+Returns the raw FHIR R4 resource:
+
+```json
+{
+  "resourceType": "Patient",
+  "id": "pt_abc123",
+  "meta": {
+    "tag": [{ "system": "https://clinikapi.com/tenant", "code": "org_def456" }]
+  },
+  "name": [{ "family": "Doe", "given": ["Jane"] }],
+  "gender": "female",
+  "birthDate": "1990-03-15"
+}
+```

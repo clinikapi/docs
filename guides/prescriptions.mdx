@@ -1,0 +1,114 @@
+---
+title: Prescriptions
+description: Create and manage medication orders with dosage instructions.
+---
+
+# Prescriptions
+
+Prescriptions (FHIR `MedicationRequest`) represent medication orders written by practitioners.
+
+## Create a Prescription
+
+```ts
+const { data: rx } = await clinik.prescriptions.create({
+  patientId: 'pt_abc123',
+  prescriberId: 'prac_def456',
+  encounterId: 'enc_xyz789',
+  medication: {
+    system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+    code: '197361',
+    display: 'Lisinopril 10 MG Oral Tablet',
+  },
+  intent: 'order',
+  status: 'active',
+  priority: 'routine',
+  dosageText: 'Take 1 tablet by mouth once daily',
+  dosage: {
+    dose: { value: 10, unit: 'mg' },
+    frequency: 1,
+    period: 1,
+    periodUnit: 'd',
+    route: 'oral',
+  },
+  refills: 3,
+  quantity: { value: 30, unit: 'tablets' },
+  supplyDays: 30,
+  substitutionAllowed: true,
+  reason: 'Essential hypertension',
+  note: 'Monitor blood pressure weekly',
+});
+```
+
+## Dosage Options
+
+You can provide dosage as free text, structured data, or both:
+
+```ts
+// Free text only
+{ dosageText: 'Take 1 tablet twice daily with food' }
+
+// Structured only
+{
+  dosage: {
+    dose: { value: 500, unit: 'mg' },
+    frequency: 2,
+    period: 1,
+    periodUnit: 'd',
+    route: 'oral',
+  }
+}
+
+// Both (recommended — structured for computation, text for display)
+{
+  dosageText: 'Take 500mg twice daily with food',
+  dosage: {
+    dose: { value: 500, unit: 'mg' },
+    frequency: 2,
+    period: 1,
+    periodUnit: 'd',
+    route: 'oral',
+  }
+}
+```
+
+### Period Units
+
+| Unit | Meaning |
+|------|---------|
+| `h` | Hours |
+| `d` | Days |
+| `wk` | Weeks |
+| `mo` | Months |
+
+## Update a Prescription
+
+```ts
+// Put a prescription on hold
+const { data: updated } = await clinik.prescriptions.update('rx_abc123', {
+  status: 'on-hold',
+  note: 'Patient reported dizziness — holding pending follow-up',
+});
+
+// Cancel a prescription
+await clinik.prescriptions.update('rx_abc123', {
+  status: 'cancelled',
+});
+```
+
+## Search Prescriptions
+
+```ts
+const { data: results } = await clinik.prescriptions.search({
+  patientId: 'pt_abc123',
+  status: 'active',
+  prescriberId: 'prac_def456',
+});
+
+for (const rx of results.data) {
+  console.log(rx.medicationCodeableConcept?.coding?.[0]?.display);
+}
+```
+
+## Status Lifecycle
+
+`draft` → `active` → `on-hold` → `completed` / `cancelled` / `stopped`

@@ -1,0 +1,125 @@
+---
+title: Labs
+description: Create and manage diagnostic reports with linked observations.
+---
+
+# Labs
+
+Labs (FHIR DiagnosticReport) represent diagnostic reports — lab panels, radiology reports, pathology results. They group related observations and provide clinical conclusions.
+
+## Create a Lab Report
+
+```ts
+const { data: lab } = await clinik.labs.create({
+  status: 'final',
+  code: {
+    system: 'http://loinc.org',
+    code: '24323-8',
+    display: 'Comprehensive metabolic 2000 panel',
+  },
+  patientId: 'pt_abc123',
+  encounterId: 'enc_xyz789',
+  category: 'LAB',
+  effectiveDateTime: '2025-01-15T10:30:00Z',
+  performer: 'prac_lab_tech',
+  resultsInterpreter: 'prac_def456',
+  resultIds: ['obs_glucose', 'obs_sodium', 'obs_potassium', 'obs_creatinine'],
+  conclusion: 'All values within normal limits. No significant abnormalities.',
+  conclusionCodes: [
+    {
+      system: 'http://snomed.info/sct',
+      code: '281900007',
+      display: 'No abnormality detected',
+    },
+  ],
+});
+```
+
+## Categories
+
+| Code | Description |
+|------|-------------|
+| `LAB` | Laboratory |
+| `RAD` | Radiology |
+| `PAT` | Pathology |
+
+## Linking Observations
+
+A lab report groups related observations. Create the observations first, then reference their IDs:
+
+```ts
+// Create individual lab results
+const { data: glucose } = await clinik.observations.create({
+  status: 'final',
+  code: { system: 'http://loinc.org', code: '2339-0', display: 'Glucose' },
+  patientId: 'pt_abc123',
+  category: 'laboratory',
+  valueQuantity: { value: 95, unit: 'mg/dL' },
+  interpretation: 'N',
+  referenceRange: { low: { value: 70, unit: 'mg/dL' }, high: { value: 100, unit: 'mg/dL' } },
+});
+
+const { data: creatinine } = await clinik.observations.create({
+  status: 'final',
+  code: { system: 'http://loinc.org', code: '2160-0', display: 'Creatinine' },
+  patientId: 'pt_abc123',
+  category: 'laboratory',
+  valueQuantity: { value: 1.1, unit: 'mg/dL' },
+  interpretation: 'N',
+  referenceRange: { low: { value: 0.7, unit: 'mg/dL' }, high: { value: 1.3, unit: 'mg/dL' } },
+});
+
+// Create the report linking them
+const { data: report } = await clinik.labs.create({
+  status: 'final',
+  code: { system: 'http://loinc.org', code: '24323-8', display: 'CMP' },
+  patientId: 'pt_abc123',
+  category: 'LAB',
+  resultIds: [glucose.id!, creatinine.id!],
+  conclusion: 'All values within normal limits.',
+});
+```
+
+## Read with Included Observations
+
+```ts
+const { data } = await clinik.labs.read('lab_abc123', {
+  include: ['Observation'],
+});
+```
+
+## Attached Documents
+
+Attach PDF reports or images:
+
+```ts
+const { data } = await clinik.labs.create({
+  status: 'final',
+  code: { system: 'http://loinc.org', code: '24323-8', display: 'CMP' },
+  patientId: 'pt_abc123',
+  category: 'LAB',
+  conclusion: 'See attached report.',
+  presentedForm: [
+    {
+      contentType: 'application/pdf',
+      url: 'https://storage.clinic.com/reports/lab-2025-001.pdf',
+      title: 'CMP Lab Report - Jan 2025',
+    },
+  ],
+});
+```
+
+## Status Lifecycle
+
+`registered` → `partial` → `preliminary` → `final` → `amended` / `corrected` / `appended` / `cancelled`
+
+## Search Labs
+
+```ts
+const { data } = await clinik.labs.search({
+  patientId: 'pt_abc123',
+  status: 'final',
+  dateFrom: '2025-01-01',
+  sort: '-date',
+});
+```

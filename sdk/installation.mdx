@@ -1,0 +1,90 @@
+---
+title: Installation
+description: Install and configure the ClinikAPI TypeScript SDK.
+---
+
+# Installation
+
+```bash
+npm install @clinikapi/sdk
+```
+
+## Requirements
+
+- Node.js 18+ (or any runtime with `fetch` support)
+- TypeScript 5+ (recommended, but not required)
+
+## Quick Setup
+
+```ts
+import { Clinik } from '@clinikapi/sdk';
+
+const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!);
+```
+
+<Warning>
+  The SDK is **server-side only**. It authenticates with your secret API key — never import it in client-side code.
+  For frontend UI, use `@clinikapi/react` with the [proxy pattern](/components/overview).
+</Warning>
+
+## Configuration Options
+
+```ts
+const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!, {
+  baseUrl: 'https://api.clinikehr.com', // default
+  timeout: 30000,                        // request timeout in ms (default: 30s)
+  retries: 2,                            // auto-retry on 5xx/429 (default: 2)
+});
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `baseUrl` | `string` | `https://api.clinikehr.com` | API base URL |
+| `timeout` | `number` | `30000` | Request timeout in milliseconds |
+| `retries` | `number` | `2` | Max retry attempts on 5xx / 429 |
+
+## Framework Examples
+
+### Next.js (Server Action)
+
+```ts
+'use server';
+import { Clinik } from '@clinikapi/sdk';
+
+const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!);
+
+export async function getPatient(id: string) {
+  const { data } = await clinik.patients.read(id);
+  return data;
+}
+```
+
+### Express.js
+
+```ts
+import express from 'express';
+import { Clinik } from '@clinikapi/sdk';
+
+const app = express();
+const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!);
+
+app.get('/api/patients/:id', async (req, res) => {
+  const { data, meta } = await clinik.patients.read(req.params.id);
+  res.json({ patient: data, requestId: meta.requestId });
+});
+```
+
+### Hono
+
+```ts
+import { Hono } from 'hono';
+import { Clinik } from '@clinikapi/sdk';
+
+const app = new Hono();
+const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!);
+
+app.get('/patients/:id', async (c) => {
+  const { data } = await clinik.patients.read(c.req.param('id'));
+  return c.json(data);
+});
+```

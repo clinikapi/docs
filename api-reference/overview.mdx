@@ -1,0 +1,100 @@
+---
+title: API Reference Overview
+description: REST API endpoints, authentication, and response format.
+---
+
+# API Reference
+
+The ClinikAPI REST API provides CRUD + search operations for 14 FHIR R4 resource types, plus bulk operations and a FHIR passthrough.
+
+## Base URL
+
+```
+https://api.clinikapi.com
+```
+
+## Authentication
+
+All endpoints (except `/health` and `/v1/metadata`) require an API key:
+
+```bash
+curl -H "x-api-key: clk_live_abc123" https://api.clinikapi.com/v1/patients
+```
+
+## Response Envelope
+
+Every response is wrapped in:
+
+```json
+{
+  "data": { ... },
+  "meta": {
+    "requestId": "req_k8f3a7x2",
+    "timestamp": "2025-01-15T09:15:00.000Z",
+    "status": 200,
+    "rateLimitTotal": 500,
+    "rateLimitRemaining": 498,
+    "rateLimitReset": 3600
+  }
+}
+```
+
+## Pagination
+
+List endpoints return paginated results:
+
+```json
+{
+  "data": {
+    "data": [ ... ],
+    "total": 150,
+    "cursor": "20",
+    "hasMore": true
+  }
+}
+```
+
+Use `count` (default: 20, max: 100) and `cursor` query parameters to paginate.
+
+## Content Types
+
+| Header | Value |
+|--------|-------|
+| Request body | `application/json` |
+| PATCH body | `application/json-patch+json` |
+| FHIR passthrough | `application/fhir+json` |
+
+## Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/health` | Health check (no auth) |
+| `GET` | `/v1/metadata` | FHIR CapabilityStatement (no auth) |
+| `POST` | `/v1/{resource}` | Create a resource |
+| `GET` | `/v1/{resource}` | Search resources |
+| `GET` | `/v1/{resource}/{id}` | Read a resource |
+| `PATCH` | `/v1/{resource}/{id}` | Update a resource |
+| `DELETE` | `/v1/{resource}/{id}` | Delete a resource |
+| `POST` | `/v1/bulk/export` | Start bulk export |
+| `POST` | `/v1/bulk/import` | Start bulk import |
+| `GET` | `/v1/bulk/jobs/{jobId}` | Check bulk job status |
+| `*` | `/v1/fhir/{path}` | FHIR passthrough |
+
+### Resource Paths
+
+| Path | FHIR Type |
+|------|-----------|
+| `/v1/patients` | Patient |
+| `/v1/practitioners` | Practitioner |
+| `/v1/practitioner-roles` | PractitionerRole |
+| `/v1/encounters` | Encounter |
+| `/v1/observations` | Observation |
+| `/v1/medications` | Medication |
+| `/v1/prescriptions` | MedicationRequest |
+| `/v1/appointments` | Appointment |
+| `/v1/intakes` | QuestionnaireResponse |
+| `/v1/consents` | Consent |
+| `/v1/labs` | DiagnosticReport |
+| `/v1/notes` | DocumentReference |
+| `/v1/assessments` | ClinicalImpression |
+| `/v1/documents` | Composition |

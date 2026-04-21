@@ -1,0 +1,123 @@
+---
+title: Patients
+description: Create, read, update, search, and delete patient records.
+---
+
+# Patients
+
+Patients are the core resource in ClinikAPI. Every clinical resource (encounters, observations, prescriptions, etc.) references a patient.
+
+## Create a Patient
+
+```ts
+const { data: patient } = await clinik.patients.create({
+  firstName: 'Jane',
+  lastName: 'Doe',
+  email: 'jane@example.com',
+  phone: '+1-555-0100',
+  gender: 'female',
+  birthDate: '1990-03-15',
+  address: {
+    line: ['123 Main St', 'Apt 4B'],
+    city: 'Austin',
+    state: 'TX',
+    postalCode: '78701',
+    country: 'US',
+  },
+});
+```
+
+## Read a Patient with Related Resources
+
+The `include` option uses FHIR `_revinclude` to fetch related resources in a single call:
+
+```ts
+const { data } = await clinik.patients.read(patient.id!, {
+  include: ['Encounter', 'Observation', 'MedicationRequest', 'Appointment'],
+});
+
+// Destructured response
+console.log(data.patient);        // Patient resource
+console.log(data.encounters);     // Encounter[]
+console.log(data.observations);   // Observation[]
+console.log(data.prescriptions);  // MedicationRequest[]
+console.log(data.appointments);   // Appointment[]
+```
+
+The full `PatientReadResponse` includes:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `patient` | `Patient` | The patient resource |
+| `encounters` | `Encounter[]` | All encounters for this patient |
+| `observations` | `Observation[]` | Vitals, lab values, etc. |
+| `medications` | `Medication[]` | Medication records |
+| `appointments` | `Appointment[]` | Scheduled appointments |
+| `intakes` | `QuestionnaireResponse[]` | Intake forms |
+| `consents` | `Consent[]` | Signed consents |
+| `labs` | `DiagnosticReport[]` | Lab reports |
+| `prescriptions` | `MedicationRequest[]` | Prescriptions |
+| `notes` | `DocumentReference[]` | Clinical notes |
+| `assessments` | `ClinicalImpression[]` | Clinical assessments |
+| `documents` | `Composition[]` | Structured documents |
+
+## Update a Patient
+
+Updates use JSON Patch under the hood — only send the fields you want to change:
+
+```ts
+const { data: updated } = await clinik.patients.update(patient.id!, {
+  phone: '+1-555-0200',
+  address: {
+    line: ['456 Oak Ave'],
+    city: 'Dallas',
+    state: 'TX',
+    postalCode: '75201',
+  },
+});
+```
+
+## Search Patients
+
+```ts
+const { data: results } = await clinik.patients.search({
+  name: 'Doe',
+  gender: 'female',
+  count: 20,
+});
+
+for (const patient of results.data) {
+  console.log(patient.name?.[0]?.family); // "Doe"
+}
+
+// Pagination
+if (results.hasMore) {
+  const { data: nextPage } = await clinik.patients.search({
+    name: 'Doe',
+    cursor: results.cursor,
+  });
+}
+```
+
+### Search Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | `string` | Search by name (partial match) |
+| `email` | `string` | Exact email match |
+| `phone` | `string` | Exact phone match |
+| `birthDate` | `string` | Date of birth (YYYY-MM-DD) |
+| `gender` | `string` | male, female, other, unknown |
+| `active` | `boolean` | Filter by active status |
+| `count` | `number` | Results per page (default: 20, max: 100) |
+| `cursor` | `string` | Pagination cursor |
+
+## Delete a Patient
+
+```ts
+await clinik.patients.delete(patient.id!);
+```
+
+<Warning>
+  Deleting a patient does not cascade to related resources. Delete dependent resources first if needed.
+</Warning>

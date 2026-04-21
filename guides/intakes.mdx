@@ -1,0 +1,127 @@
+---
+title: Intakes
+description: Collect and manage patient intake forms as structured questionnaire responses.
+---
+
+# Intakes
+
+Intakes capture patient intake forms as FHIR QuestionnaireResponse resources — structured question-answer pairs that can be queried, versioned, and linked to encounters.
+
+## Submit an Intake Form
+
+```ts
+const { data: intake } = await clinik.intakes.submit({
+  patientId: 'pt_abc123',
+  encounterId: 'enc_xyz789',
+  questionnaire: 'https://forms.clinikapi.com/new-patient-intake',
+  status: 'completed',
+  items: [
+    {
+      linkId: 'chief-complaint',
+      text: 'Primary reason for visit',
+      answer: [{ valueString: 'Persistent headaches for 2 weeks' }],
+    },
+    {
+      linkId: 'allergies',
+      text: 'Known allergies',
+      answer: [
+        { valueString: 'Penicillin' },
+        { valueString: 'Sulfa drugs' },
+      ],
+    },
+    {
+      linkId: 'current-medications',
+      text: 'Current medications',
+      answer: [
+        { valueString: 'Lisinopril 10mg daily' },
+        { valueString: 'Metformin 500mg twice daily' },
+      ],
+    },
+    {
+      linkId: 'pain-level',
+      text: 'Current pain level (0-10)',
+      answer: [{ valueInteger: 6 }],
+    },
+    {
+      linkId: 'smoking-status',
+      text: 'Smoking status',
+      answer: [{
+        valueCoding: {
+          system: 'http://snomed.info/sct',
+          code: '8517006',
+          display: 'Former smoker',
+        },
+      }],
+    },
+  ],
+});
+```
+
+## Answer Types
+
+| Type | Field | Example |
+|------|-------|---------|
+| Text | `valueString` | `"Persistent headaches"` |
+| Yes/No | `valueBoolean` | `true` |
+| Number | `valueInteger` | `6` |
+| Decimal | `valueDecimal` | `98.6` |
+| Date | `valueDate` | `"2024-06-15"` |
+| Date-Time | `valueDateTime` | `"2025-01-15T10:00:00Z"` |
+| Coded | `valueCoding` | `{ code: "8517006", display: "Former smoker" }` |
+| Measurement | `valueQuantity` | `{ value: 165, unit: "lbs" }` |
+
+## Nested Questions
+
+Group related questions using nested `items`:
+
+```ts
+{
+  linkId: 'family-history',
+  text: 'Family Medical History',
+  items: [
+    {
+      linkId: 'fh-diabetes',
+      text: 'Family history of diabetes?',
+      answer: [{ valueBoolean: true }],
+    },
+    {
+      linkId: 'fh-heart-disease',
+      text: 'Family history of heart disease?',
+      answer: [{ valueBoolean: false }],
+    },
+  ],
+}
+```
+
+## Amend an Intake
+
+```ts
+await clinik.intakes.update('intake_abc123', {
+  status: 'amended',
+  items: [
+    {
+      linkId: 'allergies',
+      text: 'Known allergies',
+      answer: [
+        { valueString: 'Penicillin' },
+        { valueString: 'Sulfa drugs' },
+        { valueString: 'Latex' }, // newly reported
+      ],
+    },
+  ],
+});
+```
+
+## Search Intakes
+
+```ts
+const { data } = await clinik.intakes.search({
+  patientId: 'pt_abc123',
+  status: 'completed',
+  sort: '-date',
+});
+```
+
+## Status Lifecycle
+
+`in-progress` → `completed` → `amended` / `stopped`
