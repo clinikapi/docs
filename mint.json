@@ -267,7 +267,7 @@
   ],
   "openapi": "api-reference/openapi.yaml",
   "api": {
-    "baseUrl": "https://api.clinikehr.com",
+    "baseUrl": "https://api.clinikapi.com",
     "auth": {
       "method": "key",
       "name": "x-api-key"

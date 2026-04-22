@@ -37,17 +37,17 @@ await clinik.fhir.request('DELETE', '/Observation/obs_xyz789');
 
 ```bash
 # Create
-curl -X POST https://api.clinikehr.com/v1/fhir/Patient \
+curl -X POST https://api.clinikapi.com/v1/fhir/Patient \
   -H "x-api-key: clk_live_abc123" \
   -H "Content-Type: application/fhir+json" \
   -d '{"resourceType":"Patient","name":[{"family":"Smith"}]}'
 
 # Search
-curl "https://api.clinikehr.com/v1/fhir/Observation?code=8867-4&_count=10" \
+curl "https://api.clinikapi.com/v1/fhir/Observation?code=8867-4&_count=10" \
   -H "x-api-key: clk_live_abc123"
 
 # Read
-curl https://api.clinikehr.com/v1/fhir/Patient/pt_abc123 \
+curl https://api.clinikapi.com/v1/fhir/Patient/pt_abc123 \
   -H "x-api-key: clk_live_abc123"
 ```
 
@@ -66,7 +66,7 @@ You cannot bypass tenant isolation through the FHIR passthrough.
 The `/v1/metadata` endpoint returns a FHIR R4 CapabilityStatement (no auth required):
 
 ```bash
-curl https://api.clinikehr.com/v1/metadata
+curl https://api.clinikapi.com/v1/metadata
 ```
 
 This describes all supported resource types, search parameters, and operations.

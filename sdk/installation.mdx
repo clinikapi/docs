@@ -31,7 +31,7 @@ const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!);
 
 ```ts
 const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!, {
-  baseUrl: 'https://api.clinikehr.com', // default
+  baseUrl: 'https://api.clinikapi.com', // default
   timeout: 30000,                        // request timeout in ms (default: 30s)
   retries: 2,                            // auto-retry on 5xx/429 (default: 2)
 });
@@ -39,7 +39,7 @@ const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!, {
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `baseUrl` | `string` | `https://api.clinikehr.com` | API base URL |
+| `baseUrl` | `string` | `https://api.clinikapi.com` | API base URL |
 | `timeout` | `number` | `30000` | Request timeout in milliseconds |
 | `retries` | `number` | `2` | Max retry attempts on 5xx / 429 |
 

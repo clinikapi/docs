@@ -12,7 +12,7 @@ Bulk operations let you import and export large volumes of clinical data using N
 Start an export job for one or more resource types:
 
 ```bash
-curl -X POST https://api.clinikehr.com/v1/bulk/export \
+curl -X POST https://api.clinikapi.com/v1/bulk/export \
   -H "x-api-key: clk_live_abc123" \
   -H "Content-Type: application/json" \
   -d '{
@@ -36,7 +36,7 @@ Response:
 ### Poll for Completion
 
 ```bash
-curl https://api.clinikehr.com/v1/bulk/jobs/job_abc123 \
+curl https://api.clinikapi.com/v1/bulk/jobs/job_abc123 \
   -H "x-api-key: clk_live_abc123"
 ```
 
@@ -61,7 +61,7 @@ The `downloadUrl` is a pre-signed S3 URL valid for 1 hour.
 Import NDJSON data — one JSON resource per line, max 10,000 records per batch:
 
 ```bash
-curl -X POST https://api.clinikehr.com/v1/bulk/import \
+curl -X POST https://api.clinikapi.com/v1/bulk/import \
   -H "x-api-key: clk_live_abc123" \
   -H "Content-Type: application/json" \
   -d '{
