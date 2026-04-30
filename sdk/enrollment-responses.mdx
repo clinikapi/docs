@@ -1,0 +1,39 @@
+---
+title: Enrollment Responses
+description: SDK reference for enrollment response operations.
+---
+
+# clinik.enrollmentResponses
+
+Enrollment Responses (FHIR `EnrollmentResponse`) represent an insurer's response to an enrollment request. Track outcomes, dispositions, and processing status.
+
+## create
+
+```ts
+const { data, meta } = await clinik.enrollmentResponses.create(request): Promise<ApiResponse<EnrollmentResponse>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | No | active, cancelled, draft (defaults to active) |
+| `requestId` | `string` | No | EnrollmentRequest ID |
+| `outcome` | `string` | No | queued, complete, error, partial |
+| `disposition` | `string` | No | Disposition message |
+| `created` | `string` | No | When created (defaults to now) |
+| `organizationId` | `string` | No | Insurer Organization ID |
+| `requestProviderId` | `string` | No | Request provider (Practitioner/Organization ID) |
+
+## Example
+
+```ts
+const { data } = await clinik.enrollmentResponses.create({
+  requestId: 'enr_req_abc123',
+  outcome: 'complete',
+  disposition: 'Enrollment approved for plan year 2024-2025',
+  organizationId: 'org_ins456',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status` and `disposition`. Search supports `status`, `outcome` filters.

@@ -1,0 +1,122 @@
+---
+title: Conditions
+description: Record and track patient diagnoses, problems, and health concerns.
+---
+
+# Conditions
+
+Conditions (FHIR `Condition`) represent clinical diagnoses, problems, and health concerns. They support the problem list, encounter diagnoses, staging, and evidence tracking throughout the condition lifecycle.
+
+## Record a Diagnosis
+
+```ts
+const { data: condition } = await clinik.conditions.create({
+  patientId: 'pt_abc123',
+  clinicalStatus: 'active',
+  verificationStatus: 'confirmed',
+  category: ['encounter-diagnosis'],
+  severity: 'moderate',
+  code: {
+    system: 'http://hl7.org/fhir/sid/icd-10-cm',
+    code: 'E11.9',
+    display: 'Type 2 diabetes mellitus without complications',
+  },
+  encounterId: 'enc_visit456',
+  onsetDateTime: '2023-08-15',
+  recordedDate: '2024-01-10',
+  recorderId: 'pract_dr456',
+  note: 'Patient presents with elevated HbA1c of 7.8%. Starting metformin.',
+});
+```
+
+## Problem List Entry
+
+```ts
+const { data: problem } = await clinik.conditions.create({
+  patientId: 'pt_abc123',
+  clinicalStatus: 'active',
+  verificationStatus: 'confirmed',
+  category: ['problem-list-item'],
+  code: {
+    system: 'http://snomed.info/sct',
+    code: '38341003',
+    display: 'Hypertension',
+  },
+  onsetString: 'Diagnosed in 2020',
+  stage: [
+    { summary: 'Stage 2', type: 'clinical' },
+  ],
+  evidence: [
+    { code: ['Elevated blood pressure readings'] },
+  ],
+});
+```
+
+## Condition with Staging and Evidence
+
+```ts
+const { data: cancer } = await clinik.conditions.create({
+  patientId: 'pt_abc123',
+  clinicalStatus: 'active',
+  verificationStatus: 'confirmed',
+  category: ['problem-list-item'],
+  severity: 'severe',
+  code: {
+    system: 'http://snomed.info/sct',
+    code: '254837009',
+    display: 'Malignant neoplasm of breast',
+  },
+  bodySite: ['Left breast'],
+  onsetDateTime: '2024-02-01',
+  recordedDate: '2024-02-15',
+  stage: [
+    { summary: 'Stage IIA', type: 'pathological' },
+  ],
+  evidence: [
+    { code: ['Mammography findings', 'Biopsy results'] },
+    { detailIds: ['obs_mammo123', 'obs_biopsy456'] },
+  ],
+});
+```
+
+## Mark a Condition as Resolved
+
+```ts
+await clinik.conditions.update(condition.id, {
+  clinicalStatus: 'resolved',
+  abatementDateTime: '2024-06-01',
+  note: 'HbA1c normalized. Condition resolved with lifestyle changes.',
+});
+```
+
+## Search Conditions
+
+```ts
+// Active conditions for a patient
+const { data } = await clinik.conditions.search({
+  patientId: 'pt_abc123',
+  clinicalStatus: 'active',
+});
+
+// Problem list items
+const { data: problems } = await clinik.conditions.search({
+  patientId: 'pt_abc123',
+  category: 'problem-list-item',
+});
+
+// Search by ICD-10 code
+const { data: diabetes } = await clinik.conditions.search({
+  code: 'E11.9',
+});
+```
+
+## Clinical Status Lifecycle
+
+| Status | Description |
+|--------|-------------|
+| `active` | Condition is currently active |
+| `recurrence` | Condition has recurred after resolution |
+| `relapse` | Condition has relapsed after remission |
+| `inactive` | Condition is no longer active |
+| `remission` | Condition is in remission |
+| `resolved` | Condition is fully resolved |

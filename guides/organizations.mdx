@@ -1,0 +1,77 @@
+---
+title: Organizations
+description: Manage healthcare organizations, departments, and provider groups.
+---
+
+# Organizations
+
+Organizations (FHIR `Organization`) represent healthcare providers, hospital departments, insurance companies, and other entities involved in care delivery. They form the organizational hierarchy that practitioners and services belong to.
+
+## Create an Organization
+
+```ts
+const { data: org } = await clinik.organizations.create({
+  name: 'Sunrise Medical Center',
+  type: ['prov'],
+  phone: '555-0100',
+  email: 'admin@sunrise-medical.com',
+  address: {
+    line: ['100 Health Blvd'],
+    city: 'Austin',
+    state: 'TX',
+    postalCode: '78701',
+    country: 'US',
+  },
+  contact: [
+    {
+      purpose: 'billing',
+      firstName: 'Sarah',
+      lastName: 'Johnson',
+      email: 'billing@sunrise-medical.com',
+      phone: '555-0101',
+    },
+    {
+      purpose: 'admin',
+      firstName: 'Mike',
+      lastName: 'Chen',
+      email: 'admin@sunrise-medical.com',
+    },
+  ],
+});
+```
+
+## Organization Hierarchy
+
+Create departments as child organizations:
+
+```ts
+const { data: dept } = await clinik.organizations.create({
+  name: 'Cardiology Department',
+  type: ['dept'],
+  partOfId: org.id,
+  phone: '555-0110',
+});
+```
+
+## Organization Types
+
+| Type | Description |
+|------|-------------|
+| `prov` | Healthcare provider |
+| `dept` | Hospital department |
+| `team` | Care team |
+| `govt` | Government |
+| `ins` | Insurance company |
+| `pay` | Payer |
+| `edu` | Educational institution |
+| `bus` | Non-healthcare business |
+
+## Search Organizations
+
+```ts
+const { data } = await clinik.organizations.search({
+  name: 'Sunrise',
+  type: 'prov',
+  active: true,
+});
+```

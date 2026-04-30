@@ -1,0 +1,113 @@
+---
+title: Claims
+description: Submit and manage healthcare billing claims for insurance reimbursement.
+---
+
+# Claims
+
+Claims (FHIR `Claim`) represent healthcare billing requests submitted to insurers for reimbursement. ClinikAPI simplifies the most common claim fields — for advanced scenarios like coordination of benefits or detailed sub-items, use the [FHIR passthrough](/guides/raw-fhir).
+
+## Submit a Professional Claim
+
+```ts
+const { data: claim } = await clinik.claims.create({
+  status: 'active',
+  type: 'professional',
+  use: 'claim',
+  patientId: 'pt_abc123',
+  providerId: 'Practitioner/prac_dr456',
+  priority: 'normal',
+  billablePeriod: {
+    start: '2024-03-15',
+    end: '2024-03-15',
+  },
+  insurance: [
+    { sequence: 1, focal: true, coverageId: 'cov_primary789' },
+  ],
+  diagnosis: [
+    { sequence: 1, code: 'E11.9' },  // Type 2 diabetes
+    { sequence: 2, code: 'I10' },     // Essential hypertension
+  ],
+  item: [
+    {
+      sequence: 1,
+      productOrService: '99214',
+      unitPrice: { value: 200.00, currency: 'USD' },
+      net: { value: 200.00, currency: 'USD' },
+    },
+    {
+      sequence: 2,
+      productOrService: '85025',
+      quantity: { value: 1, unit: 'test' },
+      unitPrice: { value: 45.00, currency: 'USD' },
+      net: { value: 45.00, currency: 'USD' },
+    },
+  ],
+  total: { value: 245.00, currency: 'USD' },
+});
+```
+
+## Pre-Authorization Request
+
+```ts
+const { data: preAuth } = await clinik.claims.create({
+  status: 'active',
+  type: 'professional',
+  use: 'preauthorization',
+  patientId: 'pt_abc123',
+  providerId: 'Practitioner/prac_surgeon456',
+  priority: 'normal',
+  insurance: [
+    { sequence: 1, focal: true, coverageId: 'cov_primary789' },
+  ],
+  diagnosis: [
+    { sequence: 1, code: 'M17.11' },  // Primary osteoarthritis, right knee
+  ],
+  procedure: [
+    { sequence: 1, code: '27447', date: '2024-04-15' },  // Total knee replacement
+  ],
+  item: [
+    {
+      sequence: 1,
+      productOrService: '27447',
+      unitPrice: { value: 35000.00, currency: 'USD' },
+      net: { value: 35000.00, currency: 'USD' },
+    },
+  ],
+  total: { value: 35000.00, currency: 'USD' },
+  note: 'Conservative treatment failed after 6 months of physical therapy',
+});
+```
+
+## Search Claims
+
+```ts
+// All claims for a patient
+const { data } = await clinik.claims.search({
+  patientId: 'pt_abc123',
+});
+
+// Filter by status and use
+const { data: activeClaims } = await clinik.claims.search({
+  patientId: 'pt_abc123',
+  status: 'active',
+  use: 'claim',
+});
+
+// Filter by date range
+const { data: recent } = await clinik.claims.search({
+  dateFrom: '2024-01-01',
+  dateTo: '2024-03-31',
+  providerId: 'Practitioner/prac_dr456',
+});
+```
+
+## Claim Types
+
+| Type | Description |
+|------|-------------|
+| `institutional` | Hospital / facility claims |
+| `oral` | Dental claims |
+| `pharmacy` | Pharmacy claims |
+| `professional` | Physician / provider claims |
+| `vision` | Vision care claims |

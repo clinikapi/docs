@@ -1,0 +1,38 @@
+---
+title: Enrollment Requests
+description: SDK reference for enrollment request operations.
+---
+
+# clinik.enrollmentRequests
+
+Enrollment Requests (FHIR `EnrollmentRequest`) represent requests to enroll a patient in an insurance plan. ClinikAPI simplifies the enrollment workflow — use the [FHIR passthrough](/sdk/fhir-passthrough) for advanced scenarios.
+
+## create
+
+```ts
+const { data, meta } = await clinik.enrollmentRequests.create(request): Promise<ApiResponse<EnrollmentRequest>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | No | active, cancelled, draft (defaults to active) |
+| `created` | `string` | No | When created (defaults to now) |
+| `insurerId` | `string` | No | Insurer Organization ID |
+| `providerId` | `string` | No | Provider (Practitioner/Organization ID) |
+| `candidateId` | `string` | Yes | Patient ID (the enrollment candidate) |
+| `coverageId` | `string` | No | Coverage ID |
+
+## Example
+
+```ts
+const { data } = await clinik.enrollmentRequests.create({
+  candidateId: 'pt_abc123',
+  insurerId: 'org_ins456',
+  providerId: 'Practitioner/prac_dr789',
+  coverageId: 'cov_plan001',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status` only. Search supports `candidateId`, `status`, `insurerId` filters.

@@ -1,0 +1,73 @@
+---
+title: Invoices
+description: SDK reference for invoice operations.
+---
+
+# clinik.invoices
+
+Invoices (FHIR `Invoice`) represent billing documents for healthcare services. ClinikAPI exposes the most commonly used fields — use the [FHIR passthrough](/sdk/fhir-passthrough) for advanced invoice scenarios.
+
+## create
+
+```ts
+const { data, meta } = await clinik.invoices.create(request: InvoiceCreateRequest): Promise<ApiResponse<Invoice>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | draft, issued, balanced, cancelled |
+| `patientId` | `string` | No | Patient the invoice is for |
+| `type` | `string` | No | Invoice type |
+| `recipientId` | `string` | No | Recipient (Organization/Patient reference) |
+| `date` | `string` | No | Invoice date (defaults to now) |
+| `issuerId` | `string` | No | Issuing Organization ID |
+| `accountId` | `string` | No | Account ID |
+| `participant` | `Array` | No | Participants involved |
+| `lineItem` | `Array` | No | Line items with charge codes and pricing |
+| `totalNet` | `{ value, currency? }` | No | Total net amount |
+| `totalGross` | `{ value, currency? }` | No | Total gross amount |
+| `paymentTerms` | `string` | No | Payment terms text |
+| `cancelledReason` | `string` | No | Reason for cancellation |
+| `note` | `string` | No | Additional notes |
+
+### Participant Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `role` | `string` | No | Participant role |
+| `actorId` | `string` | Yes | Actor reference ID |
+
+### Line Item Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `sequence` | `number` | No | Sequence number |
+| `chargeItemCode` | `string` | Yes | Charge item code |
+| `priceComponent` | `Array` | No | Price components |
+
+## Example
+
+```ts
+const { data } = await clinik.invoices.create({
+  status: 'issued',
+  patientId: 'pt_abc123',
+  type: 'professional-services',
+  issuerId: 'org_clinic456',
+  lineItem: [
+    {
+      sequence: 1,
+      chargeItemCode: '99213',
+      priceComponent: [
+        { type: 'base', amount: { value: 150.00, currency: 'USD' } },
+      ],
+    },
+  ],
+  totalNet: { value: 150.00, currency: 'USD' },
+  totalGross: { value: 150.00, currency: 'USD' },
+  paymentTerms: 'Net 30',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `cancelledReason`, `note`. Search supports `patientId`, `status`, `dateFrom`, `dateTo`, `issuerId` filters.

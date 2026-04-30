@@ -1,0 +1,53 @@
+---
+title: Devices
+description: SDK reference for device operations.
+---
+
+# clinik.devices
+
+Devices represent medical devices, equipment, and implantable hardware tracked in the system.
+
+## create
+
+```ts
+const { data, meta } = await clinik.devices.create(request): Promise<ApiResponse<Device>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `deviceName` | `string` | Yes | User-friendly device name |
+| `status` | `string` | No | active, inactive |
+| `manufacturer` | `string` | No | Manufacturer name |
+| `modelNumber` | `string` | No | Model number |
+| `serialNumber` | `string` | No | Serial number |
+| `lotNumber` | `string` | No | Lot number |
+| `manufactureDate` | `string` | No | Date of manufacture |
+| `expirationDate` | `string` | No | Expiration date |
+| `type` | `string` | No | Device type/kind |
+| `patientId` | `string` | No | Patient this device is affixed to |
+| `ownerId` | `string` | No | Organization responsible |
+| `locationId` | `string` | No | Where the device is found |
+| `url` | `string` | No | Network address |
+| `note` | `string` | No | Additional notes |
+| `parentId` | `string` | No | Parent device ID |
+| `udiCarrier` | `Array` | No | UDI carrier info (deviceIdentifier, carrierHRF) |
+| `safety` | `string[]` | No | Safety codes |
+
+## Example
+
+```ts
+const { data } = await clinik.devices.create({
+  deviceName: 'Medtronic Pacemaker Model X200',
+  status: 'active',
+  manufacturer: 'Medtronic',
+  modelNumber: 'X200',
+  serialNumber: 'SN-2024-78432',
+  type: 'cardiac-pacemaker',
+  patientId: 'pt_abc123',
+  udiCarrier: [{ deviceIdentifier: '08717648200274', carrierHRF: '(01)08717648200274' }],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `note`, `locationId`, `patientId`. Search supports `patientId`, `status`, `type`, `manufacturer`, `modelNumber` filters.

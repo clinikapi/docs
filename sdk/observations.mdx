@@ -19,6 +19,7 @@ const { data, meta } = await clinik.observations.create(request: ObservationCrea
 | `encounterId` | `string` | No | Encounter reference |
 | `performerId` | `string` | No | Who performed the observation |
 | `effectiveDateTime` | `string` | No | When clinically relevant |
+| `issued` | `string` | No | When this version was made available |
 | `valueQuantity` | `{ value, unit?, system?, code? }` | No | Numeric value |
 | `valueString` | `string` | No | Text value |
 | `valueCodeableConcept` | `{ system?, code, display? }` | No | Coded value |
@@ -28,6 +29,8 @@ const { data, meta } = await clinik.observations.create(request: ObservationCrea
 | `referenceRange` | `{ low?, high?, text? }` | No | Normal range |
 | `bodySite` | `string` | No | Body site |
 | `method` | `string` | No | Method used |
+| `specimenId` | `string` | No | Specimen reference |
+| `deviceId` | `string` | No | Device reference |
 | `note` | `string` | No | Additional notes |
 
 ## read / update / delete / search

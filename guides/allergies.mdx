@@ -1,0 +1,112 @@
+---
+title: Allergies
+description: Record and manage patient allergies and intolerances.
+---
+
+# Allergies
+
+Allergies (FHIR `AllergyIntolerance`) record a patient's known allergies and adverse reactions to substances including medications, foods, and environmental agents. They track clinical status, criticality, and detailed reaction history.
+
+## Record an Allergy
+
+```ts
+const { data: allergy } = await clinik.allergies.create({
+  patientId: 'pt_abc123',
+  clinicalStatus: 'active',
+  verificationStatus: 'confirmed',
+  type: 'allergy',
+  category: ['medication'],
+  criticality: 'high',
+  code: {
+    system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+    code: '7980',
+    display: 'Penicillin',
+  },
+  onsetDateTime: '2019-06-15',
+  recordedDate: '2024-01-10',
+  recorderId: 'pract_dr456',
+  reaction: [
+    {
+      substance: 'Amoxicillin',
+      manifestation: ['Hives', 'Angioedema'],
+      severity: 'severe',
+      onset: '2019-06-15T14:30:00Z',
+      exposureRoute: 'Oral',
+      note: 'Patient developed hives within 30 minutes of first dose.',
+    },
+  ],
+  note: 'Confirmed penicillin allergy — avoid all beta-lactam antibiotics.',
+});
+```
+
+## Food Allergy with Multiple Reactions
+
+```ts
+const { data: peanutAllergy } = await clinik.allergies.create({
+  patientId: 'pt_abc123',
+  clinicalStatus: 'active',
+  verificationStatus: 'confirmed',
+  type: 'allergy',
+  category: ['food'],
+  criticality: 'high',
+  code: 'Peanut',
+  reaction: [
+    {
+      substance: 'Peanut butter',
+      manifestation: ['Anaphylaxis', 'Throat swelling', 'Difficulty breathing'],
+      severity: 'severe',
+      description: 'Severe anaphylactic reaction requiring epinephrine.',
+    },
+    {
+      substance: 'Peanut oil',
+      manifestation: ['Skin rash', 'Itching'],
+      severity: 'mild',
+    },
+  ],
+});
+```
+
+## Update Clinical Status
+
+Mark an allergy as resolved:
+
+```ts
+await clinik.allergies.update(allergy.id, {
+  clinicalStatus: 'resolved',
+  note: 'Patient completed desensitization therapy. No longer reactive.',
+});
+```
+
+## Search Allergies
+
+```ts
+// All active allergies for a patient
+const { data } = await clinik.allergies.search({
+  patientId: 'pt_abc123',
+  clinicalStatus: 'active',
+});
+
+// High-criticality medication allergies
+const { data: critical } = await clinik.allergies.search({
+  patientId: 'pt_abc123',
+  category: 'medication',
+  criticality: 'high',
+});
+```
+
+## Allergy Categories
+
+| Category | Description |
+|----------|-------------|
+| `food` | Food substances (peanuts, shellfish, dairy) |
+| `medication` | Medications (penicillin, sulfa drugs) |
+| `environment` | Environmental agents (pollen, dust, latex) |
+| `biologic` | Biological substances (vaccines, blood products) |
+
+## Criticality Levels
+
+| Level | Description |
+|-------|-------------|
+| `low` | Low risk — reaction is not life-threatening |
+| `high` | High risk — potential for life-threatening reaction |
+| `unable-to-assess` | Unable to assess the criticality |

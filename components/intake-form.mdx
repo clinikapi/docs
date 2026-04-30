@@ -1,11 +1,11 @@
 ---
 title: IntakeForm
-description: Patient intake questionnaire widget.
+description: Patient intake questionnaire widget with structured FHIR answers.
 ---
 
 # IntakeForm
 
-A dynamic intake form that submits responses as FHIR QuestionnaireResponse resources.
+A dynamic intake form that submits responses as FHIR QuestionnaireResponse resources. Supports all FHIR answer types including text, boolean, integer, decimal, date, time, coded values, quantities, and URIs.
 
 ## Usage
 
@@ -13,8 +13,9 @@ A dynamic intake form that submits responses as FHIR QuestionnaireResponse resou
 import { IntakeForm } from '@clinikapi/react';
 
 <IntakeForm
-  proxyUrl="/api/clinik/intakes"
-  onError={(err) => console.error(err)}
+  proxyUrl="/api/clinik"
+  patientId="pt_abc123"
+  theme="light"
 />
 ```
 
@@ -22,13 +23,58 @@ import { IntakeForm } from '@clinikapi/react';
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `proxyUrl` | `string` | Yes | Backend proxy URL for intake submission |
-| `className` | `string` | No | CSS class name |
-| `onError` | `(error: Error) => void` | No | Error callback |
+| `proxyUrl` | `string` | Yes | Backend proxy URL |
+| `patientId` | `string` | Yes | Patient ID |
+| `theme` | `'light' \| 'dark'` | No | Color theme |
+
+## Supported Answer Types
+
+The intake form maps to FHIR QuestionnaireResponse answer types:
+
+| Type | Field | Example |
+|------|-------|---------|
+| Text | `valueString` | Free-text answers |
+| Yes/No | `valueBoolean` | `true` / `false` |
+| Integer | `valueInteger` | Whole numbers |
+| Decimal | `valueDecimal` | Decimal numbers |
+| Date | `valueDate` | `"2024-06-15"` |
+| Date-Time | `valueDateTime` | `"2025-01-15T10:00:00Z"` |
+| Time | `valueTime` | `"14:30:00"` |
+| Coded | `valueCoding` | SNOMED, ICD codes |
+| Measurement | `valueQuantity` | `{ value: 165, unit: "lbs" }` |
+| URI | `valueUri` | External references |
 
 ## Features
 
-- Dynamic question rendering based on questionnaire definition
-- Support for text, boolean, integer, date, and coded answer types
-- Nested question groups
+- Dynamic question rendering
+- Nested question groups (unlimited depth)
+- Multiple answer types per question
 - Auto-save as `in-progress`, submit as `completed`
+- Support for `basedOn` (ServiceRequest/CarePlan references)
+- Support for `partOf` (Observation/Procedure references)
+
+## Proxy Action
+
+The widget sends `intakes.submit` with:
+
+```json
+{
+  "action": "intakes.submit",
+  "data": {
+    "patientId": "pt_abc123",
+    "status": "completed",
+    "items": [
+      {
+        "linkId": "chief-complaint",
+        "text": "Primary reason for visit",
+        "answer": [{ "valueString": "Annual physical exam" }]
+      },
+      {
+        "linkId": "pain-level",
+        "text": "Current pain level (0-10)",
+        "answer": [{ "valueInteger": 3 }]
+      }
+    ]
+  }
+}
+```

@@ -1,11 +1,11 @@
 ---
 title: NoteEditor
-description: Rich clinical note editor with note type selection.
+description: Clinical note editor with note type, category, and practice setting.
 ---
 
 # NoteEditor
 
-A clinical note editor supporting multiple note types with rich text input.
+A clinical note editor supporting multiple note types, document status management, category tagging, and practice setting.
 
 ## Usage
 
@@ -13,8 +13,11 @@ A clinical note editor supporting multiple note types with rich text input.
 import { NoteEditor } from '@clinikapi/react';
 
 <NoteEditor
-  proxyUrl="/api/clinik/notes"
-  onError={(err) => console.error(err)}
+  proxyUrl="/api/clinik"
+  patientId="pt_abc123"
+  authorId="prac_def456"
+  encounterId="enc_xyz789"
+  theme="light"
 />
 ```
 
@@ -22,13 +25,53 @@ import { NoteEditor } from '@clinikapi/react';
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `proxyUrl` | `string` | Yes | Backend proxy URL for note CRUD |
-| `className` | `string` | No | CSS class name |
-| `onError` | `(error: Error) => void` | No | Error callback |
+| `proxyUrl` | `string` | Yes | Backend proxy URL |
+| `patientId` | `string` | Yes | Patient ID |
+| `authorId` | `string` | No | Practitioner who authored the note |
+| `encounterId` | `string` | No | Associated encounter |
+| `theme` | `'light' \| 'dark'` | No | Color theme |
 
-## Features
+## Form Fields
 
-- Note type selector (progress note, discharge summary, consultation, H&P, etc.)
-- Rich text content area
-- Document status management (preliminary → final → amended)
-- Category tagging
+| Field | Description |
+|-------|-------------|
+| Note type | Progress note, consultation, discharge summary, H&P, operative, procedure, referral, transfer summary |
+| Document status | Draft (preliminary), final, amended |
+| Category | Free-text category tag (e.g. "cardiology", "oncology") |
+| Practice setting | Clinical specialty context (e.g. "cardiology", "family-medicine") |
+| Title | Note title / description |
+| Content | Clinical note content (supports plain text and markdown) |
+
+## Note Types
+
+| Type | LOINC Code | Description |
+|------|------------|-------------|
+| `progress-note` | 11506-3 | Standard visit documentation |
+| `consultation-note` | 11488-4 | Specialist consultation |
+| `discharge-summary` | 18842-5 | Hospital discharge summary |
+| `history-and-physical` | 34117-2 | H&P documentation |
+| `operative-note` | 11504-8 | Surgical procedure note |
+| `procedure-note` | 28570-0 | Non-surgical procedure note |
+| `referral-note` | 57133-1 | Referral documentation |
+| `transfer-summary` | 18761-7 | Patient transfer summary |
+
+## Proxy Action
+
+The widget sends `notes.create` with:
+
+```json
+{
+  "action": "notes.create",
+  "data": {
+    "patientId": "pt_abc123",
+    "authorId": "prac_def456",
+    "encounterId": "enc_xyz789",
+    "title": "Follow-up Visit - Hypertension",
+    "content": "## Subjective\nPatient reports...",
+    "type": "progress-note",
+    "docStatus": "final",
+    "category": "cardiology",
+    "practiceSetting": "cardiology"
+  }
+}
+```

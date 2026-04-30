@@ -15,6 +15,9 @@ const { data: encounter } = await clinik.encounters.create({
   class: 'AMB', // ambulatory
   patientId: 'pt_abc123',
   practitionerId: 'prac_def456',
+  participants: [
+    { practitionerId: 'prac_nurse01', role: 'nurse' },
+  ],
   type: 'Annual wellness visit',
   serviceType: 'General Practice',
   reasonCode: 'Routine health maintenance',
@@ -22,6 +25,8 @@ const { data: encounter } = await clinik.encounters.create({
     start: '2025-01-15T09:00:00Z',
   },
   location: 'Main Clinic - Room 204',
+  serviceProvider: 'Austin Family Medicine',
+  appointmentId: 'appt_abc123',
   diagnosis: [
     { condition: 'Essential hypertension', use: 'AD', rank: 1 },
     { condition: 'Type 2 diabetes mellitus', use: 'DD', rank: 2 },
@@ -59,6 +64,12 @@ const { data: updated } = await clinik.encounters.update('enc_xyz789', {
     end: '2025-01-15T09:45:00Z',
   },
   lengthMinutes: 45,
+  serviceProvider: 'Austin Family Medicine',
+  diagnosis: [
+    { condition: 'Essential hypertension', use: 'AD', rank: 1 },
+    { condition: 'Type 2 diabetes mellitus', use: 'DD', rank: 2 },
+    { condition: 'Obesity', use: 'DD', rank: 3 },
+  ],
 });
 ```
 
@@ -72,6 +83,54 @@ const { data: results } = await clinik.encounters.search({
   dateTo: '2025-03-31',
   sort: '-date', // newest first
   count: 20,
+});
+```
+
+## Inpatient Encounters
+
+For hospital admissions, include hospitalization details:
+
+```ts
+const { data: admission } = await clinik.encounters.create({
+  status: 'in-progress',
+  class: 'IMP', // inpatient
+  patientId: 'pt_abc123',
+  practitionerId: 'prac_def456',
+  type: 'Surgical admission',
+  reasonCode: ['Appendicitis', 'Acute abdominal pain'],
+  hospitalization: {
+    admitSource: 'Emergency department',
+    origin: 'Austin General ER',
+    dietPreference: ['regular'],
+    specialArrangement: ['wheelchair'],
+  },
+  location: 'Ward 3B - Bed 12',
+});
+
+// Discharge the patient
+await clinik.encounters.update(admission.id!, {
+  status: 'finished',
+  hospitalization: {
+    admitSource: 'Emergency department',
+    dischargeDisposition: 'Home',
+    destination: 'Patient residence',
+  },
+});
+```
+
+## Sub-Encounters
+
+Link related encounters using `partOfId`:
+
+```ts
+// Pre-op consultation as part of the admission
+await clinik.encounters.create({
+  status: 'finished',
+  class: 'AMB',
+  patientId: 'pt_abc123',
+  practitionerId: 'prac_anesthesia01',
+  type: 'Pre-operative assessment',
+  partOfId: admission.id!,
 });
 ```
 

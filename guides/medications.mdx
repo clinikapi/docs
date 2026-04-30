@@ -15,9 +15,10 @@ const { data: med } = await clinik.medications.create({
   code: 'Amoxicillin 500mg Capsule',
   status: 'active',
   form: 'capsule',
+  manufacturer: 'Teva Pharmaceuticals',
 });
 
-// Coded — RxNorm with ingredients
+// Coded — RxNorm with full details
 const { data: coded } = await clinik.medications.create({
   code: {
     system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
@@ -26,6 +27,11 @@ const { data: coded } = await clinik.medications.create({
   },
   status: 'active',
   form: 'capsule',
+  manufacturer: 'Teva Pharmaceuticals',
+  amount: {
+    numerator: { value: 500, unit: 'mg' },
+    denominator: { value: 1, unit: 'capsule' },
+  },
   ingredient: [
     {
       item: {
@@ -47,6 +53,42 @@ const { data: coded } = await clinik.medications.create({
 });
 ```
 
+## Manufacturer
+
+Track the drug manufacturer:
+
+```ts
+const { data } = await clinik.medications.create({
+  code: 'Metformin 500mg Tablet',
+  form: 'tablet',
+  manufacturer: 'Merck & Co.',
+});
+```
+
+The manufacturer is returned in read responses and can be updated:
+
+```ts
+await clinik.medications.update('med_abc123', {
+  manufacturer: 'Generic Pharma Inc.',
+});
+```
+
+## Amount
+
+Specify the total amount of drug in the package using a ratio:
+
+```ts
+const { data } = await clinik.medications.create({
+  code: 'Insulin Glargine',
+  form: 'injection',
+  manufacturer: 'Sanofi',
+  amount: {
+    numerator: { value: 100, unit: 'units' },
+    denominator: { value: 1, unit: 'mL' },
+  },
+});
+```
+
 ## Coding Systems
 
 | System | Use Case | Example |
@@ -60,6 +102,7 @@ const { data: coded } = await clinik.medications.create({
 ```ts
 await clinik.medications.update('med_abc123', {
   status: 'inactive',
+  manufacturer: 'Updated Pharma Corp.',
   batch: { expirationDate: '2025-06-30' },
 });
 ```
@@ -71,6 +114,14 @@ const { data } = await clinik.medications.search({
   status: 'active',
   count: 50,
 });
+
+for (const med of data.data) {
+  console.log(`${med.code} — ${med.form}`);
+  console.log(`  Manufacturer: ${med.manufacturer}`);
+  if (med.batch) {
+    console.log(`  Lot: ${med.batch.lotNumber}, Expires: ${med.batch.expirationDate}`);
+  }
+}
 ```
 
 ## Medications vs Prescriptions
@@ -81,3 +132,15 @@ const { data } = await clinik.medications.search({
 | Prescription | `MedicationRequest` | Medication order (prescribe it to a patient) |
 
 A prescription references a medication. You can create prescriptions with inline medication codes without creating a separate Medication resource first.
+
+## Complete Field Reference
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `code` | `string \| CodeableConcept` | Yes | RxNorm, SNOMED CT, or free-text name |
+| `status` | `string` | No | active (default), inactive |
+| `form` | `string` | No | Dosage form (tablet, capsule, injection, etc.) |
+| `manufacturer` | `string` | No | Manufacturer name |
+| `amount` | `{ numerator, denominator }` | No | Total amount of drug in package |
+| `ingredient` | `Array` | No | Active and inactive ingredients with strength |
+| `batch` | `{ lotNumber?, expirationDate? }` | No | Batch/lot tracking information |

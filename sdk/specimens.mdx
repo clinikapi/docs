@@ -1,0 +1,72 @@
+---
+title: Specimens
+description: SDK reference for specimen operations.
+---
+
+# clinik.specimens
+
+Specimens (FHIR `Specimen`) represent biological samples collected from patients for laboratory testing. ClinikAPI simplifies collection details to flat fields — use the [FHIR passthrough](/sdk/fhir-passthrough) for advanced specimen processing workflows.
+
+## create
+
+```ts
+const { data, meta } = await clinik.specimens.create(request): Promise<ApiResponse<Specimen>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | No | available, unavailable, unsatisfactory |
+| `type` | `string` | No | Specimen type (e.g. blood, urine, tissue) |
+| `patientId` | `string` | Yes | Patient ID |
+| `receivedTime` | `string` | No | When the specimen was received |
+| `parentIds` | `string[]` | No | Parent Specimen IDs |
+| `requestIds` | `string[]` | No | ServiceRequest IDs |
+| `collection` | `object` | No | Collection details |
+| `container` | `Array` | No | Container details |
+| `condition` | `string[]` | No | Specimen condition codes |
+| `note` | `string` | No | Additional notes |
+
+### Collection Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `collectorId` | `string` | No | Practitioner who collected |
+| `collectedDateTime` | `string` | No | When collected |
+| `quantity` | `{ value, unit? }` | No | Amount collected |
+| `method` | `string` | No | Collection method |
+| `bodySite` | `string` | No | Body site |
+
+### Container Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `description` | `string` | No | Container description |
+| `type` | `string` | No | Container type |
+| `capacity` | `{ value, unit? }` | No | Container capacity |
+| `specimenQuantity` | `{ value, unit? }` | No | Quantity in container |
+
+## Example
+
+```ts
+const { data } = await clinik.specimens.create({
+  status: 'available',
+  type: 'blood',
+  patientId: 'pt_abc123',
+  collection: {
+    collectorId: 'Practitioner/prac_nurse456',
+    collectedDateTime: '2024-03-15T09:30:00Z',
+    quantity: { value: 10, unit: 'mL' },
+    method: 'venipuncture',
+    bodySite: 'left antecubital fossa',
+  },
+  container: [
+    { type: 'EDTA tube', capacity: { value: 10, unit: 'mL' } },
+  ],
+  condition: ['room-temperature'],
+  requestIds: ['sr_lab789'],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `note`, `condition`. Search supports `patientId`, `status`, `type`, `dateFrom`, `dateTo` filters.

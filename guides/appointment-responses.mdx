@@ -1,0 +1,73 @@
+---
+title: Appointment Responses
+description: Manage participant responses to appointments — accept, decline, or propose new times.
+---
+
+# Appointment Responses
+
+Appointment responses (FHIR `AppointmentResponse`) represent a participant's reply to an appointment invitation. Practitioners, patients, or other participants can accept, decline, tentatively accept, or propose alternative times.
+
+## Accept an Appointment
+
+```ts
+const { data } = await clinik.appointmentResponses.create({
+  appointmentId: 'appt_abc123',
+  participantStatus: 'accepted',
+  actorId: 'Practitioner/prac_def456',
+  comment: 'Confirmed — see you then.',
+});
+```
+
+## Decline an Appointment
+
+```ts
+const { data } = await clinik.appointmentResponses.create({
+  appointmentId: 'appt_abc123',
+  participantStatus: 'declined',
+  actorId: 'Patient/pt_xyz789',
+  comment: 'Unable to attend — please reschedule.',
+});
+```
+
+## Propose a New Time
+
+```ts
+const { data } = await clinik.appointmentResponses.create({
+  appointmentId: 'appt_abc123',
+  participantStatus: 'tentative',
+  actorId: 'Patient/pt_xyz789',
+  start: '2025-02-03T10:00:00Z',
+  end: '2025-02-03T10:30:00Z',
+  comment: 'Can we move to Monday morning?',
+});
+```
+
+## Participant Status Values
+
+| Status | Description |
+|--------|-------------|
+| `accepted` | Participant has accepted |
+| `declined` | Participant has declined |
+| `tentative` | Tentatively accepted (may propose new time) |
+| `needs-action` | Awaiting response |
+
+## Search Responses
+
+```ts
+// All responses for an appointment
+const { data } = await clinik.appointmentResponses.search({
+  appointmentId: 'appt_abc123',
+});
+
+// Responses from a specific participant
+const { data: byActor } = await clinik.appointmentResponses.search({
+  actorId: 'Practitioner/prac_def456',
+  participantStatus: 'accepted',
+});
+```
+
+## Workflow
+
+1. Create an `Appointment` with status `proposed` or `pending`
+2. Each participant creates an `AppointmentResponse` (accepted/declined/tentative)
+3. Once all required participants accept, update the appointment to `booked`

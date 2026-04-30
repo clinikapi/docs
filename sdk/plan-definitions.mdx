@@ -1,0 +1,80 @@
+---
+title: Plan Definitions
+description: SDK reference for plan definition operations.
+---
+
+# clinik.planDefinitions
+
+Plan definitions (FHIR `PlanDefinition`) describe clinical protocols, order sets, and workflow definitions — reusable templates for care plans and clinical decision support.
+
+## create
+
+```ts
+const { data, meta } = await clinik.planDefinitions.create(request): Promise<ApiResponse<PlanDefinition>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | draft, active, retired |
+| `name` | `string` | No | Computer-friendly name |
+| `title` | `string` | No | Human-friendly title |
+| `type` | `string` | No | order-set, clinical-protocol, eca-rule, workflow-definition |
+| `description` | `string` | No | Description of the plan |
+| `purpose` | `string` | No | Why this plan exists |
+| `usage` | `string` | No | Clinical usage notes |
+| `publisher` | `string` | No | Publisher name |
+| `date` | `string` | No | Publication date |
+| `version` | `string` | No | Business version |
+| `url` | `string` | No | Canonical URL |
+| `experimental` | `boolean` | No | For testing only |
+| `topic` | `string[]` | No | Topic categories |
+| `goal` | `Array<object>` | No | Plan goals |
+| `action` | `Array<object>` | No | Plan actions |
+
+### goal
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `description` | `string` | Goal description (required) |
+| `priority` | `string` | Goal priority |
+| `category` | `string` | Goal category |
+
+### action
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | `string` | Action title |
+| `description` | `string` | Action description |
+| `priority` | `string` | Action priority |
+| `code` | `string` | Action code |
+| `type` | `string` | Action type |
+| `definitionUri` | `string` | URI to the activity definition |
+
+## Example
+
+```ts
+const { data } = await clinik.planDefinitions.create({
+  status: 'active',
+  name: 'diabetes-management-protocol',
+  title: 'Type 2 Diabetes Management Protocol',
+  type: 'clinical-protocol',
+  description: 'Standard protocol for managing Type 2 Diabetes in primary care',
+  goal: [
+    { description: 'HbA1c below 7%', priority: 'high-priority', category: 'physiologic' },
+    { description: 'Blood pressure below 130/80', priority: 'high-priority' },
+  ],
+  action: [
+    { title: 'Initial Assessment', description: 'Complete metabolic panel and HbA1c', priority: 'routine', code: 'initial-assessment' },
+    { title: 'Quarterly Follow-up', description: 'HbA1c check every 3 months', priority: 'routine' },
+    { title: 'Annual Eye Exam', description: 'Dilated eye exam referral', priority: 'routine', type: 'referral' },
+  ],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `status`, `name`, `title`, `type` filters.
+
+<Note>
+  For advanced PlanDefinition features like dynamicValue, expression, library, or relatedArtifact, use the [FHIR Passthrough](/sdk/fhir-passthrough).
+</Note>

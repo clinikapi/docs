@@ -1,0 +1,82 @@
+---
+title: Eligibility Requests
+description: Check insurance eligibility and benefits for patients.
+---
+
+# Eligibility Requests
+
+Eligibility Requests (FHIR `CoverageEligibilityRequest`) are used to check whether a patient's insurance covers specific services. ClinikAPI simplifies the most common fields — for advanced scenarios, use the [FHIR passthrough](/guides/raw-fhir).
+
+## Check Benefits
+
+```ts
+const { data: request } = await clinik.eligibilityRequests.create({
+  status: 'active',
+  purpose: ['benefits'],
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins_bluecross',
+  providerId: 'Practitioner/prac_dr456',
+  servicedDate: '2024-06-15',
+  insurance: [
+    { focal: true, coverageId: 'cov_primary789' },
+  ],
+});
+```
+
+## Pre-Authorization Check
+
+```ts
+const { data: preAuth } = await clinik.eligibilityRequests.create({
+  status: 'active',
+  purpose: ['auth-requirements'],
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins_bluecross',
+  providerId: 'Practitioner/prac_surgeon456',
+  servicedPeriod: {
+    start: '2024-07-01',
+    end: '2024-07-01',
+  },
+  insurance: [
+    { focal: true, coverageId: 'cov_primary789' },
+  ],
+  item: [
+    { category: 'surgical', productOrService: '27447' },
+  ],
+});
+```
+
+## Discovery Request
+
+```ts
+const { data: discovery } = await clinik.eligibilityRequests.create({
+  status: 'active',
+  purpose: ['discovery'],
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins_bluecross',
+});
+```
+
+## Search Eligibility Requests
+
+```ts
+// All requests for a patient
+const { data } = await clinik.eligibilityRequests.search({
+  patientId: 'pt_abc123',
+});
+
+// Filter by date range
+const { data: recent } = await clinik.eligibilityRequests.search({
+  patientId: 'pt_abc123',
+  dateFrom: '2024-01-01',
+  dateTo: '2024-06-30',
+});
+```
+
+## Purpose Codes
+
+| Purpose | Description |
+|---------|-------------|
+| `auth-requirements` | Check authorization requirements |
+| `benefits` | Check benefit coverage |
+| `discovery` | Discover available coverage |
+| `validation` | Validate coverage is active |

@@ -17,12 +17,31 @@ const { data: patient } = await clinik.patients.create({
   phone: '+1-555-0100',
   gender: 'female',
   birthDate: '1990-03-15',
+  maritalStatus: 'married',
   address: {
     line: ['123 Main St', 'Apt 4B'],
     city: 'Austin',
     state: 'TX',
     postalCode: '78701',
     country: 'US',
+  },
+  languages: [
+    { language: 'en', preferred: true },
+    { language: 'es' },
+  ],
+  contact: [
+    {
+      relationship: 'spouse',
+      firstName: 'John',
+      lastName: 'Doe',
+      phone: '+1-555-0101',
+      email: 'john@example.com',
+    },
+  ],
+  generalPractitionerId: 'prac_abc123',
+  photo: {
+    url: 'https://cdn.example.com/patients/jane.jpg',
+    contentType: 'image/jpeg',
   },
 });
 ```

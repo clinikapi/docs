@@ -1,0 +1,75 @@
+---
+title: CarePlanBuilder
+description: Create structured care plans with status, intent, and category.
+---
+
+# CarePlanBuilder
+
+Create structured patient care plans as FHIR CarePlan resources. Supports plan status management, intent classification, category tagging, and optional author attribution.
+
+## Usage
+
+```tsx
+import { CarePlanBuilder } from '@clinikapi/react';
+
+<CarePlanBuilder
+  proxyUrl="/api/clinik"
+  patientId="pt_abc123"
+  authorId="prac_def456"
+  theme="light"
+/>
+```
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `proxyUrl` | `string` | Yes | Backend proxy URL |
+| `patientId` | `string` | Yes | Patient ID |
+| `authorId` | `string` | No | Practitioner who authored the plan |
+| `theme` | `'light' \| 'dark'` | No | Color theme |
+
+## Form Fields
+
+| Field | Description |
+|-------|-------------|
+| Title | Care plan title |
+| Description | Detailed description of the care plan |
+| Status | draft, active |
+| Intent | plan, order |
+| Category | Care plan category (e.g. "diabetes-management", "post-surgical") |
+| Note | Additional clinical notes |
+
+## Status Values
+
+| Status | Description |
+|--------|-------------|
+| `draft` | Care plan is being developed |
+| `active` | Care plan is currently in effect |
+
+## Intent Values
+
+| Intent | Description |
+|--------|-------------|
+| `plan` | A suggested care plan |
+| `order` | An authoritative care plan |
+
+## Proxy Action
+
+The widget sends `care-plans.create` with:
+
+```json
+{
+  "action": "care-plans.create",
+  "data": {
+    "patientId": "pt_abc123",
+    "authorId": "prac_def456",
+    "title": "Diabetes Management Plan",
+    "description": "Comprehensive plan for Type 2 diabetes management including diet, exercise, and medication adherence.",
+    "status": "active",
+    "intent": "plan",
+    "category": "diabetes-management",
+    "note": "Patient agreed to follow-up in 3 months"
+  }
+}
+```

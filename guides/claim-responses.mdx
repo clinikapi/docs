@@ -1,0 +1,123 @@
+---
+title: Claim Responses
+description: Process and track insurance adjudication results for submitted claims.
+---
+
+# Claim Responses
+
+Claim Responses (FHIR `ClaimResponse`) represent adjudication results from insurers. They contain the outcome of a submitted claim including payment details, adjudicated line items, and processing notes.
+
+## Create a Claim Response
+
+```ts
+const { data: response } = await clinik.claimResponses.create({
+  status: 'active',
+  type: 'professional',
+  use: 'claim',
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins789',
+  requestId: 'claim_xyz456',
+  outcome: 'complete',
+  disposition: 'Claim adjudicated per contract terms',
+  item: [
+    {
+      itemSequence: 1,
+      adjudication: [
+        { category: 'submitted', amount: { value: 200.00, currency: 'USD' } },
+        { category: 'eligible', amount: { value: 180.00, currency: 'USD' } },
+        { category: 'benefit', amount: { value: 144.00, currency: 'USD' } },
+        { category: 'copay', amount: { value: 36.00, currency: 'USD' } },
+      ],
+    },
+    {
+      itemSequence: 2,
+      adjudication: [
+        { category: 'submitted', amount: { value: 45.00, currency: 'USD' } },
+        { category: 'eligible', amount: { value: 45.00, currency: 'USD' } },
+        { category: 'benefit', amount: { value: 36.00, currency: 'USD' } },
+        { category: 'copay', amount: { value: 9.00, currency: 'USD' } },
+      ],
+    },
+  ],
+  total: [
+    { category: 'submitted', amount: { value: 245.00, currency: 'USD' } },
+    { category: 'eligible', amount: { value: 225.00, currency: 'USD' } },
+    { category: 'benefit', amount: { value: 180.00, currency: 'USD' } },
+    { category: 'patient', amount: { value: 45.00, currency: 'USD' } },
+  ],
+  payment: {
+    type: 'complete',
+    amount: { value: 180.00, currency: 'USD' },
+    date: '2024-04-15',
+  },
+  processNote: [
+    { number: 1, text: 'Line 1 reduced to contracted rate per provider agreement' },
+  ],
+});
+```
+
+## Pre-Authorization Response
+
+```ts
+const { data: preAuthResp } = await clinik.claimResponses.create({
+  status: 'active',
+  type: 'professional',
+  use: 'preauthorization',
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins789',
+  requestId: 'claim_preauth123',
+  outcome: 'complete',
+  disposition: 'Pre-authorization approved',
+  preAuthRef: 'PA-2024-00456',
+  processNote: [
+    { number: 1, text: 'Approved for total knee replacement. Valid for 90 days.' },
+  ],
+});
+```
+
+## Denied Claim
+
+```ts
+const { data: denied } = await clinik.claimResponses.create({
+  status: 'active',
+  type: 'professional',
+  use: 'claim',
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins789',
+  requestId: 'claim_denied789',
+  outcome: 'error',
+  disposition: 'Claim denied — service not covered under current plan',
+  processNote: [
+    { number: 1, text: 'CPT 99215 requires prior authorization for this plan type' },
+  ],
+});
+```
+
+## Search Claim Responses
+
+```ts
+// All responses for a patient
+const { data } = await clinik.claimResponses.search({
+  patientId: 'pt_abc123',
+});
+
+// Find response for a specific claim
+const { data: forClaim } = await clinik.claimResponses.search({
+  requestId: 'claim_xyz456',
+});
+
+// Filter by outcome
+const { data: errors } = await clinik.claimResponses.search({
+  patientId: 'pt_abc123',
+  outcome: 'error',
+});
+```
+
+## Outcome Types
+
+| Outcome | Description |
+|---------|-------------|
+| `queued` | Claim is queued for processing |
+| `complete` | Processing is complete |
+| `error` | Claim was denied or had errors |
+| `partial` | Partially processed |

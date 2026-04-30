@@ -1,0 +1,102 @@
+---
+title: Care Teams
+description: Organize multidisciplinary care teams for coordinated patient care.
+---
+
+# Care Teams
+
+Care Teams (FHIR `CareTeam`) represent groups of practitioners and organizations collaborating on a patient's care. They define roles, responsibilities, and the period of team involvement.
+
+## Create a Care Team
+
+```ts
+const { data: team } = await clinik.careTeams.create({
+  name: 'Diabetes Management Team',
+  status: 'active',
+  category: ['longitudinal-care'],
+  patientId: 'pt_abc123',
+  participant: [
+    {
+      role: 'Primary Care Physician',
+      memberId: 'Practitioner/pract_dr456',
+    },
+    {
+      role: 'Endocrinologist',
+      memberId: 'Practitioner/pract_dr789',
+    },
+    {
+      role: 'Diabetes Educator',
+      memberId: 'Practitioner/pract_nurse101',
+      onBehalfOfId: 'org_sunrise',
+    },
+    {
+      role: 'Dietitian',
+      memberId: 'Practitioner/pract_diet202',
+      period: { start: '2024-01-01', end: '2024-06-30' },
+    },
+  ],
+  reasonCode: ['Type 2 Diabetes Mellitus'],
+  managingOrganizationIds: ['org_sunrise'],
+  phone: '555-0200',
+  email: 'diabetes-team@sunrise-medical.com',
+  note: 'Weekly team huddle every Monday at 9am.',
+});
+```
+
+## Encounter-Based Team
+
+Create a team for a specific encounter:
+
+```ts
+const { data: surgeryTeam } = await clinik.careTeams.create({
+  name: 'Knee Replacement Surgery Team',
+  status: 'active',
+  category: ['encounter-based'],
+  patientId: 'pt_abc123',
+  encounterId: 'enc_surgery789',
+  participant: [
+    { role: 'Lead Surgeon', memberId: 'Practitioner/pract_surgeon01' },
+    { role: 'Anesthesiologist', memberId: 'Practitioner/pract_anesthesia02' },
+    { role: 'Surgical Nurse', memberId: 'Practitioner/pract_nurse03' },
+  ],
+  period: { start: '2024-03-15', end: '2024-03-15' },
+});
+```
+
+## Update Team Members
+
+```ts
+await clinik.careTeams.update(team.id, {
+  participant: [
+    { role: 'Primary Care Physician', memberId: 'Practitioner/pract_dr456' },
+    { role: 'Endocrinologist', memberId: 'Practitioner/pract_dr789' },
+    { role: 'Diabetes Educator', memberId: 'Practitioner/pract_nurse101' },
+    { role: 'Pharmacist', memberId: 'Practitioner/pract_pharm303' },
+  ],
+  note: 'Added pharmacist for medication management review.',
+});
+```
+
+## Search Care Teams
+
+```ts
+// All active teams for a patient
+const { data } = await clinik.careTeams.search({
+  patientId: 'pt_abc123',
+  status: 'active',
+});
+
+// Teams by category
+const { data: longitudinal } = await clinik.careTeams.search({
+  category: 'longitudinal-care',
+});
+```
+
+## Team Statuses
+
+| Status | Description |
+|--------|-------------|
+| `proposed` | Team has been suggested but not yet formed |
+| `active` | Team is currently active and providing care |
+| `suspended` | Team is temporarily paused |
+| `inactive` | Team is no longer active |

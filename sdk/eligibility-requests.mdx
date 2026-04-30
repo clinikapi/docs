@@ -1,0 +1,61 @@
+---
+title: Eligibility Requests
+description: SDK reference for eligibility request operations.
+---
+
+# clinik.eligibilityRequests
+
+Eligibility Requests (FHIR `CoverageEligibilityRequest`) are used to check insurance eligibility and benefits. ClinikAPI exposes the most commonly used fields — use the [FHIR passthrough](/sdk/fhir-passthrough) for advanced eligibility scenarios.
+
+## create
+
+```ts
+const { data, meta } = await clinik.eligibilityRequests.create(request): Promise<ApiResponse<CoverageEligibilityRequest>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | active, cancelled, draft |
+| `purpose` | `string[]` | Yes | auth-requirements, benefits, discovery, validation |
+| `patientId` | `string` | Yes | Patient ID |
+| `created` | `string` | No | When created (defaults to now) |
+| `insurerId` | `string` | Yes | Insurer Organization ID |
+| `providerId` | `string` | No | Provider (Practitioner/Organization ID) |
+| `servicedDate` | `string` | No | Service date (point in time) |
+| `servicedPeriod` | `{ start?, end? }` | No | Service period |
+| `insurance` | `Array` | No | Insurance coverages to check |
+| `item` | `Array` | No | Items to check eligibility for |
+
+### Insurance Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `focal` | `boolean` | No | Whether this is the focal coverage |
+| `coverageId` | `string` | Yes | Coverage resource ID |
+
+### Item Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `category` | `string` | No | Benefit category |
+| `productOrService` | `string` | No | Product or service code |
+
+## Example
+
+```ts
+const { data } = await clinik.eligibilityRequests.create({
+  status: 'active',
+  purpose: ['benefits'],
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins_bluecross',
+  providerId: 'Practitioner/prac_dr456',
+  servicedDate: '2024-06-15',
+  insurance: [
+    { focal: true, coverageId: 'cov_primary789' },
+  ],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status` only. Search supports `patientId`, `status`, `dateFrom`, `dateTo` filters.

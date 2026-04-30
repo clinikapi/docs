@@ -1,0 +1,84 @@
+---
+title: Devices
+description: Track medical devices, equipment, and implantable hardware.
+---
+
+# Devices
+
+Devices (FHIR `Device`) represent medical equipment, implantable hardware, and other devices used in patient care. They can be tracked by manufacturer, model, serial number, and UDI (Unique Device Identifier).
+
+## Register a Device
+
+```ts
+const { data: device } = await clinik.devices.create({
+  deviceName: 'Medtronic Pacemaker Model X200',
+  status: 'active',
+  manufacturer: 'Medtronic',
+  modelNumber: 'X200',
+  serialNumber: 'SN-2024-78432',
+  lotNumber: 'LOT-2024-A',
+  type: 'cardiac-pacemaker',
+  patientId: 'pt_abc123',
+  ownerId: 'org_sunrise456',
+  udiCarrier: [
+    {
+      deviceIdentifier: '08717648200274',
+      carrierHRF: '(01)08717648200274(17)240630(10)LOT-2024-A(21)SN-2024-78432',
+    },
+  ],
+  safety: ['MR Conditional'],
+});
+```
+
+## Device Hierarchy
+
+Track parent-child relationships between devices:
+
+```ts
+const { data: lead } = await clinik.devices.create({
+  deviceName: 'Pacemaker Lead - Right Ventricle',
+  status: 'active',
+  manufacturer: 'Medtronic',
+  type: 'pacemaker-lead',
+  parentId: device.id,
+  patientId: 'pt_abc123',
+});
+```
+
+## Update Device Location
+
+```ts
+await clinik.devices.update(device.id, {
+  locationId: 'loc_cardiology789',
+  note: 'Transferred to cardiology department for monitoring',
+});
+```
+
+## Search Devices
+
+```ts
+// Find all active devices for a patient
+const { data } = await clinik.devices.search({
+  patientId: 'pt_abc123',
+  status: 'active',
+});
+
+// Find devices by manufacturer
+const { data: medtronicDevices } = await clinik.devices.search({
+  manufacturer: 'Medtronic',
+  type: 'cardiac-pacemaker',
+});
+```
+
+## Common Device Types
+
+| Type | Description |
+|------|-------------|
+| `cardiac-pacemaker` | Implantable cardiac pacemaker |
+| `insulin-pump` | Insulin delivery pump |
+| `cgm` | Continuous glucose monitor |
+| `ventilator` | Mechanical ventilator |
+| `infusion-pump` | IV infusion pump |
+| `prosthesis` | Prosthetic device |
+| `hearing-aid` | Hearing aid device |
+| `wheelchair` | Wheelchair or mobility device |

@@ -1,0 +1,61 @@
+---
+title: Accounts
+description: Track billing accounts, insurance coverage, and guarantors.
+---
+
+# Accounts
+
+Accounts (FHIR `Account`) track billing and financial information for patients — insurance coverage, guarantors, service periods, and account status.
+
+## Create a Patient Account
+
+```ts
+const { data: account } = await clinik.accounts.create({
+  status: 'active',
+  type: 'patient',
+  name: 'Jane Doe - Primary Account',
+  patientId: 'pt_abc123',
+  servicePeriod: { start: '2025-01-01', end: '2025-12-31' },
+  ownerId: 'org_sunrise_medical',
+  coverage: [
+    { coverageId: 'cov_bcbs_001', priority: 1 },
+    { coverageId: 'cov_dental_001', priority: 2 },
+  ],
+  guarantor: [{
+    partyId: 'Patient/pt_abc123',
+    onHold: false,
+  }],
+  description: 'Primary billing account for outpatient services',
+});
+```
+
+## Account Status
+
+| Status | Description |
+|--------|-------------|
+| `active` | Account is in use |
+| `inactive` | Account is closed |
+| `on-hold` | Account is temporarily suspended |
+
+## Sub-Accounts
+
+Create child accounts for specific service lines:
+
+```ts
+const { data: subAccount } = await clinik.accounts.create({
+  status: 'active',
+  type: 'expense',
+  name: 'Cardiology Services',
+  patientId: 'pt_abc123',
+  partOfId: account.id,
+});
+```
+
+## Search Accounts
+
+```ts
+const { data } = await clinik.accounts.search({
+  patientId: 'pt_abc123',
+  status: 'active',
+});
+```

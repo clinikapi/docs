@@ -1,0 +1,45 @@
+---
+title: Accounts
+description: SDK reference for billing account operations.
+---
+
+# clinik.accounts
+
+Accounts track billing and financial information — patient accounts, insurance coverage, guarantors, and service periods.
+
+## create
+
+```ts
+const { data, meta } = await clinik.accounts.create(request): Promise<ApiResponse<Account>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | active, inactive, on-hold |
+| `type` | `string` | No | Account type (patient, expense, depreciation) |
+| `name` | `string` | No | Human-readable label |
+| `patientId` | `string` | No | Patient the account is for |
+| `servicePeriod` | `{ start?, end? }` | No | Transaction window |
+| `coverage` | `Array<{ coverageId, priority? }>` | No | Insurance coverage |
+| `ownerId` | `string` | No | Organization managing the account |
+| `description` | `string` | No | Explanation of purpose |
+| `guarantor` | `Array<{ partyId, onHold?, period? }>` | No | Responsible parties |
+| `partOfId` | `string` | No | Parent account ID |
+
+## Example
+
+```ts
+const { data } = await clinik.accounts.create({
+  status: 'active',
+  type: 'patient',
+  name: 'Jane Doe - Primary Account',
+  patientId: 'pt_abc123',
+  servicePeriod: { start: '2025-01-01', end: '2025-12-31' },
+  coverage: [{ coverageId: 'cov_insurance_001', priority: 1 }],
+  ownerId: 'org_sunrise_medical',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `patientId`, `status`, `type`, `ownerId` filters.

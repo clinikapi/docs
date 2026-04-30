@@ -18,24 +18,110 @@ const { data: note } = await clinik.notes.create({
   title: 'Follow-up Visit - Hypertension Management',
   content: `## Subjective
 Patient reports compliance with lisinopril 10mg daily. No dizziness, cough, or swelling.
-Home BP readings averaging 128/82.
 
 ## Objective
-BP: 130/84 mmHg, HR: 72 bpm, Weight: 165 lbs
-No peripheral edema. Heart sounds regular, no murmurs.
+BP: 130/84 mmHg, HR: 72 bpm
 
 ## Assessment
-Essential hypertension — improving but not at goal (<130/80).
+Essential hypertension — improving but not at goal.
 
 ## Plan
 - Increase lisinopril to 20mg daily
-- Continue low-sodium diet
-- Recheck BP in 4 weeks
-- Order BMP to monitor renal function`,
+- Recheck BP in 4 weeks`,
   contentType: 'text/markdown',
   docStatus: 'final',
   category: 'cardiology',
   date: '2025-01-15',
+  practiceSetting: 'cardiology',
+  facilityType: 'outpatient-clinic',
+});
+```
+
+## Document Relationships
+
+Link notes to other documents they replace, append to, or sign:
+
+```ts
+// Amend a note by creating a replacement
+const { data: amended } = await clinik.notes.create({
+  patientId: 'pt_abc123',
+  authorId: 'prac_def456',
+  type: 'progress-note',
+  title: 'Follow-up Visit - Amended',
+  content: '... corrected content ...',
+  docStatus: 'amended',
+  relatesTo: [{
+    code: 'replaces',
+    targetId: 'note_original_001',
+  }],
+});
+
+// Append an addendum
+const { data: addendum } = await clinik.notes.create({
+  patientId: 'pt_abc123',
+  authorId: 'prac_def456',
+  type: 'progress-note',
+  title: 'Addendum - Follow-up Visit',
+  content: 'Patient called to report mild dizziness. Advised to take medication with food.',
+  relatesTo: [{
+    code: 'appends',
+    targetId: 'note_original_001',
+  }],
+});
+```
+
+## Security Labels
+
+Tag notes with security classifications:
+
+```ts
+const { data } = await clinik.notes.create({
+  patientId: 'pt_abc123',
+  type: 'progress-note',
+  title: 'Mental Health Assessment',
+  content: '...',
+  securityLabel: [
+    { system: 'http://terminology.hl7.org/CodeSystem/v3-Confidentiality', code: 'R', display: 'Restricted' },
+    { code: 'mental-health', display: 'Mental Health' },
+  ],
+  // ...
+});
+```
+
+## Authentication and Custody
+
+Track who authenticated and who maintains the document:
+
+```ts
+const { data } = await clinik.notes.create({
+  patientId: 'pt_abc123',
+  authorId: 'prac_resident',
+  authenticatorId: 'prac_attending',  // Attending physician who co-signed
+  custodianId: 'org_hospital',        // Hospital maintaining the record
+  type: 'discharge-summary',
+  title: 'Discharge Summary',
+  content: '...',
+  // ...
+});
+```
+
+## Service Context
+
+Document the clinical context:
+
+```ts
+const { data } = await clinik.notes.create({
+  patientId: 'pt_abc123',
+  type: 'consultation-note',
+  title: 'Cardiology Consultation',
+  content: '...',
+  servicePeriod: {
+    start: '2025-01-15T09:00:00Z',
+    end: '2025-01-15T09:45:00Z',
+  },
+  facilityType: 'outpatient-clinic',
+  practiceSetting: 'cardiology',
+  // ...
 });
 ```
 
@@ -53,43 +139,26 @@ Essential hypertension — improving but not at goal (<130/80).
 | `transfer-summary` | Patient transfer summary |
 | `other` | Other note types |
 
-## Document Status
-
-| Status | Description |
-|--------|-------------|
-| `preliminary` | Draft — still being written |
-| `final` | Completed and signed |
-| `amended` | Modified after finalization |
-
 ## Update a Note
 
 ```ts
-// Amend a finalized note
 await clinik.notes.update('note_abc123', {
   docStatus: 'amended',
   content: '... updated content with addendum ...',
+  relatesTo: [{
+    code: 'appends',
+    targetId: 'note_original_001',
+  }],
 });
 ```
 
 ## Search Notes
 
 ```ts
-// All progress notes for a patient
 const { data } = await clinik.notes.search({
   patientId: 'pt_abc123',
   type: 'progress-note',
-  sort: '-date',
-});
-
-// Notes by a specific author
-const { data: byAuthor } = await clinik.notes.search({
   authorId: 'prac_def456',
-  dateFrom: '2025-01-01',
-  dateTo: '2025-03-31',
-});
-
-// Notes from a specific encounter
-const { data: fromEncounter } = await clinik.notes.search({
-  encounterId: 'enc_xyz789',
+  sort: '-date',
 });
 ```

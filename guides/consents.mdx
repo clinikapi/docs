@@ -17,14 +17,15 @@ const { data: hipaa } = await clinik.consents.sign({
   scope: 'patient-privacy',
   category: 'hipaa-notice',
   policyUri: 'https://clinic.com/hipaa-notice',
-  verification: {
+  policyRule: 'HIPAA-Auth',
+  verification: [{
     verified: true,
     verifiedWith: 'pt_abc123',
     verificationDate: '2025-01-15T10:00:00Z',
-  },
+  }],
 });
 
-// Treatment consent with time-limited provision
+// Treatment consent with provisions and attestation
 const { data: treatment } = await clinik.consents.sign({
   patientId: 'pt_abc123',
   status: 'active',
@@ -32,6 +33,10 @@ const { data: treatment } = await clinik.consents.sign({
   category: ['treatment-consent', 'surgical-consent'],
   performerId: 'prac_def456',
   organizationId: 'org_ghi789',
+  policies: [
+    { authority: 'https://clinic.com', uri: 'https://clinic.com/treatment-policy' },
+    { authority: 'https://clinic.com', uri: 'https://clinic.com/surgical-policy' },
+  ],
   provision: {
     type: 'permit',
     period: {
@@ -39,10 +44,99 @@ const { data: treatment } = await clinik.consents.sign({
       end: '2025-07-15',
     },
     purpose: [
-      { code: 'TREAT', display: 'Treatment' },
+      { system: 'http://terminology.hl7.org/CodeSystem/v3-ActReason', code: 'TREAT', display: 'Treatment' },
+    ],
+    action: [
+      { code: 'access', display: 'Access' },
+      { code: 'use', display: 'Use' },
     ],
   },
 });
+```
+
+## Source Documents
+
+Link a consent to its source document:
+
+```ts
+// From an attachment
+const { data } = await clinik.consents.sign({
+  patientId: 'pt_abc123',
+  scope: 'treatment',
+  category: 'surgical-consent',
+  sourceAttachment: {
+    contentType: 'application/pdf',
+    url: 'https://storage.clinic.com/consents/signed-form.pdf',
+    title: 'Signed Surgical Consent Form',
+  },
+  // ...
+});
+
+// From a reference (e.g. a QuestionnaireResponse)
+const { data: fromForm } = await clinik.consents.sign({
+  patientId: 'pt_abc123',
+  scope: 'research',
+  category: 'research-participation',
+  sourceReferenceId: 'QuestionnaireResponse/intake_consent_form',
+  // ...
+});
+```
+
+## Multiple Verifications
+
+Track multiple verification events:
+
+```ts
+const { data } = await clinik.consents.sign({
+  patientId: 'pt_abc123',
+  scope: 'treatment',
+  category: 'surgical-consent',
+  verification: [
+    {
+      verified: true,
+      verifiedWith: 'pt_abc123',
+      verificationDate: '2025-01-15T09:00:00Z',
+    },
+    {
+      verified: true,
+      verifiedWith: 'related_person_spouse',
+      verificationDate: '2025-01-15T09:30:00Z',
+    },
+  ],
+  // ...
+});
+```
+
+## Provisions with Data Control
+
+Control access to specific data:
+
+```ts
+provision: {
+  type: 'permit',
+  period: { start: '2025-01-01', end: '2025-12-31' },
+  purpose: [
+    { code: 'TREAT', display: 'Treatment' },
+    { code: 'HPAYMT', display: 'Healthcare Payment' },
+  ],
+  action: [
+    { code: 'access', display: 'Access' },
+    { code: 'use', display: 'Use' },
+  ],
+  securityLabel: [
+    { system: 'http://terminology.hl7.org/CodeSystem/v3-Confidentiality', code: 'R', display: 'Restricted' },
+  ],
+  data: [
+    { meaning: 'instance', reference: 'DiagnosticReport/lab_hiv_001' },
+    { meaning: 'related', reference: 'Condition/cond_mental_health' },
+  ],
+  dataPeriod: { start: '2024-01-01', end: '2025-12-31' },
+  // Nested exception: deny research use
+  provision: [{
+    type: 'deny',
+    purpose: [{ code: 'HRESCH', display: 'Healthcare Research' }],
+  }],
+}
 ```
 
 ## Consent Scopes
@@ -56,18 +150,7 @@ const { data: treatment } = await clinik.consents.sign({
 
 ## Status Lifecycle
 
-```
-draft → proposed → active → inactive
-                 ↘ rejected
-```
-
-| Status | Description |
-|--------|-------------|
-| `draft` | Being prepared |
-| `proposed` | Presented to patient |
-| `active` | Patient has agreed |
-| `rejected` | Patient declined |
-| `inactive` | Withdrawn or expired |
+`draft` → `proposed` → `active` → `inactive` / `rejected`
 
 ## Revoke a Consent
 
@@ -75,34 +158,6 @@ draft → proposed → active → inactive
 await clinik.consents.update('consent_abc123', {
   status: 'inactive',
 });
-```
-
-## Provisions
-
-Provisions define what is permitted or denied:
-
-```ts
-// Permit data sharing for treatment purposes only
-provision: {
-  type: 'permit',
-  period: { start: '2025-01-01', end: '2025-12-31' },
-  purpose: [
-    { code: 'TREAT', display: 'Treatment' },
-    { code: 'HPAYMT', display: 'Healthcare Payment' },
-  ],
-  action: [
-    { code: 'access', display: 'Access' },
-    { code: 'use', display: 'Use' },
-  ],
-}
-
-// Deny research use of data
-provision: {
-  type: 'deny',
-  purpose: [
-    { code: 'HRESCH', display: 'Healthcare Research' },
-  ],
-}
 ```
 
 ## Search Consents

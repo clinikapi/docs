@@ -29,6 +29,9 @@ const { data, meta } = await clinik.appointments.create(request: AppointmentCrea
 | `comment` | `string` | No | Additional comments |
 | `patientInstruction` | `string` | No | Instructions for patient |
 | `cancelationReason` | `string` | No | Reason for cancellation |
+| `basedOnId` | `string` | No | ServiceRequest this appointment assesses |
+| `requestedPeriod` | `Array<{ start?, end? }>` | No | Preferred time windows |
+| `created` | `string` | No | When initially created (defaults to now) |
 
 ## read / update / delete / search
 

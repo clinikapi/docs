@@ -1,11 +1,11 @@
 ---
 title: PatientDashboard
-description: Full patient overview widget with encounters, vitals, medications, and more.
+description: Full patient overview widget with encounters, vitals, medications, labs, notes, and prescriptions.
 ---
 
 # PatientDashboard
 
-A comprehensive patient overview displaying demographics, recent encounters, vitals, medications, and appointments.
+A comprehensive patient overview displaying demographics, appointments, lab reports, prescriptions, and clinical notes. Supports light, dark, and glassmorphism themes.
 
 ## Usage
 
@@ -13,8 +13,9 @@ A comprehensive patient overview displaying demographics, recent encounters, vit
 import { PatientDashboard } from '@clinikapi/react';
 
 <PatientDashboard
-  proxyUrl={`/api/clinik/patients/${patientId}`}
-  onError={(err) => console.error('Dashboard error:', err)}
+  proxyUrl="/api/clinik"
+  patientId="pt_abc123"
+  theme="light"
 />
 ```
 
@@ -22,32 +23,70 @@ import { PatientDashboard } from '@clinikapi/react';
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `proxyUrl` | `string` | Yes | Backend proxy URL that returns `PatientReadResponse` |
-| `className` | `string` | No | CSS class name |
-| `onError` | `(error: Error) => void` | No | Error callback |
+| `proxyUrl` | `string` | Yes | Backend proxy URL (or `'demo'` for demo mode) |
+| `patientId` | `string` | No | Patient ID to load (if omitted, shows create form) |
+| `theme` | `'light' \| 'dark' \| 'glassmorphism'` | No | Color theme |
 
-## Proxy Endpoint
+## Views
 
-Your proxy should return the patient with included resources:
+The dashboard has three views:
 
-```ts
-// /api/clinik/patients/[id]/route.ts
-import { Clinik } from '@clinikapi/sdk';
-
-const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!);
-
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const { data } = await clinik.patients.read(params.id, {
-    include: ['Encounter', 'Observation', 'MedicationRequest', 'Appointment'],
-  });
-  return Response.json(data);
-}
-```
+1. **Create** — Patient creation form (firstName, lastName, email)
+2. **Profile** — Patient overview with all related resources
+3. **Edit** — Inline patient update form
 
 ## What It Displays
 
-- Patient demographics (name, DOB, gender, contact info)
-- Recent encounters with status badges
-- Latest vital signs
-- Active medications
-- Upcoming appointments
+The profile view shows the patient's destructured FHIR bundle:
+
+| Section | FHIR Resource | Enriched Fields |
+|---------|---------------|-----------------|
+| Patient info | Patient | name, email, photo, maritalStatus, languages, contacts |
+| Appointments | Appointment | status, appointmentType, serviceType, specialty, priority, created |
+| Labs & Diagnostics | DiagnosticReport | code, status, category, effectiveDateTime/Period, conclusion |
+| Prescriptions | MedicationRequest | medication, status, priority, category, dosageText, courseOfTherapy |
+| Clinical Notes | DocumentReference | title, docStatus, type, category, practiceSetting |
+
+## Proxy Endpoint
+
+Your proxy should handle the `patients.read` action with included resources:
+
+```ts
+// Handle patients.read action
+case 'patients.read':
+  const { data } = await clinik.patients.read(body.data.id, {
+    include: body.data.include || [
+      'Encounter', 'Observation', 'MedicationRequest',
+      'Appointment', 'DiagnosticReport', 'DocumentReference',
+    ],
+  });
+  return Response.json({ data });
+```
+
+The SDK returns a `PatientReadResponse` with:
+
+```ts
+{
+  patient: Patient;
+  encounters: Encounter[];
+  observations: Observation[];
+  medications: Medication[];
+  appointments: Appointment[];
+  intakes: QuestionnaireResponse[];
+  consents: Consent[];
+  labs: DiagnosticReport[];
+  prescriptions: MedicationRequest[];
+  notes: DocumentReference[];
+  assessments: ClinicalImpression[];
+  documents: Composition[];
+}
+```
+
+## Actions
+
+The dashboard can trigger:
+
+- `patients.create` — Create a new patient
+- `patients.read` — Load patient with included resources
+- `patients.update` — Update patient demographics
+- `appointments.create` — Schedule an appointment

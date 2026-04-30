@@ -1,0 +1,119 @@
+---
+title: Charge Items
+description: Track billable services and charges for patient encounters.
+---
+
+# Charge Items
+
+Charge Items (FHIR `ChargeItem`) represent individual billable services, procedures, or supplies provided to a patient. They capture pricing, performers, and link charges to accounts for billing workflows.
+
+## Create a Charge Item
+
+```ts
+const { data: charge } = await clinik.chargeItems.create({
+  status: 'billable',
+  code: {
+    system: 'http://www.ama-assn.org/go/cpt',
+    code: '99213',
+    display: 'Office visit, established patient, low complexity',
+  },
+  patientId: 'pt_abc123',
+  encounterId: 'enc_visit456',
+  occurrenceDateTime: '2024-01-15T10:30:00Z',
+  performer: [
+    { function: 'Primary performer', actorId: 'Practitioner/pract_dr456' },
+  ],
+  performingOrganizationId: 'org_sunrise',
+  priceOverride: { value: 150.00, currency: 'USD' },
+  accountIds: ['acct_billing789'],
+  note: 'Routine follow-up visit for diabetes management.',
+});
+```
+
+## Lab Service Charge
+
+```ts
+const { data: labCharge } = await clinik.chargeItems.create({
+  status: 'billable',
+  code: {
+    system: 'http://www.ama-assn.org/go/cpt',
+    code: '80053',
+    display: 'Comprehensive metabolic panel',
+  },
+  patientId: 'pt_abc123',
+  encounterId: 'enc_visit456',
+  occurrenceDateTime: '2024-01-15T11:00:00Z',
+  quantity: { value: 1, unit: 'test' },
+  priceOverride: { value: 45.00, currency: 'USD' },
+  reason: ['Annual metabolic screening'],
+});
+```
+
+## Procedure Charge with Multiple Performers
+
+```ts
+const { data: procedureCharge } = await clinik.chargeItems.create({
+  status: 'billable',
+  code: {
+    system: 'http://www.ama-assn.org/go/cpt',
+    code: '27447',
+    display: 'Total knee replacement',
+  },
+  patientId: 'pt_abc123',
+  encounterId: 'enc_surgery789',
+  occurrencePeriod: {
+    start: '2024-03-15T08:00:00Z',
+    end: '2024-03-15T11:30:00Z',
+  },
+  performer: [
+    { function: 'Lead Surgeon', actorId: 'Practitioner/pract_surgeon01' },
+    { function: 'Anesthesiologist', actorId: 'Practitioner/pract_anesthesia02' },
+  ],
+  bodySite: ['Right knee'],
+  priceOverride: { value: 28500.00, currency: 'USD' },
+  overrideReason: 'Negotiated rate per contract',
+  accountIds: ['acct_billing789'],
+});
+```
+
+## Update Charge Status
+
+```ts
+// Mark as billed after claim submission
+await clinik.chargeItems.update(charge.id, {
+  status: 'billed',
+  note: 'Claim submitted to insurance on 2024-01-20.',
+});
+```
+
+## Search Charge Items
+
+```ts
+// All billable charges for a patient
+const { data } = await clinik.chargeItems.search({
+  patientId: 'pt_abc123',
+  status: 'billable',
+});
+
+// Charges by date range
+const { data: recent } = await clinik.chargeItems.search({
+  patientId: 'pt_abc123',
+  dateFrom: '2024-01-01',
+  dateTo: '2024-01-31',
+});
+
+// Search by billing code
+const { data: visits } = await clinik.chargeItems.search({
+  code: '99213',
+});
+```
+
+## Charge Item Statuses
+
+| Status | Description |
+|--------|-------------|
+| `planned` | Charge is planned but not yet incurred |
+| `billable` | Charge is ready to be billed |
+| `not-billable` | Charge is not billable (e.g. courtesy service) |
+| `aborted` | Charge was cancelled before completion |
+| `billed` | Charge has been submitted for billing |

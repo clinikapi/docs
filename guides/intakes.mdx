@@ -43,6 +43,11 @@ const { data: intake } = await clinik.intakes.submit({
       answer: [{ valueInteger: 6 }],
     },
     {
+      linkId: 'temperature',
+      text: 'Body temperature',
+      answer: [{ valueQuantity: { value: 98.6, unit: '°F' } }],
+    },
+    {
       linkId: 'smoking-status',
       text: 'Smoking status',
       answer: [{
@@ -57,6 +62,22 @@ const { data: intake } = await clinik.intakes.submit({
 });
 ```
 
+## Based On / Part Of
+
+Link intakes to the requests or procedures they fulfill:
+
+```ts
+const { data } = await clinik.intakes.submit({
+  patientId: 'pt_abc123',
+  basedOn: ['sr_preop_assessment'],  // ServiceRequest this fulfills
+  partOf: ['proc_surgery_001'],       // Procedure this is part of
+  items: [
+    { linkId: 'consent-confirmed', answer: [{ valueBoolean: true }] },
+    { linkId: 'fasting-hours', answer: [{ valueInteger: 12 }] },
+  ],
+});
+```
+
 ## Answer Types
 
 | Type | Field | Example |
@@ -67,12 +88,14 @@ const { data: intake } = await clinik.intakes.submit({
 | Decimal | `valueDecimal` | `98.6` |
 | Date | `valueDate` | `"2024-06-15"` |
 | Date-Time | `valueDateTime` | `"2025-01-15T10:00:00Z"` |
+| Time | `valueTime` | `"14:30:00"` |
 | Coded | `valueCoding` | `{ code: "8517006", display: "Former smoker" }` |
 | Measurement | `valueQuantity` | `{ value: 165, unit: "lbs" }` |
+| URI | `valueUri` | `"https://example.com/document"` |
 
 ## Nested Questions
 
-Group related questions using nested `items`:
+Group related questions using nested `items` — supports unlimited depth:
 
 ```ts
 {
@@ -88,6 +111,17 @@ Group related questions using nested `items`:
       linkId: 'fh-heart-disease',
       text: 'Family history of heart disease?',
       answer: [{ valueBoolean: false }],
+    },
+    {
+      linkId: 'fh-details',
+      text: 'Details',
+      items: [
+        {
+          linkId: 'fh-diabetes-who',
+          text: 'Who has diabetes?',
+          answer: [{ valueString: 'Mother, maternal grandmother' }],
+        },
+      ],
     },
   ],
 }

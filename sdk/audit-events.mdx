@@ -1,0 +1,73 @@
+---
+title: Audit Events
+description: SDK reference for audit event operations.
+---
+
+# clinik.auditEvents
+
+Audit Events (FHIR `AuditEvent`) record security-relevant events in your system. Audit events are **immutable** — they can be created and read, but not updated.
+
+## create
+
+```ts
+const { data, meta } = await clinik.auditEvents.create(request): Promise<ApiResponse<AuditEvent>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `type` | `string` | Yes | Event type code (e.g. "rest", "login", "export") |
+| `subtype` | `string[]` | No | Event subtypes |
+| `action` | `string` | No | Action code: C, R, U, D, E |
+| `recorded` | `string` | Yes | ISO 8601 timestamp |
+| `outcome` | `string` | No | 0=success, 4=minor, 8=serious, 12=major failure |
+| `outcomeDesc` | `string` | No | Outcome description |
+| `purposeOfEvent` | `string[]` | No | Purpose of the event |
+| `agent` | `Array` | Yes | Who was involved |
+| `agent[].who` | `string` | Yes | Agent identifier |
+| `agent[].name` | `string` | No | Agent display name |
+| `agent[].requestor` | `boolean` | Yes | Whether this agent initiated the event |
+| `agent[].role` | `string` | No | Agent role |
+| `agent[].networkAddress` | `string` | No | Network address |
+| `source` | `object` | Yes | Event source |
+| `source.observer` | `string` | Yes | Source observer |
+| `source.site` | `string` | No | Source site |
+| `source.type` | `string` | No | Source type |
+| `entity` | `Array` | No | Entities involved |
+| `entity[].what` | `string` | No | Entity reference |
+| `entity[].type` | `string` | No | Entity type |
+| `entity[].role` | `string` | No | Entity role |
+| `entity[].name` | `string` | No | Entity name |
+| `entity[].description` | `string` | No | Entity description |
+
+## Example
+
+```ts
+const { data } = await clinik.auditEvents.create({
+  type: 'rest',
+  action: 'R',
+  recorded: new Date().toISOString(),
+  outcome: '0',
+  agent: [{
+    who: 'prac_dr456',
+    name: 'Dr. Smith',
+    requestor: true,
+    role: 'Practitioner',
+    networkAddress: '192.168.1.100',
+  }],
+  source: {
+    observer: 'ClinikAPI',
+    site: 'Cloud',
+    type: 'Application Server',
+  },
+  entity: [{
+    what: 'Patient/pt_abc123',
+    type: '1',
+    role: '1',
+    name: 'Patient Record',
+  }],
+});
+```
+
+## read / delete / search
+
+Audit events support `read`, `delete`, and `search` — but **not** `update`. Search supports `action`, `outcome`, `agent`, `dateFrom`, `dateTo` filters.

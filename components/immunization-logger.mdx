@@ -1,0 +1,67 @@
+---
+title: ImmunizationLogger
+description: Log immunization records with vaccine details, lot tracking, and administration site.
+---
+
+# ImmunizationLogger
+
+Log patient immunization records as FHIR Immunization resources. Supports vaccine code entry, lot number tracking, manufacturer details, and administration site recording.
+
+## Usage
+
+```tsx
+import { ImmunizationLogger } from '@clinikapi/react';
+
+<ImmunizationLogger
+  proxyUrl="/api/clinik"
+  patientId="pt_abc123"
+  theme="light"
+/>
+```
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `proxyUrl` | `string` | Yes | Backend proxy URL |
+| `patientId` | `string` | Yes | Patient ID |
+| `theme` | `'light' \| 'dark'` | No | Color theme |
+
+## Form Fields
+
+| Field | Description |
+|-------|-------------|
+| Vaccine code | Vaccine name or CVX code (e.g. "COVID-19 mRNA", "Influenza") |
+| Status | completed, not-done |
+| Site | Administration body site (e.g. "Left arm", "Right deltoid") |
+| Route | Administration route (e.g. "Intramuscular", "Subcutaneous") |
+| Lot number | Vaccine lot number for tracking |
+| Manufacturer | Vaccine manufacturer name |
+| Note | Additional notes about the immunization |
+
+## Status Values
+
+| Status | Description |
+|--------|-------------|
+| `completed` | Immunization was administered |
+| `not-done` | Immunization was not administered (e.g. patient refused) |
+
+## Proxy Action
+
+The widget sends `immunizations.create` with:
+
+```json
+{
+  "action": "immunizations.create",
+  "data": {
+    "patientId": "pt_abc123",
+    "vaccineCode": "COVID-19 mRNA",
+    "status": "completed",
+    "site": "Left deltoid",
+    "route": "Intramuscular",
+    "lotNumber": "EW0150",
+    "manufacturer": "Moderna",
+    "note": "No adverse reactions observed"
+  }
+}
+```

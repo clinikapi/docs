@@ -1,0 +1,56 @@
+---
+title: Care Teams
+description: SDK reference for care team operations.
+---
+
+# clinik.careTeams
+
+Care Teams represent groups of practitioners collaborating on patient care, mapped to the FHIR `CareTeam` resource.
+
+## create
+
+```ts
+const { data, meta } = await clinik.careTeams.create(request): Promise<ApiResponse<CareTeam>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | `string` | Yes | Team name |
+| `status` | `string` | No | proposed, active, suspended, inactive |
+| `category` | `string[]` | No | Team categories |
+| `patientId` | `string` | No | Patient this team is for |
+| `encounterId` | `string` | No | Encounter context |
+| `period` | `{ start?, end? }` | No | Active period |
+| `participant` | `Array` | No | Team members |
+| `reasonCode` | `string[]` | No | Reason codes |
+| `managingOrganizationIds` | `string[]` | No | Managing organizations |
+| `phone` | `string` | No | Team phone |
+| `email` | `string` | No | Team email |
+| `note` | `string` | No | Additional notes |
+
+### Participant Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `role` | `string` | No | Participant role |
+| `memberId` | `string` | Yes | Member reference |
+| `onBehalfOfId` | `string` | No | Organization represented |
+| `period` | `{ start?, end? }` | No | Participation period |
+
+## Example
+
+```ts
+const { data } = await clinik.careTeams.create({
+  name: 'Diabetes Management Team',
+  status: 'active',
+  patientId: 'pt_abc123',
+  participant: [
+    { role: 'Primary Care Physician', memberId: 'Practitioner/pract_dr456' },
+    { role: 'Endocrinologist', memberId: 'Practitioner/pract_dr789' },
+  ],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `patientId`, `status`, `category` filters.

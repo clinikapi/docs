@@ -40,6 +40,10 @@ const { data: doc } = await clinik.practitioners.create({
     state: 'TX',
     postalCode: '78701',
   },
+  photo: {
+    url: 'https://cdn.austinheart.com/staff/dr-chen.jpg',
+    contentType: 'image/jpeg',
+  },
 });
 ```
 
@@ -55,9 +59,17 @@ await clinik.practitionerRoles.create({
   role: 'doctor',
   specialty: ['Cardiology', 'Interventional Cardiology'],
   locationName: 'Main Campus',
-  availableDays: ['mon', 'tue', 'wed', 'thu', 'fri'],
-  availableStartTime: '08:00',
-  availableEndTime: '17:00',
+  period: { start: '2024-01-01' },
+  availableTime: [
+    {
+      daysOfWeek: ['mon', 'tue', 'wed', 'thu', 'fri'],
+      availableStartTime: '08:00:00',
+      availableEndTime: '17:00:00',
+    },
+  ],
+  notAvailable: [
+    { description: 'Annual conference', during: { start: '2025-10-01', end: '2025-10-05' } },
+  ],
 });
 
 // She also consults at St. David's Hospital on Thursdays
@@ -67,9 +79,13 @@ await clinik.practitionerRoles.create({
   role: 'consultant',
   specialty: ['Cardiology'],
   locationName: 'Cardiology Wing',
-  availableDays: ['thu'],
-  availableStartTime: '13:00',
-  availableEndTime: '17:00',
+  availableTime: [
+    {
+      daysOfWeek: ['thu'],
+      availableStartTime: '13:00:00',
+      availableEndTime: '17:00:00',
+    },
+  ],
 });
 ```
 

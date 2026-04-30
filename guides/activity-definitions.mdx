@@ -1,0 +1,101 @@
+---
+title: Activity Definitions
+description: Define reusable clinical activity templates — order templates, procedure definitions, and standardized workflows.
+---
+
+# Activity Definitions
+
+Activity definitions (FHIR `ActivityDefinition`) are reusable templates that describe clinical activities. They define what should happen — the kind of resource to create, the code, timing, participants, and other details — so that clinical protocols and order sets can reference them.
+
+## Create an Activity Definition
+
+```ts
+const { data: activity } = await clinik.activityDefinitions.create({
+  status: 'active',
+  name: 'hba1c-lab-order',
+  title: 'HbA1c Lab Order',
+  kind: 'ServiceRequest',
+  code: {
+    system: 'http://loinc.org',
+    code: '4548-4',
+    display: 'Hemoglobin A1c/Hemoglobin.total in Blood',
+  },
+  intent: 'order',
+  priority: 'routine',
+  description: 'Standard HbA1c lab order for diabetes monitoring',
+  participant: [{ type: 'practitioner', role: 'Lab Technician' }],
+  topic: ['diabetes', 'laboratory'],
+});
+```
+
+## Common Use Cases
+
+### Medication Order Template
+
+```ts
+const { data } = await clinik.activityDefinitions.create({
+  status: 'active',
+  name: 'metformin-500mg-bid',
+  title: 'Metformin 500mg BID',
+  kind: 'MedicationRequest',
+  code: 'Metformin 500mg',
+  intent: 'order',
+  description: 'Standard starting dose of Metformin for Type 2 Diabetes',
+  quantity: { value: 60, unit: 'tablets' },
+  topic: ['diabetes', 'medication'],
+});
+```
+
+### Appointment Template
+
+```ts
+const { data } = await clinik.activityDefinitions.create({
+  status: 'active',
+  name: 'diabetes-followup-visit',
+  title: 'Diabetes Follow-up Visit',
+  kind: 'Appointment',
+  intent: 'plan',
+  priority: 'routine',
+  description: 'Quarterly follow-up for diabetes management',
+  participant: [
+    { type: 'practitioner', role: 'Primary Care Physician' },
+    { type: 'patient' },
+  ],
+});
+```
+
+### Do Not Perform
+
+```ts
+const { data } = await clinik.activityDefinitions.create({
+  status: 'active',
+  name: 'no-aspirin-allergy',
+  title: 'Do Not Administer Aspirin',
+  kind: 'MedicationRequest',
+  code: 'Aspirin',
+  doNotPerform: true,
+  description: 'Contraindicated due to aspirin allergy',
+});
+```
+
+## Search Activity Definitions
+
+```ts
+const { data } = await clinik.activityDefinitions.search({
+  status: 'active',
+  kind: 'ServiceRequest',
+  name: 'hba1c',
+});
+```
+
+## Advanced Features
+
+For advanced ActivityDefinition features like `dynamicValue`, `expression`, `library`, or `relatedArtifact`, use the [FHIR Passthrough](/sdk/fhir-passthrough):
+
+```ts
+const { data } = await clinik.fhir.request('POST', '/ActivityDefinition', {
+  resourceType: 'ActivityDefinition',
+  status: 'active',
+  // ... full FHIR R4 ActivityDefinition
+});
+```

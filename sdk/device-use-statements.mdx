@@ -1,0 +1,46 @@
+---
+title: Device Use Statements
+description: SDK reference for device use statement operations.
+---
+
+# clinik.deviceUseStatements
+
+Device use statements record when and how a device was used on a patient.
+
+## create
+
+```ts
+const { data, meta } = await clinik.deviceUseStatements.create(request): Promise<ApiResponse<DeviceUseStatement>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | active, completed, on-hold, intended, stopped, not-done |
+| `patientId` | `string` | Yes | Patient ID |
+| `deviceId` | `string` | Yes | Device reference |
+| `timingDateTime` | `string` | No | When the device was used (point in time) |
+| `timingPeriod` | `object` | No | When the device was used (period) |
+| `recordedOn` | `string` | No | When the statement was recorded |
+| `sourceId` | `string` | No | Who made the statement |
+| `reasonCode` | `string[]` | No | Reason codes for device use |
+| `bodySite` | `string` | No | Body site where device was used |
+| `note` | `string` | No | Additional notes |
+| `basedOn` | `string[]` | No | ServiceRequest IDs |
+
+## Example
+
+```ts
+const { data } = await clinik.deviceUseStatements.create({
+  status: 'active',
+  patientId: 'pt_abc123',
+  deviceId: 'dev_pacemaker789',
+  timingPeriod: { start: '2024-01-15' },
+  bodySite: 'Left chest wall',
+  reasonCode: ['Bradycardia management'],
+  note: 'Dual-chamber pacemaker implanted, functioning normally',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `note`. Search supports `patientId`, `status`, `deviceId` filters.

@@ -100,9 +100,27 @@ You can subscribe to:
 
 ### Available Events
 
-All 14 resource types support `.created`, `.updated`, and `.deleted`:
+All 62 resource types support `.created`, `.updated`, and `.deleted` events:
 
-`patient`, `encounter`, `observation`, `medication`, `appointment`, `intake`, `consent`, `lab`, `prescription`, `note`, `assessment`, `document`, `practitioner`, `practitioner-role`
+**Clinical:** `patient`, `encounter`, `observation`, `condition`, `allergy`, `assessment`, `care-plan`, `care-team`, `goal`, `risk-assessment`, `family-member-history`
+
+**Medications:** `medication`, `prescription`, `medication-dispense`, `medication-statement`, `medication-knowledge`, `immunization`, `immunization-evaluation`, `immunization-recommendation`, `nutrition-order`
+
+**Scheduling:** `appointment`, `appointment-response`, `schedule`, `slot`
+
+**Documentation:** `note`, `document`, `consent`, `intake`, `media`
+
+**Diagnostics:** `lab`, `specimen`, `imaging-study`
+
+**Administrative:** `practitioner`, `practitioner-role`, `organization`, `location`, `healthcare-service`, `person`
+
+**Workflow:** `task`, `service-request`, `device-request`, `activity-definition`, `plan-definition`
+
+**Devices:** `device`, `device-use-statement`
+
+**Billing and Insurance:** `account`, `charge-item`, `claim`, `claim-response`, `coverage`, `eligibility-request`, `eligibility-response`, `explanation-of-benefit`, `invoice`, `payment-notice`, `payment-reconciliation`, `enrollment-request`, `enrollment-response`, `vision-prescription`
+
+**Quality and Audit:** `measure`, `measure-report`, `audit-event`
 
 ## Retry Policy
 

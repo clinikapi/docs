@@ -1,0 +1,131 @@
+---
+title: Care Plans
+description: Create and manage patient care plans with activities, goals, and care team coordination.
+---
+
+# Care Plans
+
+Care Plans (FHIR `CarePlan`) represent planned healthcare activities for a patient. They coordinate goals, activities, and care teams to manage conditions like chronic diseases, post-surgical recovery, or preventive care.
+
+## Create a Care Plan
+
+```ts
+const { data: plan } = await clinik.carePlans.create({
+  status: 'active',
+  intent: 'plan',
+  patientId: 'pt_abc123',
+  title: 'Post-Surgical Recovery Plan',
+  description: 'Recovery plan following knee replacement surgery',
+  category: ['post-surgical'],
+  authorId: 'prac_surgeon456',
+  period: {
+    start: '2024-03-15',
+    end: '2024-06-15',
+  },
+  activity: [
+    {
+      description: 'Physical therapy sessions — 3x per week',
+      status: 'scheduled',
+      code: 'physical-therapy',
+      scheduledString: 'Mon/Wed/Fri at 10:00 AM',
+      performerId: 'prac_pt789',
+    },
+    {
+      description: 'Wound care assessment',
+      status: 'not-started',
+      scheduledString: 'Weekly for first 4 weeks',
+    },
+    {
+      description: 'Pain management follow-up',
+      status: 'not-started',
+      scheduledString: '2 weeks post-op',
+      performerId: 'prac_surgeon456',
+    },
+  ],
+  note: 'Patient is motivated and has good family support at home',
+});
+```
+
+## Chronic Disease Management
+
+Care plans are ideal for managing ongoing conditions:
+
+```ts
+const { data: diabetesPlan } = await clinik.carePlans.create({
+  status: 'active',
+  intent: 'plan',
+  patientId: 'pt_abc123',
+  title: 'Type 2 Diabetes Management',
+  category: ['chronic-disease', 'diabetes'],
+  authorId: 'prac_pcp456',
+  contributorIds: ['prac_endo789', 'prac_dietitian012'],
+  goalIds: ['goal_a1c_target', 'goal_weight_loss'],
+  addressesIds: ['condition_diabetes_e119'],
+  activity: [
+    {
+      description: 'HbA1c monitoring',
+      status: 'scheduled',
+      code: 'lab-monitoring',
+      scheduledString: 'Every 3 months',
+    },
+    {
+      description: 'Metformin 500mg twice daily',
+      status: 'in-progress',
+      code: 'medication',
+    },
+    {
+      description: 'Nutritional counseling',
+      status: 'scheduled',
+      scheduledString: 'Monthly',
+      performerId: 'prac_dietitian012',
+    },
+  ],
+});
+```
+
+## Update Activity Status
+
+```ts
+const { data: updated } = await clinik.carePlans.update(plan.id, {
+  activity: [
+    {
+      description: 'Physical therapy sessions — 3x per week',
+      status: 'in-progress',
+      code: 'physical-therapy',
+      scheduledString: 'Mon/Wed/Fri at 10:00 AM',
+      performerId: 'prac_pt789',
+    },
+    {
+      description: 'Wound care assessment',
+      status: 'completed',
+      scheduledString: 'Weekly for first 4 weeks',
+    },
+  ],
+});
+```
+
+## Search Care Plans
+
+```ts
+// Find all active care plans for a patient
+const { data } = await clinik.carePlans.search({
+  patientId: 'pt_abc123',
+  status: 'active',
+});
+
+// Find care plans by category
+const { data: diabetesPlans } = await clinik.carePlans.search({
+  patientId: 'pt_abc123',
+  category: 'diabetes',
+});
+```
+
+## Care Plan Statuses
+
+| Status | Description |
+|--------|-------------|
+| `draft` | Plan is being developed |
+| `active` | Plan is in effect |
+| `on-hold` | Plan is temporarily paused |
+| `revoked` | Plan has been cancelled |
+| `completed` | Plan activities are finished |

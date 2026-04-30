@@ -1,0 +1,93 @@
+---
+title: Plan Definitions
+description: Define clinical protocols, order sets, and workflow templates for standardized care delivery.
+---
+
+# Plan Definitions
+
+Plan definitions (FHIR `PlanDefinition`) describe reusable clinical protocols, order sets, and workflow templates. They define goals and a sequence of actions that should be taken as part of a care pathway.
+
+## Create a Plan Definition
+
+```ts
+const { data: plan } = await clinik.planDefinitions.create({
+  status: 'active',
+  name: 'diabetes-management-protocol',
+  title: 'Type 2 Diabetes Management Protocol',
+  type: 'clinical-protocol',
+  description: 'Standard protocol for managing Type 2 Diabetes in primary care',
+  goal: [
+    { description: 'HbA1c below 7%', priority: 'high-priority', category: 'physiologic' },
+    { description: 'Blood pressure below 130/80', priority: 'high-priority' },
+    { description: 'LDL cholesterol below 100 mg/dL', priority: 'medium-priority' },
+  ],
+  action: [
+    { title: 'Initial Assessment', description: 'Complete metabolic panel and HbA1c', priority: 'routine', code: 'initial-assessment' },
+    { title: 'Quarterly Follow-up', description: 'HbA1c check every 3 months', priority: 'routine' },
+    { title: 'Annual Eye Exam', description: 'Dilated eye exam referral', priority: 'routine', type: 'referral' },
+    { title: 'Annual Foot Exam', description: 'Comprehensive foot examination', priority: 'routine' },
+  ],
+  topic: ['diabetes', 'chronic-disease-management'],
+});
+```
+
+## Common Use Cases
+
+### Order Set
+
+```ts
+const { data } = await clinik.planDefinitions.create({
+  status: 'active',
+  name: 'pre-op-cardiac-order-set',
+  title: 'Pre-Operative Cardiac Assessment Order Set',
+  type: 'order-set',
+  description: 'Standard pre-operative cardiac workup',
+  action: [
+    { title: 'ECG', code: 'ecg', priority: 'urgent' },
+    { title: 'Chest X-Ray', code: 'chest-xray', priority: 'routine' },
+    { title: 'CBC', code: 'cbc', priority: 'routine' },
+    { title: 'BMP', code: 'bmp', priority: 'routine' },
+    { title: 'Coagulation Panel', code: 'coag-panel', priority: 'routine' },
+  ],
+});
+```
+
+### Workflow Definition
+
+```ts
+const { data } = await clinik.planDefinitions.create({
+  status: 'active',
+  name: 'patient-intake-workflow',
+  title: 'New Patient Intake Workflow',
+  type: 'workflow-definition',
+  action: [
+    { title: 'Registration', description: 'Complete patient demographics', type: 'create' },
+    { title: 'Insurance Verification', description: 'Verify coverage eligibility', type: 'create' },
+    { title: 'Health History', description: 'Complete intake questionnaire', type: 'create' },
+    { title: 'Vitals', description: 'Record initial vital signs', type: 'create' },
+    { title: 'Provider Assignment', description: 'Assign to available provider', type: 'create' },
+  ],
+});
+```
+
+## Search Plan Definitions
+
+```ts
+const { data } = await clinik.planDefinitions.search({
+  status: 'active',
+  type: 'clinical-protocol',
+  title: 'diabetes',
+});
+```
+
+## Advanced Features
+
+For advanced PlanDefinition features like `dynamicValue`, `expression`, `library`, or `relatedArtifact`, use the [FHIR Passthrough](/sdk/fhir-passthrough):
+
+```ts
+const { data } = await clinik.fhir.request('POST', '/PlanDefinition', {
+  resourceType: 'PlanDefinition',
+  status: 'active',
+  // ... full FHIR R4 PlanDefinition
+});
+```

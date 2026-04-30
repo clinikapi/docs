@@ -1,17 +1,18 @@
 ---
 title: Assessments
-description: Record clinical impressions, findings, and care plans.
+description: Record clinical impressions, findings, investigations, and prognosis.
 ---
 
 # Assessments
 
-Assessments (FHIR ClinicalImpression) capture a clinician's overall evaluation of a patient — findings, diagnoses, and clinical summary. They're typically created during or after an encounter.
+Assessments (FHIR ClinicalImpression) capture a clinician's overall evaluation of a patient — findings, diagnoses, investigations, prognosis, and clinical summary. They're typically created during or after an encounter.
 
 ## Create an Assessment
 
 ```ts
 const { data: assessment } = await clinik.assessments.create({
   status: 'completed',
+  code: 'initial-assessment',
   patientId: 'pt_abc123',
   encounterId: 'enc_xyz789',
   practitionerId: 'prac_def456',
@@ -20,28 +21,133 @@ const { data: assessment } = await clinik.assessments.create({
     + 'No signs of end-organ damage. Continue current medication regimen. '
     + 'Recommend dietary counseling and increased physical activity.',
   findings: [
-    { code: 'I10', text: 'Essential hypertension — well controlled on lisinopril 10mg' },
-    { code: 'E11.9', text: 'Type 2 diabetes mellitus — HbA1c 6.8%, at goal' },
+    { code: 'I10', text: 'Essential hypertension — well controlled on lisinopril 10mg', basis: 'BP readings over 3 months' },
+    { code: 'E11.9', text: 'Type 2 diabetes mellitus — HbA1c 6.8%, at goal', basis: 'Lab panel from today' },
     { text: 'BMI 28.5 — overweight, recommend weight management' },
     { text: 'No peripheral neuropathy on exam' },
+  ],
+  investigations: [
+    { name: 'Lab panel', itemIds: ['obs_cmp_001', 'obs_hba1c_001'] },
+    { name: 'Vitals', itemIds: ['obs_bp_001', 'obs_bmi_001'] },
+  ],
+  problemIds: ['cond_hypertension', 'cond_diabetes'],
+  prognosis: [
+    { text: 'Good — well controlled with current regimen' },
+    { code: 'favorable', text: 'Favorable with continued compliance' },
   ],
   note: 'Follow up in 3 months. Order HbA1c and CMP at next visit.',
   effectiveDateTime: '2025-01-15T10:00:00Z',
 });
 ```
 
-## Findings
+## Assessment Code
 
-Findings can include coded diagnoses (ICD-10, SNOMED) and/or free-text descriptions:
+Classify the type of assessment:
+
+```ts
+const { data } = await clinik.assessments.create({
+  status: 'completed',
+  code: 'discharge',  // initial-assessment, follow-up, discharge, pre-operative
+  patientId: 'pt_abc123',
+  summary: 'Patient stable for discharge...',
+  // ...
+});
+```
+
+## Status Reason
+
+Explain why an assessment is still in progress:
+
+```ts
+const { data } = await clinik.assessments.create({
+  status: 'in-progress',
+  statusReason: 'Awaiting lab results before finalizing',
+  patientId: 'pt_abc123',
+  summary: 'Preliminary assessment — pending CMP results.',
+  // ...
+});
+```
+
+## Findings with Basis
+
+Document which investigations support each finding:
 
 ```ts
 findings: [
-  // Coded finding
-  { code: 'I10', text: 'Essential hypertension' },
-  // Free-text only
-  { text: 'Patient reports improved energy levels' },
-  // SNOMED coded
-  { code: '44054006', text: 'Type 2 diabetes mellitus' },
+  {
+    code: 'I10',
+    text: 'Essential hypertension',
+    basis: 'Blood pressure 148/92 on three separate readings',
+  },
+  {
+    code: 'E11.9',
+    text: 'Type 2 diabetes mellitus',
+    basis: 'HbA1c 7.2% (lab panel obs_hba1c_001)',
+  },
+  {
+    text: 'Patient reports improved energy levels',
+  },
+]
+```
+
+## Investigations
+
+Group related clinical investigations:
+
+```ts
+investigations: [
+  {
+    name: 'Initial labs',
+    itemIds: ['obs_glucose', 'obs_creatinine', 'obs_hba1c'],
+  },
+  {
+    name: 'Imaging',
+    itemIds: ['dr_chest_xray_001'],
+  },
+  {
+    name: 'Patient-reported',
+    itemIds: ['intake_symptoms_001'],
+  },
+]
+```
+
+## Previous Assessment
+
+Link to a prior assessment for longitudinal tracking:
+
+```ts
+const { data } = await clinik.assessments.create({
+  status: 'completed',
+  code: 'follow-up',
+  patientId: 'pt_abc123',
+  previousAssessmentId: 'assess_initial_001',
+  summary: 'Follow-up: Blood pressure improved since last visit.',
+  // ...
+});
+```
+
+## Problem List
+
+Reference the conditions being assessed:
+
+```ts
+const { data } = await clinik.assessments.create({
+  status: 'completed',
+  patientId: 'pt_abc123',
+  problemIds: ['cond_hypertension', 'cond_diabetes', 'allergy_penicillin'],
+  summary: 'Reviewed active problem list...',
+  // ...
+});
+```
+
+## Prognosis
+
+Document the expected outcome:
+
+```ts
+prognosis: [
+  { text: 'Good — well controlled with current regimen' },
+  { code: 'guarded', text: 'Guarded if medication compliance declines' },
 ]
 ```
 
@@ -57,13 +163,18 @@ findings: [
 ```ts
 await clinik.assessments.update('assess_abc123', {
   status: 'completed',
-  summary: 'Updated summary with additional findings...',
+  statusReason: 'Lab results received',
+  summary: 'Updated summary with lab findings...',
   findings: [
-    { code: 'I10', text: 'Essential hypertension — well controlled' },
-    { code: 'E11.9', text: 'Type 2 diabetes — at goal' },
-    { text: 'New finding: mild vitamin D deficiency' },
+    { code: 'I10', text: 'Essential hypertension — well controlled', basis: 'BP 128/82' },
+    { code: 'E11.9', text: 'Type 2 diabetes — at goal', basis: 'HbA1c 6.8%' },
+    { text: 'New finding: mild vitamin D deficiency', basis: 'Vitamin D level 22 ng/mL' },
   ],
-  note: 'Added vitamin D supplementation to plan.',
+  investigations: [
+    { name: 'Updated labs', itemIds: ['obs_cmp_002', 'obs_vitd_001'] },
+  ],
+  prognosis: [{ text: 'Good with vitamin D supplementation' }],
+  note: 'Added vitamin D 2000 IU daily to plan.',
 });
 ```
 
@@ -88,7 +199,7 @@ const { data: byDoc } = await clinik.assessments.search({
 
 | Resource | Purpose |
 |----------|---------|
-| Assessment (ClinicalImpression) | Structured clinical evaluation with coded findings |
+| Assessment (ClinicalImpression) | Structured clinical evaluation with coded findings, investigations, prognosis |
 | Note (DocumentReference) | Narrative documentation (SOAP notes, discharge summaries) |
 
 Use assessments for structured clinical reasoning. Use notes for narrative documentation. They often complement each other — an encounter might have both a progress note and a clinical assessment.

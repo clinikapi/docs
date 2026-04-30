@@ -19,10 +19,64 @@ const { data: appt } = await clinik.appointments.create({
   minutesDuration: 30,
   appointmentType: 'followup',
   serviceType: 'Cardiology consultation',
+  serviceCategory: 'specialist',
   specialty: 'Cardiology',
   reasonCode: 'Blood pressure follow-up',
+  priority: 0,
   description: 'Follow-up visit for hypertension management',
   patientInstruction: 'Please bring your home BP log',
+});
+```
+
+## New Fields
+
+### Based On (ServiceRequest)
+
+Link an appointment to the ServiceRequest it was created to assess:
+
+```ts
+const { data } = await clinik.appointments.create({
+  status: 'proposed',
+  patientId: 'pt_abc123',
+  practitionerId: 'prac_def456',
+  basedOnId: 'sr_referral789',
+  serviceType: 'Orthopedic consultation',
+  description: 'Referral follow-up for knee pain',
+  // ...
+});
+```
+
+### Requested Period
+
+Specify preferred time windows when the patient is available:
+
+```ts
+const { data } = await clinik.appointments.create({
+  status: 'proposed',
+  patientId: 'pt_abc123',
+  practitionerId: 'prac_def456',
+  requestedPeriod: [
+    { start: '2025-02-03T09:00:00Z', end: '2025-02-03T12:00:00Z' },
+    { start: '2025-02-04T14:00:00Z', end: '2025-02-04T17:00:00Z' },
+  ],
+  description: 'Patient prefers morning or afternoon slots',
+  // ...
+});
+```
+
+### Created Timestamp
+
+Track when the appointment was initially created (defaults to now):
+
+```ts
+const { data } = await clinik.appointments.create({
+  status: 'booked',
+  patientId: 'pt_abc123',
+  practitionerId: 'prac_def456',
+  start: '2025-02-01T14:00:00Z',
+  end: '2025-02-01T14:30:00Z',
+  created: '2025-01-20T08:30:00Z', // when the booking was made
+  // ...
 });
 ```
 
@@ -59,10 +113,15 @@ await clinik.appointments.update('appt_xyz789', {
   cancelationReason: 'Patient requested reschedule',
 });
 
-// Reschedule
+// Reschedule with updated service details
 await clinik.appointments.update('appt_xyz789', {
   start: '2025-02-03T10:00:00Z',
   end: '2025-02-03T10:30:00Z',
+  appointmentType: 'followup',
+  serviceType: 'General checkup',
+  specialty: 'Family Medicine',
+  reasonCode: 'Annual wellness visit',
+  priority: 0,
   comment: 'Rescheduled from Feb 1 per patient request',
 });
 ```
@@ -98,3 +157,27 @@ Priority is an integer from 0-9:
 | `1-3` | Low urgency |
 | `4-6` | Medium urgency |
 | `7-9` | High urgency |
+
+## Complete Field Reference
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | proposed, pending, booked, arrived, fulfilled, cancelled, noshow, checked-in, waitlist |
+| `patientId` | `string` | Yes | Patient reference |
+| `practitionerId` | `string` | No | Practitioner reference |
+| `start` | `string` | No | Start time (ISO 8601) |
+| `end` | `string` | No | End time (ISO 8601) |
+| `minutesDuration` | `number` | No | Duration in minutes (max 1440) |
+| `appointmentType` | `string` | No | routine, walkin, urgent, followup |
+| `serviceType` | `string` | No | Service being booked |
+| `serviceCategory` | `string` | No | Service category |
+| `specialty` | `string` | No | Required specialty |
+| `reasonCode` | `string` | No | Reason for appointment |
+| `priority` | `number` | No | 0 (routine) to 9 (urgent) |
+| `description` | `string` | No | Subject line |
+| `comment` | `string` | No | Additional comments |
+| `patientInstruction` | `string` | No | Instructions for patient |
+| `cancelationReason` | `string` | No | Reason for cancellation |
+| `basedOnId` | `string` | No | ServiceRequest this appointment assesses |
+| `requestedPeriod` | `Array<{ start?, end? }>` | No | Preferred time windows |
+| `created` | `string` | No | When initially created (defaults to now) |

@@ -1,11 +1,11 @@
 ---
 title: PrescriptionForm
-description: Create and edit medication prescriptions.
+description: Create medication prescriptions with dosage, priority, category, and course of therapy.
 ---
 
 # PrescriptionForm
 
-A form widget for creating and editing medication prescriptions with dosage instructions.
+A form widget for creating medication prescriptions with full FHIR MedicationRequest field support.
 
 ## Usage
 
@@ -13,8 +13,10 @@ A form widget for creating and editing medication prescriptions with dosage inst
 import { PrescriptionForm } from '@clinikapi/react';
 
 <PrescriptionForm
-  proxyUrl="/api/clinik/prescriptions"
-  onError={(err) => console.error(err)}
+  proxyUrl="/api/clinik"
+  patientId="pt_abc123"
+  prescriberId="prac_def456"
+  theme="light"
 />
 ```
 
@@ -22,14 +24,49 @@ import { PrescriptionForm } from '@clinikapi/react';
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `proxyUrl` | `string` | Yes | Backend proxy URL for prescription CRUD |
-| `className` | `string` | No | CSS class name |
-| `onError` | `(error: Error) => void` | No | Error callback |
+| `proxyUrl` | `string` | Yes | Backend proxy URL |
+| `patientId` | `string` | Yes | Patient ID |
+| `prescriberId` | `string` | No | Prescribing practitioner ID |
+| `theme` | `'light' \| 'dark'` | No | Color theme |
 
-## Features
+## Form Fields
 
-- Medication search with RxNorm codes
-- Structured dosage input (dose, frequency, route)
-- Refill and quantity fields
-- Substitution toggle
-- Pharmacist notes
+| Field | Description |
+|-------|-------------|
+| Medication | Medication name or RxNorm code |
+| Dosage | Human-readable dosage instructions |
+| Priority | Routine, urgent, asap, stat |
+| Category | Outpatient, inpatient, community, discharge |
+| Frequency | Once, twice, three, or four times daily |
+| Duration | Number of days |
+| Quantity | Number of units to dispense |
+| Refills | Number of refills (0-12) |
+| Course of therapy | Continuous, acute, seasonal |
+| Generic substitution | Allow/disallow generic substitution |
+| Pharmacist notes | Additional notes for the pharmacist |
+
+## Proxy Action
+
+The widget sends `prescriptions.create` with:
+
+```json
+{
+  "action": "prescriptions.create",
+  "data": {
+    "patientId": "pt_abc123",
+    "prescriberId": "prac_def456",
+    "medication": "Amoxicillin 500mg",
+    "status": "active",
+    "intent": "order",
+    "priority": "routine",
+    "category": "outpatient",
+    "courseOfTherapy": "acute",
+    "substitutionAllowed": true,
+    "dosageText": "Take 1 capsule three times daily",
+    "dosage": { "frequency": 3, "period": 7, "periodUnit": "d" },
+    "refills": 0,
+    "quantity": { "value": 21, "unit": "tablets" },
+    "supplyDays": 7
+  }
+}
+```

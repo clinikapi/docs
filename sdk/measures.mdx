@@ -1,0 +1,60 @@
+---
+title: Measures
+description: SDK reference for measure operations.
+---
+
+# clinik.measures
+
+Measures (FHIR `Measure`) define quality measures, clinical guidelines, and performance metrics used in healthcare quality reporting.
+
+## create
+
+```ts
+const { data, meta } = await clinik.measures.create(request): Promise<ApiResponse<Measure>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | draft, active, retired |
+| `name` | `string` | No | Computer-friendly name |
+| `title` | `string` | No | Human-friendly title |
+| `description` | `string` | No | Description |
+| `purpose` | `string` | No | Why this measure is defined |
+| `usage` | `string` | No | Clinical usage description |
+| `publisher` | `string` | No | Publisher |
+| `date` | `string` | No | Publication date |
+| `version` | `string` | No | Business version |
+| `url` | `string` | No | Canonical URL |
+| `experimental` | `boolean` | No | For testing purposes |
+| `scoring` | `string` | No | proportion, ratio, continuous-variable, cohort |
+| `type` | `string[]` | No | process, outcome, structure, patient-reported-outcome, composite |
+| `riskAdjustment` | `string` | No | Risk adjustment description |
+| `rationale` | `string` | No | Rationale |
+| `clinicalRecommendationStatement` | `string` | No | Clinical recommendation |
+| `guidance` | `string` | No | Implementation guidance |
+| `topic` | `string[]` | No | Topic categories |
+| `group` | `Array` | No | Measure groups |
+| `group[].code` | `string` | No | Group code |
+| `group[].description` | `string` | No | Group description |
+
+## Example
+
+```ts
+const { data } = await clinik.measures.create({
+  status: 'active',
+  name: 'diabetes-hba1c-control',
+  title: 'Diabetes: HbA1c Poor Control (>9%)',
+  description: 'Percentage of patients 18-75 with diabetes whose HbA1c was >9.0%',
+  scoring: 'proportion',
+  type: ['outcome'],
+  topic: ['Diabetes', 'Quality Measure'],
+  group: [{
+    code: 'initial-population',
+    description: 'Patients 18-75 with diabetes',
+  }],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `title`, `description`, `version`. Search supports `status`, `name`, `title`, `topic` filters.

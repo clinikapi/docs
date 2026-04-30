@@ -1,0 +1,99 @@
+---
+title: Eligibility Responses
+description: Process insurance eligibility check results.
+---
+
+# Eligibility Responses
+
+Eligibility Responses (FHIR `CoverageEligibilityResponse`) contain the results of an eligibility check — whether coverage is active, what benefits are available, and any errors. ClinikAPI simplifies the most common fields — for advanced benefit detail scenarios, use the [FHIR passthrough](/guides/raw-fhir).
+
+## Create an Eligibility Response
+
+```ts
+const { data: response } = await clinik.eligibilityResponses.create({
+  status: 'active',
+  purpose: ['benefits'],
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins_bluecross',
+  requestId: 'eligreq_xyz456',
+  outcome: 'complete',
+  disposition: 'Coverage is active with standard benefits',
+  insurance: [
+    {
+      coverageId: 'cov_primary789',
+      inforce: true,
+      benefitPeriod: {
+        start: '2024-01-01',
+        end: '2024-12-31',
+      },
+    },
+  ],
+});
+```
+
+## Eligibility Error
+
+```ts
+const { data: errorResp } = await clinik.eligibilityResponses.create({
+  status: 'active',
+  purpose: ['validation'],
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins_bluecross',
+  requestId: 'eligreq_check789',
+  outcome: 'error',
+  disposition: 'Coverage not found for subscriber',
+  error: [
+    { code: 'subscriber-not-found' },
+  ],
+});
+```
+
+## Pre-Auth Response
+
+```ts
+const { data: preAuthResp } = await clinik.eligibilityResponses.create({
+  status: 'active',
+  purpose: ['auth-requirements'],
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins_bluecross',
+  requestId: 'eligreq_preauth123',
+  outcome: 'complete',
+  disposition: 'Prior authorization required for this procedure',
+  preAuthRef: 'PA-REQ-2024-00789',
+  insurance: [
+    {
+      coverageId: 'cov_primary789',
+      inforce: true,
+    },
+  ],
+});
+```
+
+## Search Eligibility Responses
+
+```ts
+// All responses for a patient
+const { data } = await clinik.eligibilityResponses.search({
+  patientId: 'pt_abc123',
+});
+
+// Find response for a specific request
+const { data: forRequest } = await clinik.eligibilityResponses.search({
+  requestId: 'eligreq_xyz456',
+});
+
+// Filter by outcome
+const { data: errors } = await clinik.eligibilityResponses.search({
+  patientId: 'pt_abc123',
+  outcome: 'error',
+});
+```
+
+## Outcome Types
+
+| Outcome | Description |
+|---------|-------------|
+| `queued` | Request is queued for processing |
+| `complete` | Processing is complete |
+| `error` | Request had errors |
+| `partial` | Partially processed |

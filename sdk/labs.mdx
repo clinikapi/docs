@@ -17,7 +17,8 @@ const { data, meta } = await clinik.labs.create(request: LabCreateRequest): Prom
 | `code` | `string \| { system?, code, display? }` | Yes | LOINC report type |
 | `patientId` | `string` | Yes | Patient reference |
 | `encounterId` | `string` | No | Encounter reference |
-| `effectiveDateTime` | `string` | No | Clinically relevant time |
+| `effectiveDateTime` | `string` | No | Clinically relevant time (point in time) |
+| `effectivePeriod` | `{ start?, end? }` | No | Clinically relevant time (range) |
 | `resultIds` | `string[]` | No | Observation IDs in this report |
 | `category` | `string` | No | LAB, RAD, PAT |
 | `conclusion` | `string` | No | Clinical conclusion text |
@@ -26,6 +27,8 @@ const { data, meta } = await clinik.labs.create(request: LabCreateRequest): Prom
 | `resultsInterpreter` | `string` | No | Who interpreted results |
 | `specimenIds` | `string[]` | No | Specimen references |
 | `presentedForm` | `Array<{ contentType, data?, url?, title? }>` | No | Attached documents |
+| `basedOn` | `string[]` | No | ServiceRequest IDs this report is based on |
+| `media` | `Array<{ comment?, linkId }>` | No | Media/images linked to this report |
 
 ## read
 
@@ -37,6 +40,14 @@ const { data } = await clinik.labs.read('lab_abc123', {
 });
 ```
 
-## update / delete / search
+## update
+
+```ts
+const { data, meta } = await clinik.labs.update(id: string, request: LabUpdateRequest): Promise<ApiResponse<DiagnosticReport>>
+```
+
+Updatable fields: `status`, `conclusion`, `conclusionCodes`, `resultIds`, `resultsInterpreter`, `presentedForm`, `effectiveDateTime`, `effectivePeriod`.
+
+## delete / search
 
 Same pattern as other resources.

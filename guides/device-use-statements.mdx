@@ -1,0 +1,77 @@
+---
+title: Device Use Statements
+description: Record when and how devices are used on patients.
+---
+
+# Device Use Statements
+
+Device Use Statements (FHIR `DeviceUseStatement`) record the actual use of a device on a patient. While Device Requests capture the order, Device Use Statements capture what actually happened.
+
+## Record Device Use
+
+```ts
+const { data: statement } = await clinik.deviceUseStatements.create({
+  status: 'active',
+  patientId: 'pt_abc123',
+  deviceId: 'dev_pacemaker789',
+  timingPeriod: {
+    start: '2024-01-15',
+  },
+  bodySite: 'Left chest wall',
+  reasonCode: ['Bradycardia management'],
+  sourceId: 'prac_dr456',
+  note: 'Dual-chamber pacemaker implanted, functioning normally',
+});
+```
+
+## Record Completed Device Use
+
+```ts
+const { data } = await clinik.deviceUseStatements.create({
+  status: 'completed',
+  patientId: 'pt_abc123',
+  deviceId: 'dev_cgm456',
+  timingPeriod: {
+    start: '2024-02-01',
+    end: '2024-02-14',
+  },
+  recordedOn: '2024-02-15',
+  reasonCode: ['Glucose monitoring for diabetes management'],
+  note: '14-day CGM cycle completed. Average glucose: 142 mg/dL',
+});
+```
+
+## Update Statement Status
+
+```ts
+await clinik.deviceUseStatements.update(statement.id, {
+  status: 'completed',
+  note: 'Pacemaker removed due to device recall',
+});
+```
+
+## Search Device Use Statements
+
+```ts
+// Find all active device use for a patient
+const { data } = await clinik.deviceUseStatements.search({
+  patientId: 'pt_abc123',
+  status: 'active',
+});
+
+// Find all uses of a specific device
+const { data: uses } = await clinik.deviceUseStatements.search({
+  deviceId: 'dev_pacemaker789',
+});
+```
+
+## Status Values
+
+| Status | Description |
+|--------|-------------|
+| `active` | Device is currently in use |
+| `completed` | Device use has ended |
+| `on-hold` | Device use is temporarily paused |
+| `intended` | Device use is planned but not started |
+| `stopped` | Device use was stopped early |
+| `not-done` | Device use was not performed |

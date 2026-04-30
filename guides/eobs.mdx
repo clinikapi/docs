@@ -1,0 +1,107 @@
+---
+title: Explanation of Benefits
+description: Track insurance adjudication results and payment details.
+---
+
+# Explanation of Benefits
+
+Explanation of Benefits (FHIR `ExplanationOfBenefit`) provide a complete picture of how a claim was adjudicated — what was submitted, what was allowed, what the insurer paid, and what the patient owes. ClinikAPI simplifies the most common fields — for advanced scenarios like care team details or benefit balances, use the [FHIR passthrough](/guides/raw-fhir).
+
+## Create an EOB
+
+```ts
+const { data: eob } = await clinik.eobs.create({
+  status: 'active',
+  type: 'professional',
+  use: 'claim',
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins_bluecross',
+  providerId: 'Practitioner/prac_dr456',
+  outcome: 'complete',
+  claimId: 'claim_xyz456',
+  claimResponseId: 'claimresp_abc789',
+  billablePeriod: {
+    start: '2024-03-15',
+    end: '2024-03-15',
+  },
+  insurance: [
+    { focal: true, coverageId: 'cov_primary789' },
+  ],
+  item: [
+    {
+      sequence: 1,
+      productOrService: '99214',
+      unitPrice: { value: 200.00, currency: 'USD' },
+      net: { value: 200.00, currency: 'USD' },
+      adjudication: [
+        { category: 'submitted', amount: { value: 200.00, currency: 'USD' } },
+        { category: 'eligible', amount: { value: 180.00, currency: 'USD' } },
+        { category: 'benefit', amount: { value: 144.00, currency: 'USD' } },
+        { category: 'copay', amount: { value: 36.00, currency: 'USD' } },
+      ],
+    },
+  ],
+  total: [
+    { category: 'submitted', amount: { value: 200.00, currency: 'USD' } },
+    { category: 'benefit', amount: { value: 144.00, currency: 'USD' } },
+    { category: 'patient', amount: { value: 56.00, currency: 'USD' } },
+  ],
+  payment: {
+    type: 'complete',
+    amount: { value: 144.00, currency: 'USD' },
+    date: '2024-04-01',
+  },
+});
+```
+
+## Denied EOB
+
+```ts
+const { data: denied } = await clinik.eobs.create({
+  status: 'active',
+  type: 'professional',
+  use: 'claim',
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins_bluecross',
+  providerId: 'Practitioner/prac_dr456',
+  outcome: 'error',
+  disposition: 'Service not covered under current plan',
+  insurance: [
+    { focal: true, coverageId: 'cov_primary789' },
+  ],
+  processNote: [
+    { number: 1, text: 'CPT 99215 requires prior authorization for this plan type' },
+  ],
+});
+```
+
+## Search EOBs
+
+```ts
+// All EOBs for a patient
+const { data } = await clinik.eobs.search({
+  patientId: 'pt_abc123',
+});
+
+// Find EOBs for a specific claim
+const { data: forClaim } = await clinik.eobs.search({
+  claimId: 'claim_xyz456',
+});
+
+// Filter by outcome
+const { data: completed } = await clinik.eobs.search({
+  patientId: 'pt_abc123',
+  outcome: 'complete',
+  use: 'claim',
+});
+```
+
+## EOB Types
+
+| Type | Description |
+|------|-------------|
+| `institutional` | Hospital / facility EOBs |
+| `oral` | Dental EOBs |
+| `pharmacy` | Pharmacy EOBs |
+| `professional` | Physician / provider EOBs |
+| `vision` | Vision care EOBs |

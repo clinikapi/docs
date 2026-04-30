@@ -1,0 +1,59 @@
+---
+title: Measure Reports
+description: SDK reference for measure report operations.
+---
+
+# clinik.measureReports
+
+Measure Reports (FHIR `MeasureReport`) contain the results of evaluating a measure against a population or individual patient.
+
+## create
+
+```ts
+const { data, meta } = await clinik.measureReports.create(request): Promise<ApiResponse<MeasureReport>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | complete, pending, error |
+| `type` | `string` | Yes | individual, subject-list, summary, data-collection |
+| `measureId` | `string` | Yes | Measure reference (canonical URL or ID) |
+| `patientId` | `string` | No | Patient ID |
+| `date` | `string` | No | Report date (defaults to now) |
+| `reporterId` | `string` | No | Reporter (Practitioner/Organization ID) |
+| `period` | `object` | Yes | Reporting period |
+| `period.start` | `string` | Yes | Period start |
+| `period.end` | `string` | Yes | Period end |
+| `group` | `Array` | No | Report groups |
+| `group[].code` | `string` | No | Group code |
+| `group[].population` | `Array` | No | Population results |
+| `group[].population[].code` | `string` | No | Population code |
+| `group[].population[].count` | `number` | No | Population count |
+| `group[].measureScore` | `object` | No | Measure score |
+| `group[].measureScore.value` | `number` | Yes | Score value |
+| `group[].measureScore.unit` | `string` | No | Score unit |
+
+## Example
+
+```ts
+const { data } = await clinik.measureReports.create({
+  status: 'complete',
+  type: 'summary',
+  measureId: 'diabetes-hba1c-control',
+  period: { start: '2024-01-01', end: '2024-03-31' },
+  reporterId: 'org_clinic789',
+  group: [{
+    code: 'initial-population',
+    population: [
+      { code: 'initial-population', count: 500 },
+      { code: 'denominator', count: 480 },
+      { code: 'numerator', count: 72 },
+    ],
+    measureScore: { value: 0.15, unit: '%' },
+  }],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`. Search supports `patientId`, `status`, `measureId`, `dateFrom`, `dateTo` filters.

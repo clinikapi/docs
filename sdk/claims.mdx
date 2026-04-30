@@ -1,0 +1,87 @@
+---
+title: Claims
+description: SDK reference for claim operations.
+---
+
+# clinik.claims
+
+Claims (FHIR `Claim`) represent healthcare billing requests submitted to insurers for reimbursement. ClinikAPI exposes the most commonly used fields — use the [FHIR passthrough](/sdk/fhir-passthrough) for advanced claim scenarios.
+
+## create
+
+```ts
+const { data, meta } = await clinik.claims.create(request): Promise<ApiResponse<Claim>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | active, cancelled, draft |
+| `type` | `string` | Yes | institutional, oral, pharmacy, professional, vision |
+| `use` | `string` | Yes | claim, preauthorization, predetermination |
+| `patientId` | `string` | Yes | Patient ID |
+| `created` | `string` | No | When created (defaults to now) |
+| `providerId` | `string` | Yes | Provider (Practitioner/Organization ID) |
+| `insurerId` | `string` | No | Insurer Organization ID |
+| `priority` | `string` | Yes | normal, immediate, deferred, stat |
+| `billablePeriod` | `{ start?, end? }` | No | Billable period |
+| `diagnosis` | `Array` | No | Diagnoses |
+| `procedure` | `Array` | No | Procedures |
+| `insurance` | `Array` | Yes | Insurance coverage (min 1) |
+| `item` | `Array` | No | Line items |
+| `total` | `{ value, currency? }` | No | Total claim amount |
+| `note` | `string` | No | Additional notes |
+
+### Insurance Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `sequence` | `number` | Yes | Sequence number |
+| `focal` | `boolean` | Yes | Whether this is the focal coverage |
+| `coverageId` | `string` | Yes | Coverage resource ID |
+
+### Item Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `sequence` | `number` | Yes | Sequence number |
+| `productOrService` | `string` | Yes | Product or service code |
+| `quantity` | `{ value, unit? }` | No | Quantity |
+| `unitPrice` | `{ value, currency? }` | No | Unit price |
+| `net` | `{ value, currency? }` | No | Net amount |
+
+## Example
+
+```ts
+const { data } = await clinik.claims.create({
+  status: 'active',
+  type: 'professional',
+  use: 'claim',
+  patientId: 'pt_abc123',
+  providerId: 'Practitioner/prac_dr456',
+  priority: 'normal',
+  insurance: [{ sequence: 1, focal: true, coverageId: 'cov_ins789' }],
+  diagnosis: [
+    { sequence: 1, code: 'E11.9' },
+    { sequence: 2, code: 'I10' },
+  ],
+  item: [
+    {
+      sequence: 1,
+      productOrService: '99213',
+      unitPrice: { value: 150.00, currency: 'USD' },
+      net: { value: 150.00, currency: 'USD' },
+    },
+    {
+      sequence: 2,
+      productOrService: '85025',
+      unitPrice: { value: 45.00, currency: 'USD' },
+      net: { value: 45.00, currency: 'USD' },
+    },
+  ],
+  total: { value: 195.00, currency: 'USD' },
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status` only. Search supports `patientId`, `status`, `use`, `providerId`, `dateFrom`, `dateTo` filters.

@@ -28,6 +28,13 @@ const { data, meta } = await clinik.prescriptions.create(request: PrescriptionCr
 | `substitutionAllowed` | `boolean` | No | Allow generic substitution |
 | `reason` | `string` | No | Clinical reason |
 | `note` | `string` | No | Pharmacist notes |
+| `statusReason` | `string` | No | Reason for current status (e.g. why on-hold) |
+| `category` | `string` | No | Category (inpatient, outpatient, community, discharge) |
+| `doNotPerform` | `boolean` | No | True if prohibiting the medication |
+| `authoredOn` | `string` | No | When authored (defaults to now) |
+| `performerId` | `string` | No | Intended performer of administration |
+| `courseOfTherapy` | `string` | No | Course type (continuous, acute, seasonal) |
+| `priorPrescriptionId` | `string` | No | Reference to replaced prescription |
 
 ## read / update / delete / search
 

@@ -16,7 +16,8 @@ const { data, meta } = await clinik.encounters.create(request: EncounterCreateRe
 | `status` | `string` | Yes | planned, arrived, triaged, in-progress, onleave, finished, cancelled |
 | `class` | `string` | Yes | AMB, IMP, EMER, HH, VR |
 | `patientId` | `string` | Yes | Patient reference |
-| `practitionerId` | `string` | No | Practitioner reference |
+| `practitionerId` | `string` | No | Primary practitioner reference |
+| `participants` | `Array<{ practitionerId, role? }>` | No | Additional participants |
 | `type` | `string` | No | Encounter type |
 | `serviceType` | `string` | No | Service type |
 | `priority` | `string` | No | Priority |
@@ -26,6 +27,24 @@ const { data, meta } = await clinik.encounters.create(request: EncounterCreateRe
 | `location` | `string` | No | Location name |
 | `serviceProvider` | `string` | No | Organization name |
 | `diagnosis` | `Array<{ condition, use?, rank? }>` | No | Diagnoses |
+| `appointmentId` | `string` | No | Appointment that scheduled this encounter |
+| `basedOnId` | `string` | No | ServiceRequest that initiated this encounter |
+| `partOfId` | `string` | No | Parent encounter (for sub-encounters) |
+| `hospitalization` | `object` | No | Inpatient details (admitSource, dischargeDisposition, etc.) |
+
+### Hospitalization
+
+For inpatient encounters (`class: 'IMP'`), include hospitalization details:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `admitSource` | `string` | Where admitted from (physician referral, transfer, ER) |
+| `dischargeDisposition` | `string` | Discharge destination (home, SNF, expired) |
+| `reAdmission` | `string` | Re-admission type if applicable |
+| `dietPreference` | `string[]` | Diet preferences (vegetarian, kosher, etc.) |
+| `specialArrangement` | `string[]` | Wheelchair, translator, stretcher, etc. |
+| `destination` | `string` | Discharge destination facility |
+| `origin` | `string` | Originating facility |
 
 ## read
 

@@ -1,0 +1,48 @@
+---
+title: Organizations
+description: SDK reference for organization operations.
+---
+
+# clinik.organizations
+
+Organizations represent healthcare providers, departments, insurance companies, and other entities involved in care delivery.
+
+## create
+
+```ts
+const { data, meta } = await clinik.organizations.create(request): Promise<ApiResponse<Organization>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | `string` | Yes | Organization name |
+| `active` | `boolean` | No | Whether active (default: true) |
+| `type` | `string[]` | No | Organization types (prov, dept, team, ins, etc.) |
+| `alias` | `string[]` | No | Alternate names |
+| `phone` | `string` | No | Phone number |
+| `email` | `string` | No | Email address |
+| `address` | `Address` | No | Physical address |
+| `partOfId` | `string` | No | Parent organization ID |
+| `contact` | `Array` | No | Contact people |
+
+## Example
+
+```ts
+const { data } = await clinik.organizations.create({
+  name: 'Sunrise Medical Center',
+  type: ['prov'],
+  phone: '555-0100',
+  email: 'admin@sunrise-medical.com',
+  address: { line: ['100 Health Blvd'], city: 'Austin', state: 'TX', postalCode: '78701' },
+  contact: [{
+    purpose: 'billing',
+    firstName: 'Sarah',
+    lastName: 'Johnson',
+    email: 'billing@sunrise-medical.com',
+  }],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `name`, `type`, `active` filters.

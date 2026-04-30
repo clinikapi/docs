@@ -55,6 +55,54 @@
         "guides/notes",
         "guides/assessments",
         "guides/documents",
+        "guides/appointment-responses",
+        "guides/tasks",
+        "guides/slots",
+        "guides/organizations",
+        "guides/accounts",
+        "guides/healthcare-services",
+        "guides/service-requests",
+        "guides/locations",
+        "guides/schedules",
+        "guides/persons",
+        "guides/family-history",
+        "guides/care-plans",
+        "guides/immunizations",
+        "guides/claims",
+        "guides/claim-responses",
+        "guides/allergies",
+        "guides/care-teams",
+        "guides/conditions",
+        "guides/charge-items",
+        "guides/coverages",
+        "guides/eligibility-requests",
+        "guides/eligibility-responses",
+        "guides/eobs",
+        "guides/devices",
+        "guides/device-requests",
+        "guides/device-use-statements",
+        "guides/goals",
+        "guides/invoices",
+        "guides/medication-dispenses",
+        "guides/medication-knowledge",
+        "guides/medication-statements",
+        "guides/payment-notices",
+        "guides/payment-reconciliations",
+        "guides/specimens",
+        "guides/imaging-studies",
+        "guides/enrollment-requests",
+        "guides/enrollment-responses",
+        "guides/immunization-evaluations",
+        "guides/media",
+        "guides/activity-definitions",
+        "guides/nutrition-orders",
+        "guides/plan-definitions",
+        "guides/vision-prescriptions",
+        "guides/risk-assessments",
+        "guides/audit-events",
+        "guides/measures",
+        "guides/measure-reports",
+        "guides/immunization-recommendations",
         "guides/webhooks",
         "guides/bulk-operations",
         "guides/raw-fhir"
@@ -205,6 +253,484 @@
       ]
     },
     {
+      "group": "Appointment Responses",
+      "pages": [
+        "api-reference/appointment-responses/create",
+        "api-reference/appointment-responses/read",
+        "api-reference/appointment-responses/update",
+        "api-reference/appointment-responses/delete",
+        "api-reference/appointment-responses/search"
+      ]
+    },
+    {
+      "group": "Tasks",
+      "pages": [
+        "api-reference/tasks/create",
+        "api-reference/tasks/read",
+        "api-reference/tasks/update",
+        "api-reference/tasks/delete",
+        "api-reference/tasks/search"
+      ]
+    },
+    {
+      "group": "Slots",
+      "pages": [
+        "api-reference/slots/create",
+        "api-reference/slots/read",
+        "api-reference/slots/update",
+        "api-reference/slots/delete",
+        "api-reference/slots/search"
+      ]
+    },
+    {
+      "group": "Organizations",
+      "pages": [
+        "api-reference/organizations/create",
+        "api-reference/organizations/read",
+        "api-reference/organizations/update",
+        "api-reference/organizations/delete",
+        "api-reference/organizations/search"
+      ]
+    },
+    {
+      "group": "Accounts",
+      "pages": [
+        "api-reference/accounts/create",
+        "api-reference/accounts/read",
+        "api-reference/accounts/update",
+        "api-reference/accounts/delete",
+        "api-reference/accounts/search"
+      ]
+    },
+    {
+      "group": "Healthcare Services",
+      "pages": [
+        "api-reference/healthcare-services/create",
+        "api-reference/healthcare-services/read",
+        "api-reference/healthcare-services/update",
+        "api-reference/healthcare-services/delete",
+        "api-reference/healthcare-services/search"
+      ]
+    },
+    {
+      "group": "Service Requests",
+      "pages": [
+        "api-reference/service-requests/create",
+        "api-reference/service-requests/read",
+        "api-reference/service-requests/update",
+        "api-reference/service-requests/delete",
+        "api-reference/service-requests/search"
+      ]
+    },
+    {
+      "group": "Locations",
+      "pages": [
+        "api-reference/locations/create",
+        "api-reference/locations/read",
+        "api-reference/locations/update",
+        "api-reference/locations/delete",
+        "api-reference/locations/search"
+      ]
+    },
+    {
+      "group": "Schedules",
+      "pages": [
+        "api-reference/schedules/create",
+        "api-reference/schedules/read",
+        "api-reference/schedules/update",
+        "api-reference/schedules/delete",
+        "api-reference/schedules/search"
+      ]
+    },
+    {
+      "group": "Persons",
+      "pages": [
+        "api-reference/persons/create",
+        "api-reference/persons/read",
+        "api-reference/persons/update",
+        "api-reference/persons/delete",
+        "api-reference/persons/search"
+      ]
+    },
+    {
+      "group": "Family History",
+      "pages": [
+        "api-reference/family-history/create",
+        "api-reference/family-history/read",
+        "api-reference/family-history/update",
+        "api-reference/family-history/delete",
+        "api-reference/family-history/search"
+      ]
+    },
+    {
+      "group": "Care Plans",
+      "pages": [
+        "api-reference/care-plans/create",
+        "api-reference/care-plans/read",
+        "api-reference/care-plans/update",
+        "api-reference/care-plans/delete",
+        "api-reference/care-plans/search"
+      ]
+    },
+    {
+      "group": "Immunizations",
+      "pages": [
+        "api-reference/immunizations/create",
+        "api-reference/immunizations/read",
+        "api-reference/immunizations/update",
+        "api-reference/immunizations/delete",
+        "api-reference/immunizations/search"
+      ]
+    },
+    {
+      "group": "Claims",
+      "pages": [
+        "api-reference/claims/create",
+        "api-reference/claims/read",
+        "api-reference/claims/update",
+        "api-reference/claims/delete",
+        "api-reference/claims/search"
+      ]
+    },
+    {
+      "group": "Claim Responses",
+      "pages": [
+        "api-reference/claim-responses/create",
+        "api-reference/claim-responses/read",
+        "api-reference/claim-responses/update",
+        "api-reference/claim-responses/delete",
+        "api-reference/claim-responses/search"
+      ]
+    },
+    {
+      "group": "Allergies",
+      "pages": [
+        "api-reference/allergies/create",
+        "api-reference/allergies/read",
+        "api-reference/allergies/update",
+        "api-reference/allergies/delete",
+        "api-reference/allergies/search"
+      ]
+    },
+    {
+      "group": "Care Teams",
+      "pages": [
+        "api-reference/care-teams/create",
+        "api-reference/care-teams/read",
+        "api-reference/care-teams/update",
+        "api-reference/care-teams/delete",
+        "api-reference/care-teams/search"
+      ]
+    },
+    {
+      "group": "Conditions",
+      "pages": [
+        "api-reference/conditions/create",
+        "api-reference/conditions/read",
+        "api-reference/conditions/update",
+        "api-reference/conditions/delete",
+        "api-reference/conditions/search"
+      ]
+    },
+    {
+      "group": "Charge Items",
+      "pages": [
+        "api-reference/charge-items/create",
+        "api-reference/charge-items/read",
+        "api-reference/charge-items/update",
+        "api-reference/charge-items/delete",
+        "api-reference/charge-items/search"
+      ]
+    },
+    {
+      "group": "Coverages",
+      "pages": [
+        "api-reference/coverages/create",
+        "api-reference/coverages/read",
+        "api-reference/coverages/update",
+        "api-reference/coverages/delete",
+        "api-reference/coverages/search"
+      ]
+    },
+    {
+      "group": "Eligibility Requests",
+      "pages": [
+        "api-reference/eligibility-requests/create",
+        "api-reference/eligibility-requests/read",
+        "api-reference/eligibility-requests/update",
+        "api-reference/eligibility-requests/delete",
+        "api-reference/eligibility-requests/search"
+      ]
+    },
+    {
+      "group": "Eligibility Responses",
+      "pages": [
+        "api-reference/eligibility-responses/create",
+        "api-reference/eligibility-responses/read",
+        "api-reference/eligibility-responses/update",
+        "api-reference/eligibility-responses/delete",
+        "api-reference/eligibility-responses/search"
+      ]
+    },
+    {
+      "group": "Explanation of Benefits",
+      "pages": [
+        "api-reference/eobs/create",
+        "api-reference/eobs/read",
+        "api-reference/eobs/update",
+        "api-reference/eobs/delete",
+        "api-reference/eobs/search"
+      ]
+    },
+    {
+      "group": "Devices",
+      "pages": [
+        "api-reference/devices/create",
+        "api-reference/devices/read",
+        "api-reference/devices/update",
+        "api-reference/devices/delete",
+        "api-reference/devices/search"
+      ]
+    },
+    {
+      "group": "Device Requests",
+      "pages": [
+        "api-reference/device-requests/create",
+        "api-reference/device-requests/read",
+        "api-reference/device-requests/update",
+        "api-reference/device-requests/delete",
+        "api-reference/device-requests/search"
+      ]
+    },
+    {
+      "group": "Device Use Statements",
+      "pages": [
+        "api-reference/device-use-statements/create",
+        "api-reference/device-use-statements/read",
+        "api-reference/device-use-statements/update",
+        "api-reference/device-use-statements/delete",
+        "api-reference/device-use-statements/search"
+      ]
+    },
+    {
+      "group": "Goals",
+      "pages": [
+        "api-reference/goals/create",
+        "api-reference/goals/read",
+        "api-reference/goals/update",
+        "api-reference/goals/delete",
+        "api-reference/goals/search"
+      ]
+    },
+    {
+      "group": "Invoices",
+      "pages": [
+        "api-reference/invoices/create",
+        "api-reference/invoices/read",
+        "api-reference/invoices/update",
+        "api-reference/invoices/delete",
+        "api-reference/invoices/search"
+      ]
+    },
+    {
+      "group": "Medication Dispenses",
+      "pages": [
+        "api-reference/medication-dispenses/create",
+        "api-reference/medication-dispenses/read",
+        "api-reference/medication-dispenses/update",
+        "api-reference/medication-dispenses/delete",
+        "api-reference/medication-dispenses/search"
+      ]
+    },
+    {
+      "group": "Medication Knowledge",
+      "pages": [
+        "api-reference/medication-knowledge/create",
+        "api-reference/medication-knowledge/read",
+        "api-reference/medication-knowledge/update",
+        "api-reference/medication-knowledge/delete",
+        "api-reference/medication-knowledge/search"
+      ]
+    },
+    {
+      "group": "Medication Statements",
+      "pages": [
+        "api-reference/medication-statements/create",
+        "api-reference/medication-statements/read",
+        "api-reference/medication-statements/update",
+        "api-reference/medication-statements/delete",
+        "api-reference/medication-statements/search"
+      ]
+    },
+    {
+      "group": "Payment Notices",
+      "pages": [
+        "api-reference/payment-notices/create",
+        "api-reference/payment-notices/read",
+        "api-reference/payment-notices/update",
+        "api-reference/payment-notices/delete",
+        "api-reference/payment-notices/search"
+      ]
+    },
+    {
+      "group": "Payment Reconciliations",
+      "pages": [
+        "api-reference/payment-reconciliations/create",
+        "api-reference/payment-reconciliations/read",
+        "api-reference/payment-reconciliations/update",
+        "api-reference/payment-reconciliations/delete",
+        "api-reference/payment-reconciliations/search"
+      ]
+    },
+    {
+      "group": "Specimens",
+      "pages": [
+        "api-reference/specimens/create",
+        "api-reference/specimens/read",
+        "api-reference/specimens/update",
+        "api-reference/specimens/delete",
+        "api-reference/specimens/search"
+      ]
+    },
+    {
+      "group": "Imaging Studies",
+      "pages": [
+        "api-reference/imaging-studies/create",
+        "api-reference/imaging-studies/read",
+        "api-reference/imaging-studies/update",
+        "api-reference/imaging-studies/delete",
+        "api-reference/imaging-studies/search"
+      ]
+    },
+    {
+      "group": "Enrollment Requests",
+      "pages": [
+        "api-reference/enrollment-requests/create",
+        "api-reference/enrollment-requests/read",
+        "api-reference/enrollment-requests/update",
+        "api-reference/enrollment-requests/delete",
+        "api-reference/enrollment-requests/search"
+      ]
+    },
+    {
+      "group": "Enrollment Responses",
+      "pages": [
+        "api-reference/enrollment-responses/create",
+        "api-reference/enrollment-responses/read",
+        "api-reference/enrollment-responses/update",
+        "api-reference/enrollment-responses/delete",
+        "api-reference/enrollment-responses/search"
+      ]
+    },
+    {
+      "group": "Immunization Evaluations",
+      "pages": [
+        "api-reference/immunization-evaluations/create",
+        "api-reference/immunization-evaluations/read",
+        "api-reference/immunization-evaluations/update",
+        "api-reference/immunization-evaluations/delete",
+        "api-reference/immunization-evaluations/search"
+      ]
+    },
+    {
+      "group": "Media",
+      "pages": [
+        "api-reference/media/create",
+        "api-reference/media/read",
+        "api-reference/media/update",
+        "api-reference/media/delete",
+        "api-reference/media/search"
+      ]
+    },
+    {
+      "group": "Activity Definitions",
+      "pages": [
+        "api-reference/activity-definitions/create",
+        "api-reference/activity-definitions/read",
+        "api-reference/activity-definitions/update",
+        "api-reference/activity-definitions/delete",
+        "api-reference/activity-definitions/search"
+      ]
+    },
+    {
+      "group": "Nutrition Orders",
+      "pages": [
+        "api-reference/nutrition-orders/create",
+        "api-reference/nutrition-orders/read",
+        "api-reference/nutrition-orders/update",
+        "api-reference/nutrition-orders/delete",
+        "api-reference/nutrition-orders/search"
+      ]
+    },
+    {
+      "group": "Plan Definitions",
+      "pages": [
+        "api-reference/plan-definitions/create",
+        "api-reference/plan-definitions/read",
+        "api-reference/plan-definitions/update",
+        "api-reference/plan-definitions/delete",
+        "api-reference/plan-definitions/search"
+      ]
+    },
+    {
+      "group": "Vision Prescriptions",
+      "pages": [
+        "api-reference/vision-prescriptions/create",
+        "api-reference/vision-prescriptions/read",
+        "api-reference/vision-prescriptions/update",
+        "api-reference/vision-prescriptions/delete",
+        "api-reference/vision-prescriptions/search"
+      ]
+    },
+    {
+      "group": "Risk Assessments",
+      "pages": [
+        "api-reference/risk-assessments/create",
+        "api-reference/risk-assessments/read",
+        "api-reference/risk-assessments/update",
+        "api-reference/risk-assessments/delete",
+        "api-reference/risk-assessments/search"
+      ]
+    },
+    {
+      "group": "Audit Events",
+      "pages": [
+        "api-reference/audit-events/create",
+        "api-reference/audit-events/read",
+        "api-reference/audit-events/delete",
+        "api-reference/audit-events/search"
+      ]
+    },
+    {
+      "group": "Measures",
+      "pages": [
+        "api-reference/measures/create",
+        "api-reference/measures/read",
+        "api-reference/measures/update",
+        "api-reference/measures/delete",
+        "api-reference/measures/search"
+      ]
+    },
+    {
+      "group": "Measure Reports",
+      "pages": [
+        "api-reference/measure-reports/create",
+        "api-reference/measure-reports/read",
+        "api-reference/measure-reports/update",
+        "api-reference/measure-reports/delete",
+        "api-reference/measure-reports/search"
+      ]
+    },
+    {
+      "group": "Immunization Recommendations",
+      "pages": [
+        "api-reference/immunization-recommendations/create",
+        "api-reference/immunization-recommendations/read",
+        "api-reference/immunization-recommendations/delete",
+        "api-reference/immunization-recommendations/search"
+      ]
+    },
+    {
       "group": "Bulk Operations",
       "pages": [
         "api-reference/bulk/export",
@@ -241,6 +767,54 @@
         "sdk/notes",
         "sdk/assessments",
         "sdk/documents",
+        "sdk/appointment-responses",
+        "sdk/tasks",
+        "sdk/slots",
+        "sdk/organizations",
+        "sdk/accounts",
+        "sdk/healthcare-services",
+        "sdk/service-requests",
+        "sdk/locations",
+        "sdk/schedules",
+        "sdk/persons",
+        "sdk/family-history",
+        "sdk/care-plans",
+        "sdk/immunizations",
+        "sdk/claims",
+        "sdk/claim-responses",
+        "sdk/allergies",
+        "sdk/care-teams",
+        "sdk/conditions",
+        "sdk/charge-items",
+        "sdk/coverages",
+        "sdk/eligibility-requests",
+        "sdk/eligibility-responses",
+        "sdk/eobs",
+        "sdk/devices",
+        "sdk/device-requests",
+        "sdk/device-use-statements",
+        "sdk/goals",
+        "sdk/invoices",
+        "sdk/medication-dispenses",
+        "sdk/medication-knowledge",
+        "sdk/medication-statements",
+        "sdk/payment-notices",
+        "sdk/payment-reconciliations",
+        "sdk/specimens",
+        "sdk/imaging-studies",
+        "sdk/enrollment-requests",
+        "sdk/enrollment-responses",
+        "sdk/immunization-evaluations",
+        "sdk/media",
+        "sdk/activity-definitions",
+        "sdk/nutrition-orders",
+        "sdk/plan-definitions",
+        "sdk/vision-prescriptions",
+        "sdk/risk-assessments",
+        "sdk/audit-events",
+        "sdk/measures",
+        "sdk/measure-reports",
+        "sdk/immunization-recommendations",
         "sdk/fhir-passthrough",
         "sdk/error-handling"
       ]
@@ -257,7 +831,12 @@
         "components/consent-manager",
         "components/vitals-widget",
         "components/lab-results",
-        "components/prescription-widget"
+        "components/prescription-widget",
+        "components/condition-tracker",
+        "components/allergy-recorder",
+        "components/immunization-logger",
+        "components/care-plan-builder",
+        "components/goal-setter"
       ]
     },
     {

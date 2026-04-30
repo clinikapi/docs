@@ -18,26 +18,57 @@ const { data: role } = await clinik.practitionerRoles.create({
   locationName: 'Main Campus - Building A',
   phone: '+1-555-0100',
   email: 'dr.chen@austinheart.com',
-  availableDays: ['mon', 'tue', 'wed', 'thu', 'fri'],
-  availableStartTime: '08:00',
-  availableEndTime: '17:00',
+  period: { start: '2024-01-01' },
+  availableTime: [
+    {
+      daysOfWeek: ['mon', 'tue', 'wed', 'thu', 'fri'],
+      availableStartTime: '08:00:00',
+      availableEndTime: '17:00:00',
+    },
+  ],
+  notAvailable: [
+    { description: 'Annual leave', during: { start: '2025-08-01', end: '2025-08-15' } },
+  ],
+  availabilityExceptions: 'Closed on public holidays',
 });
 ```
 
-## Availability
+## Multiple Availability Schedules
 
-Define when the practitioner is available in this role:
+A practitioner can have different hours on different days:
 
 ```ts
-// Part-time consultant
 await clinik.practitionerRoles.create({
   practitionerId: 'prac_abc123',
   organizationName: "St. David's Medical Center",
   role: 'consultant',
   specialty: ['Cardiology'],
-  availableDays: ['tue', 'thu'],
-  availableStartTime: '13:00',
-  availableEndTime: '17:00',
+  availableTime: [
+    {
+      daysOfWeek: ['tue', 'thu'],
+      availableStartTime: '13:00:00',
+      availableEndTime: '17:00:00',
+    },
+    {
+      daysOfWeek: ['sat'],
+      availableStartTime: '09:00:00',
+      availableEndTime: '12:00:00',
+    },
+  ],
+});
+```
+
+## Unavailability Periods
+
+Mark periods when the practitioner is not available:
+
+```ts
+await clinik.practitionerRoles.update('role_xyz789', {
+  notAvailable: [
+    { description: 'Medical conference', during: { start: '2025-06-10', end: '2025-06-14' } },
+    { description: 'Personal leave', during: { start: '2025-07-01', end: '2025-07-05' } },
+  ],
+  availabilityExceptions: 'May be available for emergencies during leave periods',
 });
 ```
 

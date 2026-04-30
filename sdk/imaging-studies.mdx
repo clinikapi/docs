@@ -1,0 +1,86 @@
+---
+title: Imaging Studies
+description: SDK reference for imaging study operations.
+---
+
+# clinik.imagingStudies
+
+Imaging Studies (FHIR `ImagingStudy`) represent radiology and diagnostic imaging exams. ClinikAPI simplifies series to key fields and skips instance-level detail — use the [FHIR passthrough](/sdk/fhir-passthrough) for DICOM-level access.
+
+## create
+
+```ts
+const { data, meta } = await clinik.imagingStudies.create(request): Promise<ApiResponse<ImagingStudy>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | registered, available, cancelled |
+| `patientId` | `string` | Yes | Patient ID |
+| `encounterId` | `string` | No | Encounter ID |
+| `modality` | `string[]` | No | Imaging modalities (CT, MR, US, XR, NM, PT) |
+| `started` | `string` | No | When the study started |
+| `referrerId` | `string` | No | Referring Practitioner ID |
+| `interpreterIds` | `string[]` | No | Interpreting Practitioner IDs |
+| `numberOfSeries` | `number` | No | Number of series |
+| `numberOfInstances` | `number` | No | Number of instances |
+| `procedureCode` | `string[]` | No | Procedure codes |
+| `locationId` | `string` | No | Location ID |
+| `reasonCode` | `string[]` | No | Reason codes |
+| `description` | `string` | No | Study description |
+| `note` | `string` | No | Additional notes |
+| `basedOn` | `string[]` | No | ServiceRequest/CarePlan IDs |
+| `series` | `Array` | No | Series data |
+
+### Series Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `uid` | `string` | Yes | Series instance UID |
+| `number` | `number` | No | Series number |
+| `modality` | `string` | Yes | Series modality |
+| `description` | `string` | No | Series description |
+| `numberOfInstances` | `number` | No | Number of instances |
+| `bodySite` | `string` | No | Body site imaged |
+| `laterality` | `string` | No | Left, right, bilateral |
+| `started` | `string` | No | When series started |
+
+## Example
+
+```ts
+const { data } = await clinik.imagingStudies.create({
+  status: 'available',
+  patientId: 'pt_abc123',
+  encounterId: 'enc_visit456',
+  modality: ['CT'],
+  started: '2024-03-15T10:00:00Z',
+  referrerId: 'prac_dr789',
+  numberOfSeries: 2,
+  numberOfInstances: 120,
+  procedureCode: ['CT chest with contrast'],
+  description: 'CT Chest — rule out pulmonary embolism',
+  reasonCode: ['Shortness of breath', 'Chest pain'],
+  series: [
+    {
+      uid: '1.2.840.113619.2.55.3.604688119.969.1364202859.234',
+      number: 1,
+      modality: 'CT',
+      description: 'Axial images',
+      numberOfInstances: 80,
+      bodySite: 'Chest',
+    },
+    {
+      uid: '1.2.840.113619.2.55.3.604688119.969.1364202859.235',
+      number: 2,
+      modality: 'CT',
+      description: 'Coronal reformats',
+      numberOfInstances: 40,
+      bodySite: 'Chest',
+    },
+  ],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `description`, `note`. Search supports `patientId`, `status`, `modality`, `dateFrom`, `dateTo` filters.

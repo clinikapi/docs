@@ -1,0 +1,126 @@
+---
+title: Imaging Studies
+description: Manage radiology and diagnostic imaging exams with series-level detail.
+---
+
+# Imaging Studies
+
+Imaging Studies (FHIR `ImagingStudy`) represent radiology and diagnostic imaging exams such as CT scans, MRIs, X-rays, and ultrasounds. ClinikAPI simplifies series to key fields — use the [FHIR passthrough](/guides/raw-fhir) for DICOM instance-level access.
+
+## Record a CT Scan
+
+```ts
+const { data: study } = await clinik.imagingStudies.create({
+  status: 'available',
+  patientId: 'pt_jane123',
+  encounterId: 'enc_er456',
+  modality: ['CT'],
+  started: '2024-03-15T10:00:00Z',
+  referrerId: 'prac_drSmith',
+  numberOfSeries: 2,
+  numberOfInstances: 120,
+  procedureCode: ['CT chest with contrast'],
+  locationId: 'loc_radiology',
+  description: 'CT Chest — rule out pulmonary embolism',
+  reasonCode: ['Shortness of breath', 'Chest pain'],
+  series: [
+    {
+      uid: '1.2.840.113619.2.55.3.604688119.969.1364202859.234',
+      number: 1,
+      modality: 'CT',
+      description: 'Axial images with contrast',
+      numberOfInstances: 80,
+      bodySite: 'Chest',
+    },
+    {
+      uid: '1.2.840.113619.2.55.3.604688119.969.1364202859.235',
+      number: 2,
+      modality: 'CT',
+      description: 'Coronal reformats',
+      numberOfInstances: 40,
+      bodySite: 'Chest',
+    },
+  ],
+  basedOn: ['ServiceRequest/sr_ctChest789'],
+});
+```
+
+## MRI Study
+
+```ts
+const { data: mri } = await clinik.imagingStudies.create({
+  status: 'available',
+  patientId: 'pt_john456',
+  modality: ['MR'],
+  started: '2024-03-16T08:30:00Z',
+  referrerId: 'prac_drOrtho',
+  interpreterIds: ['prac_drRadiologist'],
+  numberOfSeries: 4,
+  numberOfInstances: 200,
+  procedureCode: ['MRI knee without contrast'],
+  description: 'MRI Right Knee — evaluate meniscal tear',
+  reasonCode: ['Right knee pain', 'Locking sensation'],
+  series: [
+    {
+      uid: '1.2.840.113619.2.55.3.604688119.969.1364202860.100',
+      number: 1,
+      modality: 'MR',
+      description: 'Sagittal PD fat-sat',
+      numberOfInstances: 50,
+      bodySite: 'Right knee',
+      laterality: 'R',
+    },
+  ],
+});
+```
+
+## Simple X-Ray (No Series Detail)
+
+```ts
+const { data: xray } = await clinik.imagingStudies.create({
+  status: 'available',
+  patientId: 'pt_jane123',
+  modality: ['XR'],
+  started: '2024-03-15T11:00:00Z',
+  referrerId: 'prac_drSmith',
+  numberOfSeries: 1,
+  numberOfInstances: 2,
+  procedureCode: ['XR chest 2 views'],
+  description: 'Chest X-ray PA and lateral',
+});
+```
+
+## Search Imaging Studies
+
+```ts
+// All studies for a patient
+const { data } = await clinik.imagingStudies.search({
+  patientId: 'pt_jane123',
+});
+
+// Filter by modality
+const { data: ctScans } = await clinik.imagingStudies.search({
+  patientId: 'pt_jane123',
+  modality: 'CT',
+});
+
+// Filter by date range
+const { data: recent } = await clinik.imagingStudies.search({
+  dateFrom: '2024-03-01',
+  dateTo: '2024-03-31',
+  status: 'available',
+});
+```
+
+## Common Modalities
+
+| Code | Description |
+|------|-------------|
+| `CT` | Computed Tomography |
+| `MR` | Magnetic Resonance |
+| `US` | Ultrasound |
+| `XR` | X-Ray (Radiography) |
+| `NM` | Nuclear Medicine |
+| `PT` | PET Scan |
+| `MG` | Mammography |
+| `RF` | Fluoroscopy |

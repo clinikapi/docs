@@ -1,0 +1,94 @@
+---
+title: Coverages
+description: Manage insurance coverage records for patients.
+---
+
+# Coverages
+
+Coverages (FHIR `Coverage`) represent a patient's insurance plan details — the payor, subscriber info, plan class, and coverage period. ClinikAPI simplifies the most common coverage fields — for advanced scenarios like cost-to-beneficiary or exception details, use the [FHIR passthrough](/guides/raw-fhir).
+
+## Create a Coverage
+
+```ts
+const { data: coverage } = await clinik.coverages.create({
+  status: 'active',
+  patientId: 'pt_abc123',
+  type: 'medical',
+  subscriberId: 'SUB-98765',
+  subscriberRef: 'Patient/pt_abc123',
+  relationship: 'self',
+  payorIds: ['org_ins_bluecross'],
+  period: {
+    start: '2024-01-01',
+    end: '2024-12-31',
+  },
+  class: [
+    { type: 'group', value: 'GRP-100', name: 'Employer Group Plan' },
+    { type: 'plan', value: 'PLN-GOLD', name: 'Gold PPO' },
+  ],
+  network: 'PPO Network',
+});
+```
+
+## Dependent Coverage
+
+```ts
+const { data: dependent } = await clinik.coverages.create({
+  status: 'active',
+  patientId: 'pt_child456',
+  type: 'medical',
+  subscriberId: 'SUB-98765',
+  subscriberRef: 'Patient/pt_abc123',
+  policyHolderRef: 'Patient/pt_abc123',
+  relationship: 'child',
+  payorIds: ['org_ins_bluecross'],
+  period: {
+    start: '2024-01-01',
+    end: '2024-12-31',
+  },
+  class: [
+    { type: 'group', value: 'GRP-100', name: 'Employer Group Plan' },
+    { type: 'plan', value: 'PLN-GOLD', name: 'Gold PPO' },
+  ],
+  dependent: '1',
+  order: 1,
+});
+```
+
+## Search Coverages
+
+```ts
+// All coverages for a patient
+const { data } = await clinik.coverages.search({
+  patientId: 'pt_abc123',
+});
+
+// Active coverages only
+const { data: active } = await clinik.coverages.search({
+  patientId: 'pt_abc123',
+  status: 'active',
+});
+
+// Filter by type
+const { data: dental } = await clinik.coverages.search({
+  patientId: 'pt_abc123',
+  type: 'dental',
+});
+```
+
+## Update a Coverage
+
+```ts
+const { data: updated } = await clinik.coverages.update('cov_abc123', {
+  status: 'cancelled',
+});
+```
+
+## Coverage Types
+
+| Type | Description |
+|------|-------------|
+| `medical` | Medical/health insurance |
+| `dental` | Dental insurance |
+| `vision` | Vision insurance |
+| `pharmacy` | Pharmacy benefits |

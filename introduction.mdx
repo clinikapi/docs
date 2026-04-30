@@ -5,7 +5,7 @@ description: Healthcare infrastructure for developers. Build clinical apps witho
 
 # Welcome to ClinikAPI
 
-ClinikAPI is a managed healthcare infrastructure platform that lets you build clinical applications through a simple REST API and SDK — without dealing with FHIR R4 complexity, HIPAA compliance infrastructure, or AWS provisioning.
+ClinikAPI is a managed healthcare infrastructure platform that lets you build clinical applications through a simple REST API and SDK — without dealing with FHIR R4 complexity, HIPAA compliance infrastructure, or cloud provisioning.
 
 ## What ClinikAPI Does
 
@@ -13,7 +13,7 @@ You send simplified JSON. We handle the rest:
 
 - **FHIR R4 transformation** — your payloads are automatically converted to strict FHIR R4 resources
 - **Tenant isolation** — every resource is tagged and filtered by your organization
-- **Secure storage** — data lives in AWS HealthLake with encryption at rest
+- **Secure storage** — data lives in an encrypted, HIPAA-compliant FHIR R4 data store
 - **Compliance** — BAA-ready infrastructure with audit logging on every request
 
 ```ts
@@ -33,33 +33,144 @@ const { data: patient } = await clinik.patients.create({
 console.log(patient.id); // "pt_abc123"
 ```
 
-## 14 FHIR R4 Resources
+## 62 FHIR R4 Resources
 
-Full CRUD + search + pagination out of the box:
+Full CRUD + search + pagination out of the box, organized by FHIR domain:
+
+### Individuals
 
 | Resource | FHIR Type | SDK Namespace |
 |----------|-----------|---------------|
 | Patients | Patient | `clinik.patients` |
 | Practitioners | Practitioner | `clinik.practitioners` |
 | Practitioner Roles | PractitionerRole | `clinik.practitionerRoles` |
-| Encounters | Encounter | `clinik.encounters` |
+| Persons | Person | `clinik.persons` |
+| Family History | FamilyMemberHistory | `clinik.familyHistory` |
+
+### Entities
+
+| Resource | FHIR Type | SDK Namespace |
+|----------|-----------|---------------|
+| Organizations | Organization | `clinik.organizations` |
+| Locations | Location | `clinik.locations` |
+| Healthcare Services | HealthcareService | `clinik.healthcareServices` |
+| Devices | Device | `clinik.devices` |
+
+### Clinical — Summary
+
+| Resource | FHIR Type | SDK Namespace |
+|----------|-----------|---------------|
+| Conditions | Condition | `clinik.conditions` |
+| Allergies | AllergyIntolerance | `clinik.allergies` |
+| Assessments | ClinicalImpression | `clinik.assessments` |
+| Family History | FamilyMemberHistory | `clinik.familyHistory` |
+
+### Clinical — Diagnostics
+
+| Resource | FHIR Type | SDK Namespace |
+|----------|-----------|---------------|
 | Observations | Observation | `clinik.observations` |
+| Labs | DiagnosticReport | `clinik.labs` |
+| Specimens | Specimen | `clinik.specimens` |
+| Imaging Studies | ImagingStudy | `clinik.imagingStudies` |
+| Media | Media | `clinik.media` |
+| Risk Assessments | RiskAssessment | `clinik.riskAssessments` |
+
+### Clinical — Medications
+
+| Resource | FHIR Type | SDK Namespace |
+|----------|-----------|---------------|
 | Medications | Medication | `clinik.medications` |
 | Prescriptions | MedicationRequest | `clinik.prescriptions` |
-| Appointments | Appointment | `clinik.appointments` |
-| Intakes | QuestionnaireResponse | `clinik.intakes` |
+| Medication Dispenses | MedicationDispense | `clinik.medicationDispenses` |
+| Medication Statements | MedicationStatement | `clinik.medicationStatements` |
+| Medication Knowledge | MedicationKnowledge | `clinik.medicationKnowledge` |
+| Immunizations | Immunization | `clinik.immunizations` |
+| Immunization Evaluations | ImmunizationEvaluation | `clinik.immunizationEvaluations` |
+| Immunization Recommendations | ImmunizationRecommendation | `clinik.immunizationRecommendations` |
+| Nutrition Orders | NutritionOrder | `clinik.nutritionOrders` |
+| Vision Prescriptions | VisionPrescription | `clinik.visionPrescriptions` |
+
+### Clinical — Care Provision
+
+| Resource | FHIR Type | SDK Namespace |
+|----------|-----------|---------------|
+| Encounters | Encounter | `clinik.encounters` |
+| Care Plans | CarePlan | `clinik.carePlans` |
+| Care Teams | CareTeam | `clinik.careTeams` |
+| Goals | Goal | `clinik.goals` |
+| Service Requests | ServiceRequest | `clinik.serviceRequests` |
+| Device Requests | DeviceRequest | `clinik.deviceRequests` |
+| Device Use Statements | DeviceUseStatement | `clinik.deviceUseStatements` |
 | Consents | Consent | `clinik.consents` |
-| Labs | DiagnosticReport | `clinik.labs` |
+
+### Clinical — Documents and Forms
+
+| Resource | FHIR Type | SDK Namespace |
+|----------|-----------|---------------|
 | Notes | DocumentReference | `clinik.notes` |
-| Assessments | ClinicalImpression | `clinik.assessments` |
 | Documents | Composition | `clinik.documents` |
+| Intakes | QuestionnaireResponse | `clinik.intakes` |
+
+### Scheduling
+
+| Resource | FHIR Type | SDK Namespace |
+|----------|-----------|---------------|
+| Appointments | Appointment | `clinik.appointments` |
+| Appointment Responses | AppointmentResponse | `clinik.appointmentResponses` |
+| Schedules | Schedule | `clinik.schedules` |
+| Slots | Slot | `clinik.slots` |
+
+### Workflow
+
+| Resource | FHIR Type | SDK Namespace |
+|----------|-----------|---------------|
+| Tasks | Task | `clinik.tasks` |
+| Activity Definitions | ActivityDefinition | `clinik.activityDefinitions` |
+| Plan Definitions | PlanDefinition | `clinik.planDefinitions` |
+
+### Financial — Billing
+
+| Resource | FHIR Type | SDK Namespace |
+|----------|-----------|---------------|
+| Accounts | Account | `clinik.accounts` |
+| Charge Items | ChargeItem | `clinik.chargeItems` |
+| Invoices | Invoice | `clinik.invoices` |
+
+### Financial — Claims and Reimbursement
+
+| Resource | FHIR Type | SDK Namespace |
+|----------|-----------|---------------|
+| Claims | Claim | `clinik.claims` |
+| Claim Responses | ClaimResponse | `clinik.claimResponses` |
+| Explanation of Benefits | ExplanationOfBenefit | `clinik.eobs` |
+| Payment Notices | PaymentNotice | `clinik.paymentNotices` |
+| Payment Reconciliations | PaymentReconciliation | `clinik.paymentReconciliations` |
+
+### Financial — Insurance
+
+| Resource | FHIR Type | SDK Namespace |
+|----------|-----------|---------------|
+| Coverages | Coverage | `clinik.coverages` |
+| Eligibility Requests | CoverageEligibilityRequest | `clinik.eligibilityRequests` |
+| Eligibility Responses | CoverageEligibilityResponse | `clinik.eligibilityResponses` |
+| Enrollment Requests | EnrollmentRequest | `clinik.enrollmentRequests` |
+| Enrollment Responses | EnrollmentResponse | `clinik.enrollmentResponses` |
+
+### Quality and Audit
+
+| Resource | FHIR Type | SDK Namespace |
+|----------|-----------|---------------|
+| Measures | Measure | `clinik.measures` |
+| Measure Reports | MeasureReport | `clinik.measureReports` |
+| Audit Events | AuditEvent | `clinik.auditEvents` |
 
 ## Architecture
 
-ClinikAPI is a **data API** — you bring your own auth (Supabase, Clerk, Auth0, etc.).
+ClinikAPI is a **data API** — you bring your own auth (Clerk, Auth0, Firebase, etc.).
 
 ```
-Your App → Your Backend → ClinikAPI SDK → ClinikAPI REST API → AWS HealthLake
+Your App → Your Backend → ClinikAPI SDK → ClinikAPI REST API → FHIR R4 Data Store
 ```
 
 - The SDK runs **server-side only** with a secret API key

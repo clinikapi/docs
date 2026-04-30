@@ -1,0 +1,67 @@
+---
+title: Allergies
+description: SDK reference for allergy and intolerance operations.
+---
+
+# clinik.allergies
+
+Allergies represent a patient's known allergies and adverse reactions to substances, mapped to the FHIR `AllergyIntolerance` resource.
+
+## create
+
+```ts
+const { data, meta } = await clinik.allergies.create(request): Promise<ApiResponse<AllergyIntolerance>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `patientId` | `string` | Yes | Patient ID |
+| `clinicalStatus` | `string` | No | active, inactive, resolved |
+| `verificationStatus` | `string` | No | unconfirmed, confirmed, refuted |
+| `type` | `string` | No | allergy or intolerance |
+| `category` | `string[]` | No | food, medication, environment, biologic |
+| `criticality` | `string` | No | low, high, unable-to-assess |
+| `code` | `string \| CodeableConcept` | No | What the allergy is to |
+| `encounterId` | `string` | No | Encounter context |
+| `onsetDateTime` | `string` | No | When the allergy started |
+| `onsetString` | `string` | No | Onset description |
+| `recordedDate` | `string` | No | When recorded |
+| `recorderId` | `string` | No | Practitioner who recorded |
+| `asserterId` | `string` | No | Who asserted the allergy |
+| `lastOccurrence` | `string` | No | Last occurrence date |
+| `note` | `string` | No | Additional notes |
+| `reaction` | `Array` | No | Adverse reactions |
+
+### Reaction Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `substance` | `string` | No | Specific substance |
+| `manifestation` | `string[]` | Yes | Clinical symptoms |
+| `description` | `string` | No | Reaction description |
+| `onset` | `string` | No | When the reaction occurred |
+| `severity` | `string` | No | mild, moderate, severe |
+| `exposureRoute` | `string` | No | How the allergen was encountered |
+| `note` | `string` | No | Additional notes |
+
+## Example
+
+```ts
+const { data } = await clinik.allergies.create({
+  patientId: 'pt_abc123',
+  clinicalStatus: 'active',
+  verificationStatus: 'confirmed',
+  type: 'allergy',
+  category: ['medication'],
+  criticality: 'high',
+  code: 'Penicillin',
+  reaction: [{
+    manifestation: ['Hives', 'Angioedema'],
+    severity: 'severe',
+  }],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `patientId`, `clinicalStatus`, `type`, `category`, `criticality`, `code` filters.

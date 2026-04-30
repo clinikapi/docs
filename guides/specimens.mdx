@@ -1,0 +1,107 @@
+---
+title: Specimens
+description: Track biological samples from collection through laboratory testing.
+---
+
+# Specimens
+
+Specimens (FHIR `Specimen`) represent biological samples collected from patients for laboratory analysis. ClinikAPI simplifies collection details and skips the processing array — use the [FHIR passthrough](/guides/raw-fhir) for advanced specimen processing workflows.
+
+## Collect a Blood Sample
+
+```ts
+const { data: specimen } = await clinik.specimens.create({
+  status: 'available',
+  type: 'blood',
+  patientId: 'pt_jane123',
+  collection: {
+    collectorId: 'Practitioner/prac_nurse456',
+    collectedDateTime: '2024-03-15T09:30:00Z',
+    quantity: { value: 10, unit: 'mL' },
+    method: 'venipuncture',
+    bodySite: 'left antecubital fossa',
+  },
+  container: [
+    {
+      type: 'EDTA tube',
+      description: 'Purple top tube',
+      capacity: { value: 10, unit: 'mL' },
+      specimenQuantity: { value: 8, unit: 'mL' },
+    },
+  ],
+  condition: ['room-temperature'],
+  requestIds: ['sr_cbc789'],
+});
+```
+
+## Tissue Biopsy
+
+```ts
+const { data: biopsy } = await clinik.specimens.create({
+  type: 'tissue',
+  patientId: 'pt_john456',
+  collection: {
+    collectorId: 'Practitioner/prac_surgeon789',
+    collectedDateTime: '2024-03-15T14:00:00Z',
+    method: 'excisional biopsy',
+    bodySite: 'right breast',
+  },
+  container: [
+    {
+      type: 'formalin container',
+      description: '10% neutral buffered formalin',
+    },
+  ],
+  note: 'Specimen labeled with patient name and DOB. Sent to pathology.',
+  requestIds: ['sr_pathology001'],
+});
+```
+
+## Derived Specimen (Child from Parent)
+
+```ts
+const { data: derived } = await clinik.specimens.create({
+  type: 'serum',
+  patientId: 'pt_jane123',
+  parentIds: [specimen.id],
+  receivedTime: '2024-03-15T10:00:00Z',
+  container: [
+    { type: 'serum separator tube', capacity: { value: 5, unit: 'mL' } },
+  ],
+});
+```
+
+## Search Specimens
+
+```ts
+// All specimens for a patient
+const { data } = await clinik.specimens.search({
+  patientId: 'pt_jane123',
+});
+
+// Filter by type and status
+const { data: blood } = await clinik.specimens.search({
+  patientId: 'pt_jane123',
+  type: 'blood',
+  status: 'available',
+});
+
+// Filter by collection date
+const { data: recent } = await clinik.specimens.search({
+  dateFrom: '2024-03-01',
+  dateTo: '2024-03-31',
+});
+```
+
+## Specimen Types
+
+| Type | Description |
+|------|-------------|
+| `blood` | Whole blood sample |
+| `serum` | Blood serum |
+| `plasma` | Blood plasma |
+| `urine` | Urine sample |
+| `tissue` | Tissue biopsy |
+| `saliva` | Saliva sample |
+| `csf` | Cerebrospinal fluid |
+| `stool` | Stool sample |

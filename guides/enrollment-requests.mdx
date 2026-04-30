@@ -1,0 +1,69 @@
+---
+title: Enrollment Requests
+description: Request insurance enrollment for patients with coverage and provider details.
+---
+
+# Enrollment Requests
+
+Enrollment Requests (FHIR `EnrollmentRequest`) initiate the process of enrolling a patient in an insurance plan. They link the candidate patient to an insurer, provider, and coverage plan.
+
+## Submit an Enrollment Request
+
+```ts
+const { data: enrollment } = await clinik.enrollmentRequests.create({
+  candidateId: 'pt_abc123',
+  insurerId: 'org_bluecross456',
+  providerId: 'Practitioner/prac_dr789',
+  coverageId: 'cov_gold_plan001',
+});
+```
+
+## Minimal Enrollment Request
+
+Only the candidate (patient) is required:
+
+```ts
+const { data } = await clinik.enrollmentRequests.create({
+  candidateId: 'pt_newpatient456',
+});
+```
+
+## Draft Enrollment
+
+Create a draft enrollment for later submission:
+
+```ts
+const { data } = await clinik.enrollmentRequests.create({
+  status: 'draft',
+  candidateId: 'pt_abc123',
+  insurerId: 'org_aetna789',
+  providerId: 'Organization/org_clinic001',
+});
+```
+
+## Cancel an Enrollment Request
+
+```ts
+const { data } = await clinik.enrollmentRequests.update('enr_req_abc123', {
+  status: 'cancelled',
+});
+```
+
+## Search Enrollment Requests
+
+```ts
+// All enrollment requests for a patient
+const { data } = await clinik.enrollmentRequests.search({
+  candidateId: 'pt_abc123',
+});
+
+// Filter by status
+const { data: active } = await clinik.enrollmentRequests.search({
+  status: 'active',
+});
+
+// Filter by insurer
+const { data: byInsurer } = await clinik.enrollmentRequests.search({
+  insurerId: 'org_bluecross456',
+});
+```

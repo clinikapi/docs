@@ -1,0 +1,72 @@
+---
+title: Medication Knowledge
+description: SDK reference for medication knowledge operations.
+---
+
+# clinik.medicationKnowledge
+
+Medication Knowledge (FHIR `MedicationKnowledge`) provides detailed drug information — dosage forms, ingredients, costs, and packaging. This is a drug reference database, not a prescription or dispense record.
+
+## create
+
+```ts
+const { data, meta } = await clinik.medicationKnowledge.create(request: MedicationKnowledgeCreateRequest): Promise<ApiResponse<MedicationKnowledge>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `code` | `string \| { system?, code, display? }` | No | Drug code or name |
+| `status` | `string` | No | active, inactive (default: active) |
+| `manufacturer` | `string` | No | Manufacturer name |
+| `doseForm` | `string` | No | Dosage form (tablet, capsule, etc.) |
+| `amount` | `{ value, unit? }` | No | Amount of drug in package |
+| `synonym` | `string[]` | No | Alternate names |
+| `productType` | `string[]` | No | Product types |
+| `ingredient` | `Array` | No | Ingredients with strength |
+| `preparationInstruction` | `string` | No | Preparation instructions |
+| `intendedRoute` | `string[]` | No | Intended routes (oral, IV, etc.) |
+| `cost` | `Array` | No | Cost information |
+| `packaging` | `object` | No | Packaging details |
+
+### Cost Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `type` | `string` | Yes | Cost type (e.g. wholesale, retail) |
+| `source` | `string` | No | Source of cost data |
+| `cost` | `{ value, currency? }` | Yes | Cost amount |
+
+## Example
+
+```ts
+const { data } = await clinik.medicationKnowledge.create({
+  code: {
+    system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+    code: '197361',
+    display: 'Lisinopril 10 MG Oral Tablet',
+  },
+  status: 'active',
+  doseForm: 'tablet',
+  manufacturer: 'Teva Pharmaceuticals',
+  ingredient: [
+    {
+      item: { code: '29046', display: 'Lisinopril' },
+      isActive: true,
+      strength: {
+        numerator: { value: 10, unit: 'mg' },
+        denominator: { value: 1, unit: 'tablet' },
+      },
+    },
+  ],
+  intendedRoute: ['oral'],
+  cost: [
+    { type: 'wholesale', cost: { value: 0.15, currency: 'USD' } },
+    { type: 'retail', cost: { value: 0.85, currency: 'USD' } },
+  ],
+  packaging: { type: 'bottle', quantity: { value: 100, unit: 'tablets' } },
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `doseForm`, `preparationInstruction`. Search supports `code`, `status`, `doseForm`, `manufacturer` filters.

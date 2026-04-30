@@ -1,0 +1,143 @@
+---
+title: Media
+description: Capture and manage clinical images, videos, and audio recordings.
+---
+
+# Media
+
+Media (FHIR `Media`) captures clinical images, videos, and audio recordings. Track diagnostic images, wound progression photos, ultrasound recordings, dermatology images, and other clinical media attached to patient encounters.
+
+## Capture a Clinical Image
+
+```ts
+const { data: image } = await clinik.media.create({
+  status: 'completed',
+  type: 'image',
+  patientId: 'pt_abc123',
+  encounterId: 'enc_visit456',
+  operatorId: 'prac_dr789',
+  bodySite: 'Left knee',
+  createdDateTime: '2024-03-15T14:30:00Z',
+  height: 1920,
+  width: 1080,
+  content: {
+    contentType: 'image/jpeg',
+    url: 'https://storage.example.com/images/knee-xray-001.jpg',
+    title: 'Left knee X-ray — AP view',
+  },
+  note: 'Pre-operative imaging for total knee replacement evaluation',
+});
+```
+
+## Record a Video
+
+```ts
+const { data: video } = await clinik.media.create({
+  status: 'completed',
+  type: 'video',
+  patientId: 'pt_abc123',
+  encounterId: 'enc_pt_session001',
+  operatorId: 'prac_therapist456',
+  createdDateTime: '2024-03-15T10:00:00Z',
+  duration: 1800,
+  content: {
+    contentType: 'video/mp4',
+    url: 'https://storage.example.com/videos/pt-session-001.mp4',
+    title: 'Physical therapy session — gait analysis',
+  },
+  reasonCode: ['Post-surgical rehabilitation assessment'],
+});
+```
+
+## Capture an Audio Recording
+
+```ts
+const { data: audio } = await clinik.media.create({
+  status: 'completed',
+  type: 'audio',
+  patientId: 'pt_abc123',
+  operatorId: 'prac_dr789',
+  duration: 45,
+  content: {
+    contentType: 'audio/wav',
+    url: 'https://storage.example.com/audio/heart-auscultation-001.wav',
+    title: 'Heart auscultation — mitral area',
+  },
+  bodySite: 'Heart',
+  note: 'Grade 2/6 systolic murmur noted at mitral area',
+});
+```
+
+## Wound Progression Tracking
+
+```ts
+const { data } = await clinik.media.create({
+  status: 'completed',
+  type: 'image',
+  patientId: 'pt_wound_care001',
+  encounterId: 'enc_followup789',
+  operatorId: 'prac_nurse456',
+  bodySite: 'Right lower leg',
+  height: 3024,
+  width: 4032,
+  content: {
+    contentType: 'image/jpeg',
+    data: '<base64-encoded-image-data>',
+    title: 'Wound assessment — week 4 follow-up',
+  },
+  note: 'Wound size reduced from 4cm to 2.5cm. Granulation tissue present. Healing well.',
+  basedOn: ['sr_wound_care_plan001'],
+});
+```
+
+## Ultrasound with Device Details
+
+```ts
+const { data } = await clinik.media.create({
+  status: 'completed',
+  type: 'image',
+  modality: 'US',
+  view: 'Sagittal',
+  patientId: 'pt_prenatal001',
+  encounterId: 'enc_ob_visit456',
+  operatorId: 'prac_sonographer789',
+  deviceName: 'GE Voluson E10',
+  deviceId: 'dev_us_scanner001',
+  height: 768,
+  width: 1024,
+  frames: 1,
+  content: {
+    contentType: 'image/dicom',
+    url: 'https://pacs.example.com/studies/us-ob-001/series/001/instance/001',
+    title: 'Obstetric ultrasound — 20 week anatomy scan',
+  },
+  bodySite: 'Abdomen',
+});
+```
+
+## Search Media
+
+```ts
+// All media for a patient
+const { data } = await clinik.media.search({
+  patientId: 'pt_abc123',
+});
+
+// Filter by type
+const { data: images } = await clinik.media.search({
+  patientId: 'pt_abc123',
+  type: 'image',
+});
+
+// Filter by modality
+const { data: ultrasounds } = await clinik.media.search({
+  modality: 'US',
+});
+
+// Filter by date range
+const { data: recent } = await clinik.media.search({
+  patientId: 'pt_abc123',
+  dateFrom: '2024-01-01',
+  dateTo: '2024-12-31',
+});
+```

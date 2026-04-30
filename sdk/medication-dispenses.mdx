@@ -1,0 +1,58 @@
+---
+title: Medication Dispenses
+description: SDK reference for medication dispense operations.
+---
+
+# clinik.medicationDispenses
+
+Medication Dispenses (FHIR `MedicationDispense`) track the supply of medications to patients — typically by a pharmacy. Use `clinik.prescriptions` for medication orders and `clinik.medications` for drug definitions.
+
+## create
+
+```ts
+const { data, meta } = await clinik.medicationDispenses.create(request: MedicationDispenseCreateRequest): Promise<ApiResponse<MedicationDispense>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | preparation, in-progress, cancelled, on-hold, completed, stopped, declined |
+| `medication` | `string \| { system?, code, display? }` | Yes | Medication code or name |
+| `patientId` | `string` | Yes | Patient ID |
+| `encounterId` | `string` | No | Encounter ID |
+| `statusReasonCodeableConcept` | `string` | No | Reason for current status |
+| `category` | `string` | No | Category of dispense |
+| `performer` | `Array` | No | Who performed the dispense |
+| `locationId` | `string` | No | Location ID |
+| `authorizingPrescriptionIds` | `string[]` | No | MedicationRequest IDs |
+| `type` | `string` | No | trial fill, partial fill, emergency fill |
+| `quantity` | `{ value, unit? }` | No | Quantity dispensed |
+| `daysSupply` | `number` | No | Number of days supply |
+| `whenPrepared` | `string` | No | When prepared |
+| `whenHandedOver` | `string` | No | When handed over |
+| `dosageText` | `string` | No | Dosage instructions |
+| `substitution` | `object` | No | Substitution details |
+| `note` | `string` | No | Additional notes |
+
+## Example
+
+```ts
+const { data } = await clinik.medicationDispenses.create({
+  status: 'completed',
+  medication: {
+    system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+    code: '197361',
+    display: 'Lisinopril 10 MG Oral Tablet',
+  },
+  patientId: 'pt_abc123',
+  authorizingPrescriptionIds: ['rx_order456'],
+  quantity: { value: 30, unit: 'tablets' },
+  daysSupply: 30,
+  whenPrepared: '2024-03-15T10:00:00Z',
+  whenHandedOver: '2024-03-15T14:30:00Z',
+  dosageText: 'Take 1 tablet daily in the morning',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `statusReasonCodeableConcept`, `note`. Search supports `patientId`, `status`, `medication` filters.

@@ -1,0 +1,71 @@
+---
+title: AllergyRecorder
+description: Record patient allergies and intolerances with reaction details.
+---
+
+# AllergyRecorder
+
+Record patient allergies and intolerances as FHIR AllergyIntolerance resources. Supports allergen categorization, criticality levels, and detailed reaction tracking.
+
+## Usage
+
+```tsx
+import { AllergyRecorder } from '@clinikapi/react';
+
+<AllergyRecorder
+  proxyUrl="/api/clinik"
+  patientId="pt_abc123"
+  theme="light"
+/>
+```
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `proxyUrl` | `string` | Yes | Backend proxy URL |
+| `patientId` | `string` | Yes | Patient ID |
+| `theme` | `'light' \| 'dark'` | No | Color theme |
+
+## Form Fields
+
+| Field | Description |
+|-------|-------------|
+| Code | Allergen name (e.g. "Penicillin", "Peanuts") |
+| Type | allergy, intolerance |
+| Category | food, medication, environment, biologic |
+| Criticality | low, high |
+| Clinical status | active, inactive, resolved |
+| Reaction manifestation | Observed reaction (e.g. "Hives", "Anaphylaxis") |
+| Reaction severity | mild, moderate, severe |
+
+## Categories
+
+| Category | Description |
+|----------|-------------|
+| `food` | Food allergens (e.g. peanuts, shellfish) |
+| `medication` | Drug allergens (e.g. penicillin, sulfa) |
+| `environment` | Environmental allergens (e.g. pollen, dust) |
+| `biologic` | Biologic substances (e.g. vaccines, blood products) |
+
+## Proxy Action
+
+The widget sends `allergies.create` with:
+
+```json
+{
+  "action": "allergies.create",
+  "data": {
+    "patientId": "pt_abc123",
+    "code": "Penicillin",
+    "type": "allergy",
+    "category": "medication",
+    "criticality": "high",
+    "clinicalStatus": "active",
+    "reaction": {
+      "manifestation": "Anaphylaxis",
+      "severity": "severe"
+    }
+  }
+}
+```

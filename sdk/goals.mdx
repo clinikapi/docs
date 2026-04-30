@@ -1,0 +1,59 @@
+---
+title: Goals
+description: SDK reference for goal operations.
+---
+
+# clinik.goals
+
+Goals represent intended objectives for a patient's care, including clinical targets, behavioral goals, and treatment milestones.
+
+## create
+
+```ts
+const { data, meta } = await clinik.goals.create(request): Promise<ApiResponse<Goal>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `lifecycleStatus` | `string` | Yes | proposed, planned, accepted, active, on-hold, completed, cancelled, rejected |
+| `description` | `string` | Yes | What the goal is |
+| `patientId` | `string` | Yes | Patient ID |
+| `achievementStatus` | `string` | No | in-progress, improving, worsening, achieved, etc. |
+| `category` | `string[]` | No | Goal categories (treatment, dietary, behavioral) |
+| `priority` | `string` | No | high-priority, medium-priority, low-priority |
+| `startDate` | `string` | No | When pursuit of the goal began |
+| `target` | `Array` | No | Target outcomes with measures and due dates |
+| `statusDate` | `string` | No | When status was last changed |
+| `statusReason` | `string` | No | Reason for current status |
+| `expressedById` | `string` | No | Who created the goal |
+| `addressesIds` | `string[]` | No | Condition/Observation IDs this goal addresses |
+| `note` | `string` | No | Additional notes |
+| `outcomeCode` | `string[]` | No | Outcome codes |
+
+## Example
+
+```ts
+const { data } = await clinik.goals.create({
+  lifecycleStatus: 'active',
+  description: 'Reduce HbA1c to below 7%',
+  patientId: 'pt_abc123',
+  achievementStatus: 'in-progress',
+  category: ['treatment'],
+  priority: 'high-priority',
+  startDate: '2024-01-01',
+  target: [
+    {
+      measure: 'HbA1c',
+      detailQuantity: { value: 7, unit: '%' },
+      dueDate: '2024-06-30',
+    },
+  ],
+  expressedById: 'prac_dr456',
+  addressesIds: ['cond_diabetes789'],
+  note: 'Patient motivated, starting metformin and dietary changes',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `lifecycleStatus`, `achievementStatus`, `statusReason`, `note`, `target`. Search supports `patientId`, `lifecycleStatus`, `achievementStatus`, `category` filters.

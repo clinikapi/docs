@@ -1,0 +1,75 @@
+---
+title: Measures
+description: Define quality measures and clinical performance metrics for healthcare reporting.
+---
+
+# Measures
+
+Measures (FHIR `Measure`) define quality measures, clinical guidelines, and performance metrics. They describe what to measure and how to score it — the actual results go into MeasureReports.
+
+## Create a Quality Measure
+
+```ts
+const { data: measure } = await clinik.measures.create({
+  status: 'active',
+  name: 'diabetes-hba1c-control',
+  title: 'Diabetes: HbA1c Poor Control (>9%)',
+  description: 'Percentage of patients aged 18-75 with diabetes whose most recent HbA1c level is greater than 9.0%',
+  purpose: 'Track glycemic control in diabetic patient population',
+  scoring: 'proportion',
+  type: ['outcome'],
+  topic: ['Diabetes', 'Quality Measure', 'CMS'],
+  rationale: 'Poor glycemic control leads to increased complications including retinopathy, nephropathy, and cardiovascular disease',
+  clinicalRecommendationStatement: 'ADA recommends HbA1c target of <7% for most adults with diabetes',
+  guidance: 'Use most recent HbA1c result within the measurement period',
+  group: [{
+    code: 'hba1c-control',
+    description: 'Patients with diabetes and HbA1c > 9%',
+  }],
+});
+```
+
+## Create a Process Measure
+
+```ts
+const { data } = await clinik.measures.create({
+  status: 'draft',
+  name: 'breast-cancer-screening',
+  title: 'Breast Cancer Screening',
+  description: 'Percentage of women 50-74 who had a mammogram in the past 2 years',
+  scoring: 'proportion',
+  type: ['process'],
+  topic: ['Preventive Care', 'Cancer Screening'],
+  publisher: 'Quality Department',
+  version: '2024.1',
+});
+```
+
+## Update a Measure
+
+```ts
+const { data } = await clinik.measures.update('measure_abc123', {
+  status: 'active',
+  version: '2024.2',
+  description: 'Updated description with new clinical guidelines',
+});
+```
+
+## Search Measures
+
+```ts
+// All active measures
+const { data } = await clinik.measures.search({
+  status: 'active',
+});
+
+// Search by topic
+const { data: diabetes } = await clinik.measures.search({
+  topic: 'Diabetes',
+});
+
+// Search by name
+const { data: named } = await clinik.measures.search({
+  name: 'hba1c',
+});
+```

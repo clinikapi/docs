@@ -1,0 +1,94 @@
+---
+title: Schedules
+description: Manage practitioner and location schedules for appointment booking.
+---
+
+# Schedules
+
+Schedules (FHIR `Schedule`) define a container for time slots that may be available for booking appointments. They connect practitioners, locations, or services to their availability windows.
+
+## Create a Schedule
+
+```ts
+const { data: schedule } = await clinik.schedules.create({
+  active: true,
+  serviceCategory: ['General Practice'],
+  serviceType: ['Consultation', 'Follow-up'],
+  specialty: ['Family Medicine'],
+  actorIds: ['Practitioner/dr_smith', 'Location/room_101'],
+  planningHorizon: {
+    start: '2025-03-01T00:00:00Z',
+    end: '2025-06-30T23:59:59Z',
+  },
+  comment: 'Dr. Smith Monday-Friday schedule for Q2 2025',
+});
+```
+
+## Schedule + Slots Workflow
+
+Schedules are containers — the actual bookable time windows are defined as Slots:
+
+```ts
+// 1. Create a schedule for a practitioner
+const { data: schedule } = await clinik.schedules.create({
+  actorIds: ['Practitioner/dr_jones'],
+  serviceType: ['Cardiology Consultation'],
+  specialty: ['Cardiology'],
+  planningHorizon: {
+    start: '2025-04-01T00:00:00Z',
+    end: '2025-04-30T23:59:59Z',
+  },
+});
+
+// 2. Create slots on that schedule
+for (let day = 1; day <= 30; day++) {
+  const date = `2025-04-${String(day).padStart(2, '0')}`;
+  for (let hour = 9; hour < 17; hour++) {
+    await clinik.slots.create({
+      scheduleId: schedule.id,
+      status: 'free',
+      start: `${date}T${String(hour).padStart(2, '0')}:00:00Z`,
+      end: `${date}T${String(hour).padStart(2, '0')}:30:00Z`,
+    });
+  }
+}
+
+// 3. When a patient books, create an appointment and mark the slot busy
+```
+
+## Multi-Actor Schedules
+
+A schedule can reference multiple actors (e.g., a practitioner and a room):
+
+```ts
+const { data } = await clinik.schedules.create({
+  actorIds: [
+    'Practitioner/dr_patel',
+    'Location/ultrasound_room_2',
+  ],
+  serviceType: ['Obstetric Ultrasound'],
+  specialty: ['Obstetrics'],
+  planningHorizon: {
+    start: '2025-05-01T00:00:00Z',
+    end: '2025-05-31T23:59:59Z',
+  },
+});
+```
+
+## Deactivate a Schedule
+
+```ts
+await clinik.schedules.update(schedule.id, {
+  active: false,
+  comment: 'Dr. Smith on leave — schedule paused',
+});
+```
+
+## Search Schedules
+
+```ts
+const { data } = await clinik.schedules.search({
+  specialty: 'Cardiology',
+  active: true,
+});
+```

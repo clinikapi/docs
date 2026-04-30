@@ -1,11 +1,11 @@
 ---
 title: AppointmentScheduler
-description: Book and manage patient appointments.
+description: Book and manage patient appointments with service type, specialty, and priority.
 ---
 
 # AppointmentScheduler
 
-A scheduling widget for creating and managing patient appointments.
+A scheduling widget for creating patient appointments with full FHIR R4 field support.
 
 ## Usage
 
@@ -13,8 +13,10 @@ A scheduling widget for creating and managing patient appointments.
 import { AppointmentScheduler } from '@clinikapi/react';
 
 <AppointmentScheduler
-  proxyUrl="/api/clinik/appointments"
-  onError={(err) => console.error(err)}
+  proxyUrl="/api/clinik"
+  patientId="pt_abc123"
+  practitionerId="prac_def456"
+  theme="light"
 />
 ```
 
@@ -22,28 +24,47 @@ import { AppointmentScheduler } from '@clinikapi/react';
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `proxyUrl` | `string` | Yes | Backend proxy URL for appointment CRUD |
-| `className` | `string` | No | CSS class name |
-| `onError` | `(error: Error) => void` | No | Error callback |
+| `proxyUrl` | `string` | Yes | Backend proxy URL |
+| `patientId` | `string` | Yes | Patient ID |
+| `practitionerId` | `string` | No | Default practitioner |
+| `theme` | `'light' \| 'dark'` | No | Color theme |
 
-## Proxy Endpoint
+## Form Fields
 
-Your proxy should handle GET (search) and POST (create):
+The scheduler collects:
 
-```ts
-// GET: search appointments
-// POST: create appointment
-export async function GET(req: Request) {
-  const { data } = await clinik.appointments.search({
-    dateFrom: new Date().toISOString().split('T')[0],
-    sort: 'date',
-  });
-  return Response.json(data);
-}
+| Field | Description |
+|-------|-------------|
+| Date & Time | Appointment start time |
+| Duration | 15, 30, 45, 60, or 90 minutes |
+| Appointment type | Routine, follow-up, urgent, walk-in, check-up |
+| Service type | What service is being booked (e.g. "Cardiology consultation") |
+| Specialty | Required specialty (e.g. "Cardiology", "Dermatology") |
+| Priority | Routine (0), low (1), medium (5), high (9) urgency |
+| Description | Subject line for the appointment |
+| Reason | Reason for the visit |
+| Patient instructions | Instructions for the patient (e.g. "Fast for 12 hours") |
 
-export async function POST(req: Request) {
-  const body = await req.json();
-  const { data } = await clinik.appointments.create(body);
-  return Response.json(data);
+## Proxy Action
+
+The widget sends `appointments.create` with:
+
+```json
+{
+  "action": "appointments.create",
+  "data": {
+    "status": "booked",
+    "patientId": "pt_abc123",
+    "practitionerId": "prac_def456",
+    "start": "2025-02-01T14:00:00Z",
+    "minutesDuration": 30,
+    "appointmentType": "followup",
+    "serviceType": "Cardiology consultation",
+    "specialty": "Cardiology",
+    "priority": 0,
+    "description": "Follow-up for hypertension",
+    "reasonCode": "Blood pressure check",
+    "patientInstruction": "Bring home BP log"
+  }
 }
 ```

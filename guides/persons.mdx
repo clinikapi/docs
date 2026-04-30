@@ -1,0 +1,82 @@
+---
+title: Persons
+description: Manage person records that link across patients, practitioners, and related persons.
+---
+
+# Persons
+
+Persons (FHIR `Person`) represent a common demographic record that may be linked to multiple patient, practitioner, or related person records. They are useful for identity management and record linkage across the system.
+
+## Create a Person
+
+```ts
+const { data: person } = await clinik.persons.create({
+  firstName: 'Maria',
+  lastName: 'Garcia',
+  phone: '555-0142',
+  email: 'maria.garcia@example.com',
+  gender: 'female',
+  birthDate: '1985-07-22',
+  address: {
+    line: ['456 Oak Avenue'],
+    city: 'San Antonio',
+    state: 'TX',
+    postalCode: '78205',
+  },
+  managingOrganizationId: 'org_sunrise',
+});
+```
+
+## Link to Other Records
+
+A person can be linked to patient, practitioner, or related person records with varying levels of assurance:
+
+```ts
+const { data } = await clinik.persons.create({
+  firstName: 'James',
+  lastName: 'Wilson',
+  email: 'james.wilson@example.com',
+  link: [
+    { targetId: 'Patient/pt_james_wilson', assurance: 'level4' },
+    { targetId: 'Practitioner/dr_wilson', assurance: 'level3' },
+  ],
+});
+```
+
+## Assurance Levels
+
+| Level | Description |
+|-------|-------------|
+| `level1` | No matching criteria met |
+| `level2` | Some criteria met |
+| `level3` | High confidence match |
+| `level4` | Verified — this is the same person |
+
+## Update a Person
+
+```ts
+await clinik.persons.update(person.id, {
+  phone: '555-0199',
+  link: [
+    { targetId: 'Patient/pt_maria_garcia', assurance: 'level4' },
+  ],
+});
+```
+
+## Search Persons
+
+```ts
+const { data } = await clinik.persons.search({
+  name: 'Garcia',
+  active: true,
+});
+```
+
+## Person vs Patient
+
+| Resource | Purpose |
+|----------|---------|
+| Person | Identity record — links across systems |
+| Patient | Clinical record — encounters, observations, medications |
+
+Use Person when you need to track a single individual across multiple roles or systems. Use Patient for clinical care data.

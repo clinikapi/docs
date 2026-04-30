@@ -1,0 +1,69 @@
+---
+title: Immunization Recommendations
+description: SDK reference for immunization recommendation operations.
+---
+
+# clinik.immunizationRecommendations
+
+Immunization Recommendations (FHIR `ImmunizationRecommendation`) provide patient-specific vaccine recommendations based on immunization history and clinical guidelines.
+
+## create
+
+```ts
+const { data, meta } = await clinik.immunizationRecommendations.create(request): Promise<ApiResponse<ImmunizationRecommendation>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `patientId` | `string` | Yes | Patient ID |
+| `date` | `string` | Yes | When recommendations were created |
+| `authorityId` | `string` | No | Organization ID for the authority |
+| `recommendation` | `Array` | Yes | Recommendation entries |
+| `recommendation[].vaccineCode` | `string[]` | No | Vaccine codes |
+| `recommendation[].targetDisease` | `string` | No | Target disease |
+| `recommendation[].forecastStatus` | `string` | Yes | Forecast status (e.g. due, overdue, immune, contraindicated) |
+| `recommendation[].forecastReason` | `string[]` | No | Forecast reasons |
+| `recommendation[].description` | `string` | No | Description |
+| `recommendation[].series` | `string` | No | Series name |
+| `recommendation[].doseNumber` | `number` | No | Recommended dose number |
+| `recommendation[].seriesDoses` | `number` | No | Total doses in series |
+| `recommendation[].dateCriterion` | `Array` | No | Date criteria |
+| `recommendation[].dateCriterion[].code` | `string` | Yes | Criterion code (e.g. "Earliest Date", "Recommended Date") |
+| `recommendation[].dateCriterion[].value` | `string` | Yes | Criterion date value |
+
+## Example
+
+```ts
+const { data } = await clinik.immunizationRecommendations.create({
+  patientId: 'pt_child456',
+  date: '2024-06-15T10:00:00Z',
+  authorityId: 'org_cdc',
+  recommendation: [
+    {
+      vaccineCode: ['MMR'],
+      targetDisease: 'Measles',
+      forecastStatus: 'due',
+      series: 'Primary Series',
+      doseNumber: 2,
+      seriesDoses: 2,
+      dateCriterion: [
+        { code: 'Earliest Date', value: '2024-07-01' },
+        { code: 'Recommended Date', value: '2024-08-15' },
+        { code: 'Latest Date', value: '2024-12-31' },
+      ],
+    },
+    {
+      vaccineCode: ['Tdap'],
+      targetDisease: 'Tetanus',
+      forecastStatus: 'overdue',
+      description: 'Booster dose overdue by 6 months',
+      doseNumber: 1,
+      seriesDoses: 1,
+    },
+  ],
+});
+```
+
+## read / delete / search
+
+Immunization recommendations support `read`, `delete`, and `search` — but are **not commonly updated**. Search supports `patientId`, `vaccineCode`, `targetDisease`, `dateFrom`, `dateTo` filters.

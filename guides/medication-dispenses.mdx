@@ -1,0 +1,109 @@
+---
+title: Medication Dispenses
+description: Track pharmacy dispensing of medications to patients.
+---
+
+# Medication Dispenses
+
+Medication Dispenses (FHIR `MedicationDispense`) track the supply of medications to patients — typically by a pharmacy. For medication orders, see [Prescriptions](/guides/prescriptions). For drug definitions, see [Medications](/guides/medications).
+
+## Dispense a Medication
+
+```ts
+const { data: dispense } = await clinik.medicationDispenses.create({
+  status: 'completed',
+  medication: {
+    system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+    code: '197361',
+    display: 'Lisinopril 10 MG Oral Tablet',
+  },
+  patientId: 'pt_abc123',
+  authorizingPrescriptionIds: ['rx_order456'],
+  quantity: { value: 30, unit: 'tablets' },
+  daysSupply: 30,
+  whenPrepared: '2024-03-15T10:00:00Z',
+  whenHandedOver: '2024-03-15T14:30:00Z',
+  dosageText: 'Take 1 tablet daily in the morning',
+  performer: [
+    { function: 'dispenser', actorId: 'Practitioner/pharm_rph789' },
+  ],
+});
+```
+
+## Partial Fill
+
+```ts
+const { data: partial } = await clinik.medicationDispenses.create({
+  status: 'completed',
+  medication: 'Amoxicillin 500mg Capsule',
+  patientId: 'pt_abc123',
+  authorizingPrescriptionIds: ['rx_order789'],
+  type: 'partial fill',
+  quantity: { value: 14, unit: 'capsules' },
+  daysSupply: 7,
+  whenHandedOver: '2024-03-15T16:00:00Z',
+  dosageText: 'Take 1 capsule twice daily for 7 days',
+  note: 'Partial fill — remaining 14 capsules available for pickup in 7 days',
+});
+```
+
+## Substitution
+
+Track when a generic is substituted for a brand-name drug:
+
+```ts
+const { data } = await clinik.medicationDispenses.create({
+  status: 'completed',
+  medication: 'Atorvastatin 20mg Tablet',
+  patientId: 'pt_abc123',
+  authorizingPrescriptionIds: ['rx_order101'],
+  quantity: { value: 90, unit: 'tablets' },
+  daysSupply: 90,
+  whenHandedOver: '2024-03-15',
+  substitution: {
+    wasSubstituted: true,
+    type: 'generic',
+    reason: 'Formulary policy — generic equivalent available',
+  },
+});
+```
+
+## Search Dispenses
+
+```ts
+// All dispenses for a patient
+const { data } = await clinik.medicationDispenses.search({
+  patientId: 'pt_abc123',
+});
+
+// Filter by status
+const { data: completed } = await clinik.medicationDispenses.search({
+  patientId: 'pt_abc123',
+  status: 'completed',
+});
+
+// Filter by medication
+const { data: lisinopril } = await clinik.medicationDispenses.search({
+  medication: 'lisinopril',
+});
+```
+
+## Dispense Statuses
+
+| Status | Description |
+|--------|-------------|
+| `preparation` | Being prepared by the pharmacy |
+| `in-progress` | Dispense is in progress |
+| `on-hold` | Dispense is paused |
+| `completed` | Medication has been handed over |
+| `cancelled` | Dispense was cancelled |
+| `stopped` | Dispense was stopped |
+| `declined` | Dispense was declined |
+
+## Medications vs Prescriptions vs Dispenses
+
+| Resource | FHIR Type | Purpose |
+|----------|-----------|---------|
+| Medication | `Medication` | Drug definition (what the drug is) |
+| Prescription | `MedicationRequest` | Medication order (prescribe it) |
+| Medication Dispense | `MedicationDispense` | Pharmacy supply (dispense it) |

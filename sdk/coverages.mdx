@@ -1,0 +1,63 @@
+---
+title: Coverages
+description: SDK reference for coverage operations.
+---
+
+# clinik.coverages
+
+Coverages (FHIR `Coverage`) represent a patient's insurance plan details. ClinikAPI exposes the most commonly used fields — use the [FHIR passthrough](/sdk/fhir-passthrough) for advanced coverage scenarios.
+
+## create
+
+```ts
+const { data, meta } = await clinik.coverages.create(request): Promise<ApiResponse<Coverage>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | active, cancelled, draft |
+| `patientId` | `string` | Yes | Patient (beneficiary) ID |
+| `type` | `string` | No | medical, dental, vision, pharmacy |
+| `subscriberId` | `string` | No | Subscriber ID on insurance card |
+| `subscriberRef` | `string` | No | Subscriber reference (Patient/RelatedPerson) |
+| `policyHolderRef` | `string` | No | Policy holder reference |
+| `relationship` | `string` | No | self, spouse, child, other |
+| `period` | `{ start?, end? }` | No | Coverage period |
+| `payorIds` | `string[]` | Yes | Payor Organization IDs |
+| `class` | `Array` | No | Coverage classes (group, plan, etc.) |
+| `order` | `number` | No | Relative order of coverage |
+| `network` | `string` | No | Insurance plan network |
+| `dependent` | `string` | No | Dependent number |
+| `subrogation` | `boolean` | No | Subrogation flag |
+
+### Class Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `type` | `string` | Yes | Class type (group, plan, subplan, etc.) |
+| `value` | `string` | Yes | Class value |
+| `name` | `string` | No | Human-readable name |
+
+## Example
+
+```ts
+const { data } = await clinik.coverages.create({
+  status: 'active',
+  patientId: 'pt_abc123',
+  type: 'medical',
+  subscriberId: 'SUB-98765',
+  subscriberRef: 'Patient/pt_abc123',
+  relationship: 'self',
+  payorIds: ['org_ins_bluecross'],
+  period: { start: '2024-01-01', end: '2024-12-31' },
+  class: [
+    { type: 'group', value: 'GRP-100', name: 'Employer Group Plan' },
+    { type: 'plan', value: 'PLN-GOLD', name: 'Gold PPO' },
+  ],
+  network: 'PPO Network',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `period`, `network`. Search supports `patientId`, `status`, `type`, `payorId` filters.

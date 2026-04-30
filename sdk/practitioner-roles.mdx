@@ -24,9 +24,33 @@ const { data, meta } = await clinik.practitionerRoles.create(request: Practition
 | `locationName` | `string` | No | Location/facility name |
 | `phone` | `string` | No | Contact phone for this role |
 | `email` | `string` | No | Contact email for this role |
-| `availableDays` | `string[]` | No | Days available (mon, tue, wed, thu, fri, sat, sun) |
-| `availableStartTime` | `string` | No | Start time (HH:mm) |
-| `availableEndTime` | `string` | No | End time (HH:mm) |
+| `period` | `object` | No | Period during which the role is valid (`{ start, end }`) |
+| `availableTime` | `Array` | No | Multiple availability schedules (see below) |
+| `notAvailable` | `Array` | No | Periods when the practitioner is not available |
+| `availabilityExceptions` | `string` | No | Free-text description of availability exceptions |
+| `availableDays` | `string[]` | No | Legacy: days available (mon-sun). Use `availableTime` instead. |
+| `availableStartTime` | `string` | No | Legacy: start time (HH:mm:ss). Use `availableTime` instead. |
+| `availableEndTime` | `string` | No | Legacy: end time (HH:mm:ss). Use `availableTime` instead. |
+
+### Available Time
+
+Each entry in `availableTime` supports:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `daysOfWeek` | `string[]` | Days: mon, tue, wed, thu, fri, sat, sun |
+| `allDay` | `boolean` | Whether available all day (24h) |
+| `availableStartTime` | `string` | Start time (HH:mm:ss) |
+| `availableEndTime` | `string` | End time (HH:mm:ss) |
+
+### Not Available
+
+Each entry in `notAvailable` supports:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `description` | `string` | Yes | Reason (e.g. "On vacation", "Conference") |
+| `during` | `object` | No | Period: `{ start, end }` |
 
 ### Example
 
@@ -39,9 +63,26 @@ const { data } = await clinik.practitionerRoles.create({
   locationName: 'Main Campus - Building A',
   phone: '+1-555-0100',
   email: 'dr.chen@austinheart.com',
-  availableDays: ['mon', 'tue', 'wed', 'thu', 'fri'],
-  availableStartTime: '08:00',
-  availableEndTime: '17:00',
+  period: { start: '2024-01-01' },
+  availableTime: [
+    {
+      daysOfWeek: ['mon', 'tue', 'wed', 'thu', 'fri'],
+      availableStartTime: '08:00:00',
+      availableEndTime: '17:00:00',
+    },
+    {
+      daysOfWeek: ['sat'],
+      availableStartTime: '09:00:00',
+      availableEndTime: '12:00:00',
+    },
+  ],
+  notAvailable: [
+    {
+      description: 'Annual medical conference',
+      during: { start: '2025-03-10', end: '2025-03-14' },
+    },
+  ],
+  availabilityExceptions: 'Closed on public holidays',
 });
 ```
 

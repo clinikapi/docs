@@ -1,0 +1,66 @@
+---
+title: Immunizations
+description: SDK reference for immunization operations.
+---
+
+# clinik.immunizations
+
+Immunizations (FHIR `Immunization`) record vaccine administration events including vaccine details, dose information, and reactions.
+
+## create
+
+```ts
+const { data, meta } = await clinik.immunizations.create(request): Promise<ApiResponse<Immunization>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | completed, not-done |
+| `vaccineCode` | `string \| object` | Yes | Vaccine code (string or `{ system?, code, display? }`) |
+| `patientId` | `string` | Yes | Patient ID |
+| `encounterId` | `string` | No | Encounter context |
+| `occurrenceDateTime` | `string` | No | When administered (defaults to now) |
+| `recorded` | `string` | No | When recorded |
+| `primarySource` | `boolean` | No | Whether from primary source |
+| `manufacturer` | `string` | No | Vaccine manufacturer |
+| `lotNumber` | `string` | No | Lot number |
+| `expirationDate` | `string` | No | Expiration date |
+| `site` | `string` | No | Body site (e.g. left arm) |
+| `route` | `string` | No | Route (e.g. intramuscular) |
+| `doseQuantity` | `{ value, unit? }` | No | Dose quantity |
+| `performer` | `Array` | No | Performers |
+| `note` | `string` | No | Additional notes |
+| `reasonCode` | `string[]` | No | Reason codes |
+| `statusReason` | `string` | No | Reason for not-done status |
+| `isSubpotent` | `boolean` | No | Whether dose is subpotent |
+| `reaction` | `Array` | No | Observed reactions |
+| `protocolApplied` | `Array` | No | Protocol applied records |
+
+## Example
+
+```ts
+const { data } = await clinik.immunizations.create({
+  status: 'completed',
+  vaccineCode: { system: 'http://hl7.org/fhir/sid/cvx', code: '208', display: 'COVID-19 mRNA' },
+  patientId: 'pt_abc123',
+  occurrenceDateTime: '2024-03-15T10:30:00Z',
+  manufacturer: 'Pfizer-BioNTech',
+  lotNumber: 'EW0182',
+  expirationDate: '2024-09-30',
+  site: 'Left deltoid',
+  route: 'Intramuscular',
+  doseQuantity: { value: 0.3, unit: 'mL' },
+  performer: [{ function: 'Administering', actorId: 'prac_nurse456' }],
+  protocolApplied: [{
+    series: 'Primary Series',
+    doseNumber: 2,
+    seriesDoses: 2,
+    targetDisease: ['COVID-19'],
+  }],
+  note: 'Patient tolerated well, observed for 15 minutes post-administration',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `patientId`, `status`, `vaccineCode`, `dateFrom`, `dateTo` filters.

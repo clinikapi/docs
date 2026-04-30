@@ -1,0 +1,102 @@
+---
+title: Medication Knowledge
+description: Manage drug reference data including ingredients, costs, and packaging.
+---
+
+# Medication Knowledge
+
+Medication Knowledge (FHIR `MedicationKnowledge`) provides detailed drug reference information — dosage forms, ingredients, costs, and packaging. This is a drug knowledge base, not a prescription or dispense record.
+
+## Create a Drug Reference Entry
+
+```ts
+const { data: mk } = await clinik.medicationKnowledge.create({
+  code: {
+    system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+    code: '197361',
+    display: 'Lisinopril 10 MG Oral Tablet',
+  },
+  status: 'active',
+  doseForm: 'tablet',
+  manufacturer: 'Teva Pharmaceuticals',
+  amount: { value: 10, unit: 'mg' },
+  synonym: ['Prinivil', 'Zestril'],
+  ingredient: [
+    {
+      item: {
+        system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+        code: '29046',
+        display: 'Lisinopril',
+      },
+      isActive: true,
+      strength: {
+        numerator: { value: 10, unit: 'mg' },
+        denominator: { value: 1, unit: 'tablet' },
+      },
+    },
+  ],
+  intendedRoute: ['oral'],
+  cost: [
+    { type: 'wholesale', source: 'AWP', cost: { value: 0.15, currency: 'USD' } },
+    { type: 'retail', source: 'GoodRx', cost: { value: 0.85, currency: 'USD' } },
+  ],
+  packaging: {
+    type: 'bottle',
+    quantity: { value: 100, unit: 'tablets' },
+  },
+  preparationInstruction: 'Store at room temperature. Protect from moisture.',
+});
+```
+
+## Cost Tracking
+
+Track multiple cost types for formulary management:
+
+```ts
+const { data } = await clinik.medicationKnowledge.create({
+  code: 'Metformin 500mg Tablet',
+  doseForm: 'tablet',
+  cost: [
+    { type: 'wholesale', source: 'AWP', cost: { value: 0.05, currency: 'USD' } },
+    { type: 'retail', cost: { value: 0.25, currency: 'USD' } },
+    { type: 'copay-tier-1', cost: { value: 5.00, currency: 'USD' } },
+  ],
+});
+```
+
+## Search Drug References
+
+```ts
+// Search by status
+const { data } = await clinik.medicationKnowledge.search({
+  status: 'active',
+});
+
+// Search by dose form
+const { data: tablets } = await clinik.medicationKnowledge.search({
+  doseForm: 'tablet',
+});
+
+// Search by manufacturer
+const { data: teva } = await clinik.medicationKnowledge.search({
+  manufacturer: 'Teva',
+});
+```
+
+## Update a Drug Reference
+
+```ts
+await clinik.medicationKnowledge.update('mk_abc123', {
+  status: 'inactive',
+  preparationInstruction: 'Discontinued — replaced by new formulation',
+});
+```
+
+## Medication vs MedicationKnowledge
+
+| Resource | FHIR Type | Purpose |
+|----------|-----------|---------|
+| Medication | `Medication` | Specific drug instance (batch, lot) |
+| Medication Knowledge | `MedicationKnowledge` | Drug reference data (costs, ingredients, packaging) |
+
+Use `Medication` for tracking specific drug instances in your inventory. Use `MedicationKnowledge` for building a drug formulary or reference database.

@@ -5,7 +5,7 @@ description: ClinikAPI terms of service.
 
 # Terms of Service
 
-*Last updated: April 2026*
+*Last updated: April 2025*
 
 ## 1. Acceptance
 
@@ -14,10 +14,11 @@ By accessing or using ClinikAPI ("Service"), you agree to these Terms of Service
 ## 2. Service Description
 
 ClinikAPI provides a managed healthcare infrastructure platform including:
-- REST API for clinical data storage and retrieval (FHIR R4)
-- TypeScript SDK for server-side integration
-- React component library for client-side UI
-- Developer dashboard for API key management, analytics, and billing
+- REST API for clinical data storage and retrieval (FHIR R4 — 62 resource types)
+- TypeScript SDK for server-side integration (`@clinikapi/sdk`)
+- React component library for client-side UI (`@clinikapi/react`)
+- Developer dashboard for API key management, analytics, billing, and webhooks
+- FHIR R4 transformation engine with tenant isolation
 
 ## 3. Account Responsibilities
 
@@ -33,7 +34,7 @@ You agree not to:
 - Attempt to access other tenants' data
 - Reverse engineer or decompile the Service
 - Exceed rate limits through automated means
-- Store non-clinical data in HealthLake datastores
+- Store non-clinical data in FHIR datastores
 - Resell the Service without written permission
 
 ## 5. Pricing and Billing

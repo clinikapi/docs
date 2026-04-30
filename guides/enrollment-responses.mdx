@@ -1,0 +1,64 @@
+---
+title: Enrollment Responses
+description: Track insurer responses to enrollment requests with outcomes and dispositions.
+---
+
+# Enrollment Responses
+
+Enrollment Responses (FHIR `EnrollmentResponse`) capture the insurer's decision on an enrollment request. Track whether enrollment was approved, queued for processing, or encountered an error.
+
+## Record an Enrollment Approval
+
+```ts
+const { data: response } = await clinik.enrollmentResponses.create({
+  requestId: 'enr_req_abc123',
+  outcome: 'complete',
+  disposition: 'Enrollment approved. Coverage effective 2024-04-01.',
+  organizationId: 'org_bluecross456',
+  requestProviderId: 'Practitioner/prac_dr789',
+});
+```
+
+## Queued for Processing
+
+```ts
+const { data } = await clinik.enrollmentResponses.create({
+  requestId: 'enr_req_def456',
+  outcome: 'queued',
+  disposition: 'Enrollment request received. Processing within 5 business days.',
+  organizationId: 'org_aetna789',
+});
+```
+
+## Record an Enrollment Denial
+
+```ts
+const { data } = await clinik.enrollmentResponses.create({
+  requestId: 'enr_req_ghi789',
+  outcome: 'error',
+  disposition: 'Enrollment denied — patient does not meet eligibility criteria for selected plan.',
+  organizationId: 'org_cigna001',
+});
+```
+
+## Update Disposition
+
+```ts
+const { data } = await clinik.enrollmentResponses.update('enr_resp_abc123', {
+  disposition: 'Updated: Enrollment approved after additional documentation received.',
+});
+```
+
+## Search Enrollment Responses
+
+```ts
+// Filter by outcome
+const { data } = await clinik.enrollmentResponses.search({
+  outcome: 'complete',
+});
+
+// Filter by status
+const { data: active } = await clinik.enrollmentResponses.search({
+  status: 'active',
+});
+```

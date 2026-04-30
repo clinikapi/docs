@@ -1,0 +1,83 @@
+---
+title: Immunization Evaluations
+description: Evaluate whether immunization events meet protocol requirements for target diseases.
+---
+
+# Immunization Evaluations
+
+Immunization Evaluations (FHIR `ImmunizationEvaluation`) assess whether a specific immunization event satisfies the protocol requirements for a target disease. Use these to track vaccine series compliance and identify gaps in immunization schedules.
+
+## Evaluate a Valid Dose
+
+```ts
+const { data: evaluation } = await clinik.immunizationEvaluations.create({
+  status: 'completed',
+  patientId: 'pt_abc123',
+  date: '2024-03-20',
+  authorityId: 'org_cdc001',
+  targetDisease: 'COVID-19',
+  immunizationEventId: 'imm_vax456',
+  doseStatus: 'valid',
+  series: 'Primary Series',
+  doseNumber: 2,
+  seriesDoses: 2,
+  description: 'Second dose of primary series — patient is fully vaccinated',
+});
+```
+
+## Evaluate an Invalid Dose
+
+When a dose does not meet protocol requirements:
+
+```ts
+const { data } = await clinik.immunizationEvaluations.create({
+  status: 'completed',
+  patientId: 'pt_child456',
+  date: '2024-03-15',
+  targetDisease: 'Measles',
+  immunizationEventId: 'imm_mmr789',
+  doseStatus: 'not-valid',
+  doseStatusReason: ['Administered before minimum age', 'Interval too short from previous dose'],
+  series: 'MMR Series',
+  doseNumber: 1,
+  seriesDoses: 2,
+});
+```
+
+## Pediatric Vaccine Series Tracking
+
+```ts
+const { data } = await clinik.immunizationEvaluations.create({
+  status: 'completed',
+  patientId: 'pt_infant001',
+  date: '2024-02-15',
+  authorityId: 'org_aap001',
+  targetDisease: 'Hepatitis B',
+  immunizationEventId: 'imm_hepb_dose3',
+  doseStatus: 'valid',
+  series: 'Hepatitis B 3-dose series',
+  doseNumber: 3,
+  seriesDoses: 3,
+  description: 'Third dose administered at 9 months — series complete',
+});
+```
+
+## Search Immunization Evaluations
+
+```ts
+// All evaluations for a patient
+const { data } = await clinik.immunizationEvaluations.search({
+  patientId: 'pt_abc123',
+});
+
+// Filter by target disease
+const { data: covidEvals } = await clinik.immunizationEvaluations.search({
+  patientId: 'pt_abc123',
+  targetDisease: 'COVID-19',
+});
+
+// Filter by immunization event
+const { data: byEvent } = await clinik.immunizationEvaluations.search({
+  immunizationEventId: 'imm_vax456',
+});
+```

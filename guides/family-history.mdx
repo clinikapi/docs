@@ -1,0 +1,102 @@
+---
+title: Family History
+description: Record family member health history for genetic risk assessment and clinical decision-making.
+---
+
+# Family History
+
+Family Member History (FHIR `FamilyMemberHistory`) records significant health conditions for a person related to the patient. This is critical for genetic risk assessment, hereditary condition screening, and clinical decision-making.
+
+## Record Family History
+
+```ts
+const { data } = await clinik.familyHistory.create({
+  status: 'completed',
+  patientId: 'pt_jane_doe',
+  date: '2025-01-15',
+  name: 'Robert Doe',
+  relationship: 'father',
+  sex: 'male',
+  deceasedBoolean: true,
+  deceasedDate: '2020-06-10',
+  condition: [
+    {
+      code: 'Type 2 Diabetes Mellitus',
+      onsetString: 'Age 45',
+      note: 'Managed with metformin for 15 years',
+    },
+    {
+      code: 'Coronary Artery Disease',
+      contributedToDeath: true,
+      onsetString: 'Age 60',
+      outcome: 'Fatal myocardial infarction',
+    },
+  ],
+  note: 'Father had significant cardiovascular risk factors including smoking history',
+});
+```
+
+## Multiple Family Members
+
+Build a complete family history by creating records for each relative:
+
+```ts
+// Mother
+await clinik.familyHistory.create({
+  status: 'completed',
+  patientId: 'pt_jane_doe',
+  name: 'Susan Doe',
+  relationship: 'mother',
+  sex: 'female',
+  ageString: '72 years old',
+  condition: [
+    { code: 'Breast Cancer', onsetString: 'Age 55', outcome: 'In remission' },
+    { code: 'Osteoporosis', onsetString: 'Age 65' },
+  ],
+});
+
+// Maternal grandmother
+await clinik.familyHistory.create({
+  status: 'completed',
+  patientId: 'pt_jane_doe',
+  name: 'Helen Smith',
+  relationship: 'maternal grandmother',
+  sex: 'female',
+  deceasedBoolean: true,
+  deceasedDate: '2010-03-20',
+  condition: [
+    { code: 'Breast Cancer', contributedToDeath: true, onsetString: 'Age 62' },
+  ],
+});
+```
+
+## Status Values
+
+| Status | Description |
+|--------|-------------|
+| `partial` | History is still being collected |
+| `completed` | History is complete |
+| `health-unknown` | Health status of the family member is unknown |
+
+## Unknown Family History
+
+When a patient doesn't know their family history:
+
+```ts
+await clinik.familyHistory.create({
+  status: 'health-unknown',
+  patientId: 'pt_adopted_patient',
+  relationship: 'father',
+  note: 'Patient was adopted — biological family history unknown',
+});
+```
+
+## Search Family History
+
+```ts
+// Get all family history for a patient
+const { data } = await clinik.familyHistory.search({
+  patientId: 'pt_jane_doe',
+  status: 'completed',
+});
+```

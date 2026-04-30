@@ -1,0 +1,84 @@
+---
+title: GoalSetter
+description: Set and track patient goals with lifecycle status, achievement tracking, and target dates.
+---
+
+# GoalSetter
+
+Set and track patient goals as FHIR Goal resources. Supports lifecycle status management, achievement tracking, priority levels, and target date scheduling.
+
+## Usage
+
+```tsx
+import { GoalSetter } from '@clinikapi/react';
+
+<GoalSetter
+  proxyUrl="/api/clinik"
+  patientId="pt_abc123"
+  expressedById="prac_def456"
+  theme="light"
+/>
+```
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `proxyUrl` | `string` | Yes | Backend proxy URL |
+| `patientId` | `string` | Yes | Patient ID |
+| `expressedById` | `string` | No | Who expressed the goal (practitioner or patient) |
+| `theme` | `'light' \| 'dark'` | No | Color theme |
+
+## Form Fields
+
+| Field | Description |
+|-------|-------------|
+| Description | Goal description (e.g. "Reduce HbA1c to below 7%") |
+| Lifecycle status | proposed, accepted, active, completed, cancelled |
+| Achievement status | in-progress, improving, worsening, no-change, achieved, not-achieved |
+| Priority | high-priority, medium-priority, low-priority |
+| Start date | When to begin working toward the goal |
+| Target due date | Target date for goal achievement |
+| Note | Additional notes about the goal |
+
+## Lifecycle Status Values
+
+| Status | Description |
+|--------|-------------|
+| `proposed` | Goal has been suggested |
+| `accepted` | Goal has been accepted by the patient |
+| `active` | Goal is being actively pursued |
+| `completed` | Goal tracking is complete |
+| `cancelled` | Goal has been cancelled |
+
+## Achievement Status Values
+
+| Status | Description |
+|--------|-------------|
+| `in-progress` | Goal is being worked on |
+| `improving` | Progress is being made |
+| `worsening` | Moving away from the goal |
+| `no-change` | No progress detected |
+| `achieved` | Goal has been met |
+| `not-achieved` | Goal was not met |
+
+## Proxy Action
+
+The widget sends `goals.create` with:
+
+```json
+{
+  "action": "goals.create",
+  "data": {
+    "patientId": "pt_abc123",
+    "expressedById": "prac_def456",
+    "description": "Reduce HbA1c to below 7%",
+    "lifecycleStatus": "active",
+    "achievementStatus": "in-progress",
+    "priority": "high-priority",
+    "startDate": "2025-01-15",
+    "targetDueDate": "2025-07-15",
+    "note": "Patient motivated to improve diabetes control through diet and exercise"
+  }
+}
+```

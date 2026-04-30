@@ -1,0 +1,61 @@
+---
+title: Charge Items
+description: SDK reference for charge item and billing operations.
+---
+
+# clinik.chargeItems
+
+Charge Items represent billable services and charges, mapped to the FHIR `ChargeItem` resource.
+
+## create
+
+```ts
+const { data, meta } = await clinik.chargeItems.create(request): Promise<ApiResponse<ChargeItem>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | planned, billable, not-billable, aborted, billed |
+| `code` | `string \| CodeableConcept` | Yes | Billing code (CPT, HCPCS, etc.) |
+| `patientId` | `string` | Yes | Patient ID |
+| `encounterId` | `string` | No | Encounter context |
+| `occurrenceDateTime` | `string` | No | When the charge occurred |
+| `occurrencePeriod` | `{ start?, end? }` | No | Charge time range |
+| `performer` | `Array` | No | Performers |
+| `performingOrganizationId` | `string` | No | Performing organization |
+| `requestingOrganizationId` | `string` | No | Requesting organization |
+| `quantity` | `{ value, unit? }` | No | Quantity |
+| `bodySite` | `string[]` | No | Body sites |
+| `priceOverride` | `{ value, currency? }` | No | Price override |
+| `overrideReason` | `string` | No | Reason for price override |
+| `enteredDate` | `string` | No | When the charge was entered |
+| `reason` | `string[]` | No | Reason codes |
+| `accountIds` | `string[]` | No | Account IDs to charge |
+| `note` | `string` | No | Additional notes |
+
+### Performer Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `function` | `string` | No | Performer function/role |
+| `actorId` | `string` | Yes | Performer reference |
+
+## Example
+
+```ts
+const { data } = await clinik.chargeItems.create({
+  status: 'billable',
+  code: {
+    system: 'http://www.ama-assn.org/go/cpt',
+    code: '99213',
+    display: 'Office visit, established patient',
+  },
+  patientId: 'pt_abc123',
+  encounterId: 'enc_visit456',
+  priceOverride: { value: 150.00, currency: 'USD' },
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `patientId`, `status`, `code`, `dateFrom`, `dateTo` filters.

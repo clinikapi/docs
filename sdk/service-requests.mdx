@@ -1,0 +1,60 @@
+---
+title: Service Requests
+description: SDK reference for service request (order) operations.
+---
+
+# clinik.serviceRequests
+
+Service requests represent orders for clinical services — lab orders, imaging requests, referrals, procedures, and other clinical activities.
+
+## create
+
+```ts
+const { data, meta } = await clinik.serviceRequests.create(request): Promise<ApiResponse<ServiceRequest>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | draft, active, on-hold, revoked, completed |
+| `intent` | `string` | Yes | proposal, plan, directive, order, etc. |
+| `patientId` | `string` | Yes | Patient reference |
+| `encounterId` | `string` | No | Encounter context |
+| `code` | `string \| CodeableConcept` | No | What is being requested |
+| `category` | `string[]` | No | Classification |
+| `priority` | `string` | No | routine, urgent, asap, stat |
+| `doNotPerform` | `boolean` | No | True if should NOT be performed |
+| `occurrenceDateTime` | `string` | No | When service should occur |
+| `occurrencePeriod` | `{ start?, end? }` | No | Time window for service |
+| `asNeeded` | `boolean` | No | As-needed basis |
+| `authoredOn` | `string` | No | When authored (defaults to now) |
+| `requesterId` | `string` | No | Who is requesting |
+| `performerType` | `string` | No | Desired performer type |
+| `performerIds` | `string[]` | No | Specific performers |
+| `reasonCode` | `string[]` | No | Reason for the request |
+| `bodySite` | `string[]` | No | Body site(s) |
+| `note` | `string` | No | Additional notes |
+| `patientInstruction` | `string` | No | Patient instructions |
+| `basedOn` | `string[]` | No | Request IDs this fulfills |
+| `replaces` | `string[]` | No | Request IDs this replaces |
+
+## Example
+
+```ts
+const { data } = await clinik.serviceRequests.create({
+  status: 'active',
+  intent: 'order',
+  patientId: 'pt_abc123',
+  encounterId: 'enc_xyz789',
+  code: { system: 'http://loinc.org', code: '24323-8', display: 'CMP' },
+  category: ['laboratory'],
+  priority: 'urgent',
+  requesterId: 'prac_def456',
+  reasonCode: ['Pre-operative assessment'],
+  note: 'Fasting required — draw before 10am',
+  patientInstruction: 'Do not eat or drink after midnight',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `patientId`, `status`, `priority`, `category`, `requesterId`, `performerId`, `code` filters.

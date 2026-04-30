@@ -1,0 +1,50 @@
+---
+title: Immunization Evaluations
+description: SDK reference for immunization evaluation operations.
+---
+
+# clinik.immunizationEvaluations
+
+Immunization Evaluations (FHIR `ImmunizationEvaluation`) assess whether an immunization event meets the protocol requirements for a target disease. Use these to track vaccine series compliance.
+
+## create
+
+```ts
+const { data, meta } = await clinik.immunizationEvaluations.create(request): Promise<ApiResponse<ImmunizationEvaluation>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | completed |
+| `patientId` | `string` | Yes | Patient ID |
+| `date` | `string` | No | Evaluation date |
+| `authorityId` | `string` | No | Authority Organization ID |
+| `targetDisease` | `string` | Yes | Disease being evaluated against |
+| `immunizationEventId` | `string` | Yes | Immunization ID |
+| `doseStatus` | `string` | Yes | valid, not-valid |
+| `doseStatusReason` | `string[]` | No | Reasons for the dose status |
+| `description` | `string` | No | Description of the evaluation |
+| `series` | `string` | No | Vaccine series name |
+| `doseNumber` | `number` | No | Dose number within series |
+| `seriesDoses` | `number` | No | Recommended number of doses |
+
+## Example
+
+```ts
+const { data } = await clinik.immunizationEvaluations.create({
+  status: 'completed',
+  patientId: 'pt_abc123',
+  date: '2024-03-20',
+  targetDisease: 'COVID-19',
+  immunizationEventId: 'imm_vax456',
+  doseStatus: 'valid',
+  series: 'Primary Series',
+  doseNumber: 2,
+  seriesDoses: 2,
+  description: 'Second dose of primary series meets protocol requirements',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status` and `description`. Search supports `patientId`, `status`, `immunizationEventId`, `targetDisease` filters.

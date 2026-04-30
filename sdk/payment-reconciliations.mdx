@@ -1,0 +1,74 @@
+---
+title: Payment Reconciliations
+description: SDK reference for payment reconciliation operations.
+---
+
+# clinik.paymentReconciliations
+
+Payment Reconciliations (FHIR `PaymentReconciliation`) provide detailed payment settlement information from payers to providers, including line-item breakdowns and processing notes.
+
+## create
+
+```ts
+const { data, meta } = await clinik.paymentReconciliations.create(request): Promise<ApiResponse<PaymentReconciliation>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | active, cancelled, draft |
+| `created` | `string` | No | When created (defaults to now) |
+| `paymentIssuerId` | `string` | No | Issuing Organization ID |
+| `requestId` | `string` | No | Task ID |
+| `requestorId` | `string` | No | Practitioner/Organization reference |
+| `outcome` | `string` | No | queued, complete, error, partial |
+| `disposition` | `string` | No | Disposition message |
+| `paymentDate` | `string` | Yes | Date of payment |
+| `paymentAmount` | `{ value, currency? }` | Yes | Total payment amount |
+| `period` | `{ start?, end? }` | No | Period covered |
+| `detail` | `Array` | No | Payment detail lines |
+| `processNote` | `Array` | No | Processing notes |
+
+### Detail Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `type` | `string` | Yes | Detail type |
+| `requestId` | `string` | No | Request reference |
+| `submitterId` | `string` | No | Submitter reference |
+| `payeeId` | `string` | No | Payee reference |
+| `date` | `string` | No | Detail date |
+| `amount` | `{ value, currency? }` | No | Detail amount |
+
+## Example
+
+```ts
+const { data } = await clinik.paymentReconciliations.create({
+  status: 'active',
+  paymentDate: '2024-03-15',
+  paymentAmount: { value: 1250.00, currency: 'USD' },
+  paymentIssuerId: 'org_ins456',
+  outcome: 'complete',
+  disposition: 'Payment processed successfully',
+  period: { start: '2024-03-01', end: '2024-03-31' },
+  detail: [
+    {
+      type: 'payment',
+      date: '2024-03-15',
+      amount: { value: 800.00, currency: 'USD' },
+      payeeId: 'Practitioner/prac_dr789',
+    },
+    {
+      type: 'adjustment',
+      date: '2024-03-15',
+      amount: { value: 450.00, currency: 'USD' },
+    },
+  ],
+  processNote: [
+    { type: 'display', text: 'Claim #CLM-2024-001 settled in full' },
+  ],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `disposition`, `outcome`. Search supports `status`, `dateFrom`, `dateTo`, `outcome` filters.

@@ -1,11 +1,11 @@
 ---
 title: ConsentManager
-description: Consent signing and management widget.
+description: Consent signing and management widget with scope, verification, and provisions.
 ---
 
 # ConsentManager
 
-A widget for displaying, signing, and managing patient consent documents.
+A widget for displaying, signing, and managing patient consent documents. Supports all four FHIR consent scopes, multiple verifications, and provision rules.
 
 ## Usage
 
@@ -13,8 +13,9 @@ A widget for displaying, signing, and managing patient consent documents.
 import { ConsentManager } from '@clinikapi/react';
 
 <ConsentManager
-  proxyUrl="/api/clinik/consents"
-  onError={(err) => console.error(err)}
+  proxyUrl="/api/clinik"
+  patientId="pt_abc123"
+  theme="light"
 />
 ```
 
@@ -22,14 +23,64 @@ import { ConsentManager } from '@clinikapi/react';
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `proxyUrl` | `string` | Yes | Backend proxy URL for consent CRUD |
-| `className` | `string` | No | CSS class name |
-| `onError` | `(error: Error) => void` | No | Error callback |
+| `proxyUrl` | `string` | Yes | Backend proxy URL |
+| `patientId` | `string` | Yes | Patient ID |
+| `theme` | `'light' \| 'dark'` | No | Color theme |
+
+## Consent Scopes
+
+| Scope | Description |
+|-------|-------------|
+| `patient-privacy` | Privacy and data sharing (HIPAA notices) |
+| `research` | Research participation |
+| `treatment` | Treatment consent |
+| `adr` | Advance directive |
 
 ## Features
 
 - Consent document display with scope and category
 - Digital signature capture
-- Status tracking (draft → proposed → active → rejected)
-- Verification status display
+- Status tracking (draft → proposed → active → rejected → inactive)
+- Multiple verification entries
 - Policy URI linking
+- Provision rules (permit/deny) with nested exceptions
+- Source document attachment support
+
+## Proxy Action
+
+The widget sends `consents.sign` with:
+
+```json
+{
+  "action": "consents.sign",
+  "data": {
+    "patientId": "pt_abc123",
+    "status": "active",
+    "scope": "patient-privacy",
+    "category": "hipaa-notice",
+    "verification": [{
+      "verified": true,
+      "verifiedWith": "pt_abc123",
+      "verificationDate": "2025-01-15T10:00:00Z"
+    }]
+  }
+}
+```
+
+## Advanced: Provisions with Data Control
+
+For more complex consent scenarios, your proxy can pass full provision rules:
+
+```json
+{
+  "provision": {
+    "type": "permit",
+    "period": { "start": "2025-01-01", "end": "2025-12-31" },
+    "purpose": [{ "code": "TREAT", "display": "Treatment" }],
+    "action": [{ "code": "access", "display": "Access" }],
+    "data": [
+      { "meaning": "instance", "reference": "DiagnosticReport/lab_001" }
+    ]
+  }
+}
+```

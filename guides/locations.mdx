@@ -1,0 +1,100 @@
+---
+title: Locations
+description: Manage physical locations — clinics, hospitals, rooms, and mobile units.
+---
+
+# Locations
+
+Locations (FHIR `Location`) represent physical places where healthcare services are provided. They can model buildings, wings, rooms, beds, vehicles, or even virtual locations.
+
+## Create a Location
+
+```ts
+const { data: clinic } = await clinik.locations.create({
+  name: 'Sunrise Medical Center — Main Building',
+  status: 'active',
+  description: 'Primary care facility with 3 floors and 40 exam rooms',
+  mode: 'instance',
+  type: ['HOSP'],
+  phone: '555-0100',
+  email: 'info@sunrise-medical.com',
+  address: {
+    line: ['100 Health Blvd'],
+    city: 'Austin',
+    state: 'TX',
+    postalCode: '78701',
+    country: 'US',
+  },
+  physicalType: 'building',
+  position: { longitude: -97.7431, latitude: 30.2672 },
+  managingOrganizationId: 'org_sunrise',
+  hoursOfOperation: [
+    { daysOfWeek: ['mon', 'tue', 'wed', 'thu', 'fri'], openingTime: '08:00:00', closingTime: '18:00:00' },
+    { daysOfWeek: ['sat'], openingTime: '09:00:00', closingTime: '13:00:00' },
+  ],
+  availabilityExceptions: 'Closed on federal holidays',
+});
+```
+
+## Location Hierarchy
+
+Create rooms and wings as child locations:
+
+```ts
+const { data: wing } = await clinik.locations.create({
+  name: 'East Wing — Cardiology',
+  status: 'active',
+  physicalType: 'wing',
+  partOfId: clinic.id,
+  type: ['WING'],
+});
+
+const { data: room } = await clinik.locations.create({
+  name: 'Exam Room 101',
+  status: 'active',
+  physicalType: 'room',
+  partOfId: wing.id,
+  type: ['ROOM'],
+});
+```
+
+## Location Status
+
+| Status | Description |
+|--------|-------------|
+| `active` | Open and operational |
+| `suspended` | Temporarily closed (renovation, etc.) |
+| `inactive` | Permanently closed |
+
+## Location Modes
+
+| Mode | Description |
+|------|-------------|
+| `instance` | A specific physical location |
+| `kind` | A class of locations (e.g. "any pharmacy") |
+
+## GPS Coordinates
+
+Track precise location for mobile units or mapping:
+
+```ts
+const { data } = await clinik.locations.create({
+  name: 'Mobile Health Unit — Route A',
+  mode: 'instance',
+  physicalType: 'vehicle',
+  position: {
+    longitude: -97.7431,
+    latitude: 30.2672,
+    altitude: 150,
+  },
+});
+```
+
+## Search Locations
+
+```ts
+const { data } = await clinik.locations.search({
+  name: 'Sunrise',
+  status: 'active',
+});
+```

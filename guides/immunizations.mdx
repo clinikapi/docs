@@ -1,0 +1,108 @@
+---
+title: Immunizations
+description: Record and track patient immunizations with vaccine details, reactions, and protocol tracking.
+---
+
+# Immunizations
+
+Immunizations (FHIR `Immunization`) record vaccine administration events. Track vaccine details, lot numbers, dose sequences, reactions, and protocol compliance.
+
+## Record an Immunization
+
+```ts
+const { data: imm } = await clinik.immunizations.create({
+  status: 'completed',
+  vaccineCode: {
+    system: 'http://hl7.org/fhir/sid/cvx',
+    code: '208',
+    display: 'COVID-19 mRNA, LNP-S, PF, 30 mcg/0.3 mL dose',
+  },
+  patientId: 'pt_abc123',
+  occurrenceDateTime: '2024-03-15T10:30:00Z',
+  manufacturer: 'Pfizer-BioNTech',
+  lotNumber: 'EW0182',
+  expirationDate: '2024-09-30',
+  site: 'Left deltoid',
+  route: 'Intramuscular',
+  doseQuantity: { value: 0.3, unit: 'mL' },
+  performer: [
+    { function: 'Ordering', actorId: 'prac_dr456' },
+    { function: 'Administering', actorId: 'prac_nurse789' },
+  ],
+  protocolApplied: [{
+    series: 'Primary Series',
+    doseNumber: 2,
+    seriesDoses: 2,
+    targetDisease: ['COVID-19'],
+  }],
+  note: 'Patient observed for 15 minutes, no adverse reaction',
+});
+```
+
+## Simple Vaccine Code
+
+For common vaccines, you can use a simple string:
+
+```ts
+const { data } = await clinik.immunizations.create({
+  status: 'completed',
+  vaccineCode: 'Influenza, seasonal, injectable',
+  patientId: 'pt_abc123',
+  site: 'Right deltoid',
+  route: 'Intramuscular',
+  lotNumber: 'FL2024-A',
+  performer: [{ actorId: 'prac_nurse789' }],
+});
+```
+
+## Record a Not-Done Immunization
+
+When a vaccine was not administered:
+
+```ts
+const { data } = await clinik.immunizations.create({
+  status: 'not-done',
+  vaccineCode: 'MMR',
+  patientId: 'pt_child456',
+  statusReason: 'Patient had active febrile illness',
+});
+```
+
+## Track Reactions
+
+```ts
+const { data } = await clinik.immunizations.create({
+  status: 'completed',
+  vaccineCode: 'Tdap',
+  patientId: 'pt_abc123',
+  site: 'Left deltoid',
+  route: 'Intramuscular',
+  performer: [{ actorId: 'prac_nurse789' }],
+  reaction: [
+    { date: '2024-03-15', reported: true },
+  ],
+  note: 'Mild soreness at injection site reported next day',
+});
+```
+
+## Search Immunizations
+
+```ts
+// All immunizations for a patient
+const { data } = await clinik.immunizations.search({
+  patientId: 'pt_abc123',
+});
+
+// Filter by vaccine code
+const { data: covidVax } = await clinik.immunizations.search({
+  patientId: 'pt_abc123',
+  vaccineCode: '208',
+});
+
+// Filter by date range
+const { data: recent } = await clinik.immunizations.search({
+  patientId: 'pt_abc123',
+  dateFrom: '2024-01-01',
+  dateTo: '2024-12-31',
+});
+```

@@ -32,23 +32,96 @@ const clinik = new Clinik(apiKey: string, options?: ClinikOptions);
 
 ## Resource Namespaces
 
-The client exposes 14 resource namespaces:
+The client exposes 62 resource namespaces, organized by FHIR domain:
 
 ```ts
-clinik.patients          // Patient
-clinik.practitioners     // Practitioner
-clinik.practitionerRoles // PractitionerRole
-clinik.encounters        // Encounter
-clinik.observations      // Observation
-clinik.medications       // Medication
-clinik.prescriptions     // MedicationRequest
-clinik.appointments      // Appointment
-clinik.intakes           // QuestionnaireResponse
-clinik.consents          // Consent
-clinik.labs              // DiagnosticReport
-clinik.notes             // DocumentReference
-clinik.assessments       // ClinicalImpression
-clinik.documents         // Composition
+// ── Individuals ──────────────────────────────────────────
+clinik.patients              // Patient
+clinik.practitioners         // Practitioner
+clinik.practitionerRoles     // PractitionerRole
+clinik.persons               // Person
+clinik.familyHistory         // FamilyMemberHistory
+
+// ── Entities ─────────────────────────────────────────────
+clinik.organizations         // Organization
+clinik.locations             // Location
+clinik.healthcareServices    // HealthcareService
+clinik.devices               // Device
+
+// ── Clinical — Summary ───────────────────────────────────
+clinik.conditions            // Condition
+clinik.allergies             // AllergyIntolerance
+clinik.assessments           // ClinicalImpression
+
+// ── Clinical — Diagnostics ───────────────────────────────
+clinik.observations          // Observation
+clinik.labs                  // DiagnosticReport
+clinik.specimens             // Specimen
+clinik.imagingStudies        // ImagingStudy
+clinik.media                 // Media
+clinik.riskAssessments       // RiskAssessment
+
+// ── Clinical — Medications ───────────────────────────────
+clinik.medications           // Medication
+clinik.prescriptions         // MedicationRequest
+clinik.medicationDispenses   // MedicationDispense
+clinik.medicationStatements  // MedicationStatement
+clinik.medicationKnowledge   // MedicationKnowledge
+clinik.immunizations         // Immunization
+clinik.immunizationEvaluations // ImmunizationEvaluation
+clinik.immunizationRecommendations // ImmunizationRecommendation
+clinik.nutritionOrders       // NutritionOrder
+clinik.visionPrescriptions   // VisionPrescription
+
+// ── Clinical — Care Provision ────────────────────────────
+clinik.encounters            // Encounter
+clinik.carePlans             // CarePlan
+clinik.careTeams             // CareTeam
+clinik.goals                 // Goal
+clinik.serviceRequests       // ServiceRequest
+clinik.deviceRequests        // DeviceRequest
+clinik.deviceUseStatements   // DeviceUseStatement
+clinik.consents              // Consent
+
+// ── Clinical — Documents and Forms ───────────────────────
+clinik.notes                 // DocumentReference
+clinik.documents             // Composition
+clinik.intakes               // QuestionnaireResponse
+
+// ── Scheduling ───────────────────────────────────────────
+clinik.appointments          // Appointment
+clinik.appointmentResponses  // AppointmentResponse
+clinik.schedules             // Schedule
+clinik.slots                 // Slot
+
+// ── Workflow ─────────────────────────────────────────────
+clinik.tasks                 // Task
+clinik.activityDefinitions   // ActivityDefinition
+clinik.planDefinitions       // PlanDefinition
+
+// ── Financial — Billing ──────────────────────────────────
+clinik.accounts              // Account
+clinik.chargeItems           // ChargeItem
+clinik.invoices              // Invoice
+
+// ── Financial — Claims and Reimbursement ─────────────────
+clinik.claims                // Claim
+clinik.claimResponses        // ClaimResponse
+clinik.eobs                  // ExplanationOfBenefit
+clinik.paymentNotices        // PaymentNotice
+clinik.paymentReconciliations // PaymentReconciliation
+
+// ── Financial — Insurance ────────────────────────────────
+clinik.coverages             // Coverage
+clinik.eligibilityRequests   // CoverageEligibilityRequest
+clinik.eligibilityResponses  // CoverageEligibilityResponse
+clinik.enrollmentRequests    // EnrollmentRequest
+clinik.enrollmentResponses   // EnrollmentResponse
+
+// ── Quality and Audit ────────────────────────────────────
+clinik.measures              // Measure
+clinik.measureReports        // MeasureReport
+clinik.auditEvents           // AuditEvent
 ```
 
 Each namespace provides:

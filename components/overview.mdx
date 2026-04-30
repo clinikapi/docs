@@ -5,7 +5,7 @@ description: Drop-in clinical UI widgets for your frontend using the proxy patte
 
 # React Components
 
-`@clinikapi/react` provides 9 pre-built clinical UI widgets that communicate through your backend proxy — never directly to ClinikAPI.
+`@clinikapi/react` provides 14 pre-built clinical UI widgets that communicate through your backend proxy — never directly to ClinikAPI.
 
 ```bash
 npm install @clinikapi/react
@@ -27,15 +27,33 @@ import { Clinik } from '@clinikapi/sdk';
 
 const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!);
 
-export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const patientId = url.searchParams.get('patientId');
+export async function POST(req: Request) {
+  const { action, data } = await req.json();
 
-  const { data } = await clinik.patients.read(patientId!, {
-    include: ['Encounter', 'Observation', 'MedicationRequest'],
-  });
-
-  return Response.json(data);
+  // Authenticate the user with YOUR auth system first
+  // Then proxy to ClinikAPI based on the action
+  switch (action) {
+    case 'patients.read':
+      return Response.json(await clinik.patients.read(data.id, { include: data.include }));
+    case 'patients.create':
+      return Response.json(await clinik.patients.create(data));
+    case 'appointments.create':
+      return Response.json(await clinik.appointments.create(data));
+    case 'prescriptions.create':
+      return Response.json(await clinik.prescriptions.create(data));
+    case 'notes.create':
+      return Response.json(await clinik.notes.create(data));
+    case 'intakes.submit':
+      return Response.json(await clinik.intakes.submit(data));
+    case 'consents.sign':
+      return Response.json(await clinik.consents.sign(data));
+    case 'observations.create':
+      return Response.json(await clinik.observations.create(data));
+    case 'labs.create':
+      return Response.json(await clinik.labs.create(data));
+    default:
+      return Response.json({ error: 'Unknown action' }, { status: 400 });
+  }
 }
 ```
 
@@ -47,7 +65,8 @@ import { PatientDashboard } from '@clinikapi/react';
 export default function PatientPage({ patientId }: { patientId: string }) {
   return (
     <PatientDashboard
-      proxyUrl={`/api/clinik/patients/${patientId}`}
+      proxyUrl="/api/clinik"
+      patientId={patientId}
     />
   );
 }
@@ -55,17 +74,22 @@ export default function PatientPage({ patientId }: { patientId: string }) {
 
 ## Available Widgets
 
-| Widget | Description |
-|--------|-------------|
-| [PatientDashboard](/components/patient-dashboard) | Full patient overview with encounters, vitals, meds |
-| [AppointmentScheduler](/components/appointment-scheduler) | Book and manage appointments |
-| [PrescriptionForm](/components/prescription-form) | Create and edit prescriptions |
-| [NoteEditor](/components/note-editor) | Rich clinical note editor |
-| [IntakeForm](/components/intake-form) | Patient intake questionnaire |
-| [ConsentManager](/components/consent-manager) | Consent signing and management |
-| [VitalsWidget](/components/vitals-widget) | Vital signs display with charts |
-| [LabResultsWidget](/components/lab-results) | Lab report viewer |
-| [PrescriptionWidget](/components/prescription-widget) | Prescription list and details |
+| Widget | Description | Key Fields |
+|--------|-------------|------------|
+| [PatientDashboard](/components/patient-dashboard) | Full patient overview with encounters, vitals, meds, labs, notes | demographics, appointments, prescriptions, labs, notes |
+| [AppointmentScheduler](/components/appointment-scheduler) | Book and manage appointments | date, time, type, serviceType, specialty, priority, description |
+| [PrescriptionForm](/components/prescription-form) | Create prescriptions with full dosage | medication, dosage, priority, category, courseOfTherapy, substitution |
+| [NoteEditor](/components/note-editor) | Clinical note editor with type and category | title, content, type, docStatus, category, practiceSetting |
+| [IntakeForm](/components/intake-form) | Patient intake questionnaire | items with nested answers (text, boolean, integer, coded, quantity) |
+| [ConsentManager](/components/consent-manager) | Consent signing and management | scope, category, verification, provision |
+| [VitalsWidget](/components/vitals-widget) | Vital signs recording | heart rate, blood pressure, temperature |
+| [LabResultsWidget](/components/lab-results) | Lab report ordering | code, category, effectiveDateTime/Period |
+| [PrescriptionWidget](/components/prescription-widget) | Quick medication entry | medication name, status |
+| [ConditionTracker](/components/condition-tracker) | Record conditions and diagnoses | code, clinicalStatus, severity, onset |
+| [AllergyRecorder](/components/allergy-recorder) | Record allergies and intolerances | allergen, type, category, criticality, reaction |
+| [ImmunizationLogger](/components/immunization-logger) | Log immunizations | vaccine, site, route, lot number, manufacturer |
+| [CarePlanBuilder](/components/care-plan-builder) | Create care plans | title, description, status, intent, category |
+| [GoalSetter](/components/goal-setter) | Set patient goals | description, lifecycle, achievement, priority, target date |
 
 ## Common Props
 
@@ -73,13 +97,22 @@ All widgets accept:
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `proxyUrl` | `string` | Yes | Your backend proxy endpoint |
-| `className` | `string` | No | CSS class name |
-| `onError` | `(error: Error) => void` | No | Error callback |
+| `proxyUrl` | `string` | Yes | Your backend proxy endpoint (or `'demo'` for demo mode) |
+| `patientId` | `string` | Yes | Patient ID |
+| `theme` | `'light' \| 'dark'` | No | Color theme (default: light) |
+
+## Demo Mode
+
+Set `proxyUrl="demo"` to run any widget in demo mode — no backend needed, no API calls made. Useful for prototyping and showcasing.
+
+```tsx
+<PatientDashboard proxyUrl="demo" />
+<AppointmentScheduler proxyUrl="demo" patientId="demo-patient" />
+```
 
 ## Security
 
 - Widgets never receive your API key
 - All data flows through your backend proxy
 - You control authentication and authorization on your proxy
-- `proxyUrl` is validated to prevent open redirect attacks
+- `proxyUrl` is validated to prevent open redirect attacks — must be a relative path or same-origin URL

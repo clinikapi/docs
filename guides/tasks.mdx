@@ -1,0 +1,157 @@
+---
+title: Tasks
+description: Track clinical workflow items — lab orders, referrals, care coordination, and follow-ups.
+---
+
+# Tasks
+
+Tasks (FHIR `Task`) represent actionable clinical workflow items that need to be tracked through a lifecycle. They're used for lab orders, referral follow-ups, care coordination, medication administration tracking, and any other clinical activity that needs assignment and status tracking.
+
+## Create a Task
+
+```ts
+const { data: task } = await clinik.tasks.create({
+  status: 'requested',
+  intent: 'order',
+  priority: 'urgent',
+  code: 'lab-order',
+  description: 'Order CBC and CMP for pre-operative assessment',
+  patientId: 'pt_abc123',
+  encounterId: 'enc_xyz789',
+  requesterId: 'prac_surgeon',
+  ownerId: 'prac_lab_tech',
+  executionPeriod: {
+    start: '2025-02-01T08:00:00Z',
+    end: '2025-02-01T17:00:00Z',
+  },
+  input: [
+    { type: 'lab-panel', valueString: 'CBC' },
+    { type: 'lab-panel', valueString: 'CMP' },
+    { type: 'fasting-required', valueBoolean: true },
+  ],
+  note: 'Patient is NPO after midnight. Draw labs before 10am.',
+});
+```
+
+## Task Lifecycle
+
+```
+draft → requested → received → accepted → in-progress → completed
+                                        ↘ on-hold → in-progress
+                  ↘ rejected
+                  ↘ cancelled
+                                        ↘ failed
+```
+
+| Status | Description |
+|--------|-------------|
+| `draft` | Task is being prepared |
+| `requested` | Task has been requested |
+| `received` | Owner has received the task |
+| `accepted` | Owner has accepted the task |
+| `rejected` | Owner has rejected the task |
+| `ready` | Task is ready to be performed |
+| `cancelled` | Task was cancelled |
+| `in-progress` | Task is being worked on |
+| `on-hold` | Task is paused |
+| `failed` | Task could not be completed |
+| `completed` | Task is done |
+
+## Update Task Status
+
+```ts
+// Accept a task
+await clinik.tasks.update('task_abc123', {
+  status: 'accepted',
+  businessStatus: 'Assigned to lab technician',
+});
+
+// Mark as in-progress
+await clinik.tasks.update('task_abc123', {
+  status: 'in-progress',
+  businessStatus: 'Specimen collected',
+});
+
+// Complete with output
+await clinik.tasks.update('task_abc123', {
+  status: 'completed',
+  businessStatus: 'Results available',
+  output: [
+    { type: 'lab-report', valueReference: 'DiagnosticReport/lab_cbc_001' },
+    { type: 'lab-report', valueReference: 'DiagnosticReport/lab_cmp_001' },
+  ],
+});
+```
+
+## Task Inputs and Outputs
+
+Tasks can carry structured data as inputs (what's needed) and outputs (what was produced):
+
+```ts
+// Input: what the task needs
+input: [
+  { type: 'medication', valueString: 'Amoxicillin 500mg' },
+  { type: 'dose-count', valueInteger: 21 },
+  { type: 'start-date', valueDate: '2025-02-01' },
+]
+
+// Output: what the task produced
+output: [
+  { type: 'prescription-id', valueReference: 'MedicationRequest/rx_001' },
+  { type: 'dispensed', valueBoolean: true },
+]
+```
+
+## Task Restrictions
+
+Constrain how and when a task should be fulfilled:
+
+```ts
+restriction: {
+  repetitions: 3,  // Can be repeated up to 3 times
+  period: { start: '2025-02-01', end: '2025-02-28' },
+  recipientIds: ['Patient/pt_abc123'],
+}
+```
+
+## Parent Tasks
+
+Break complex workflows into sub-tasks:
+
+```ts
+// Parent task
+const { data: parent } = await clinik.tasks.create({
+  status: 'requested',
+  intent: 'order',
+  code: 'pre-op-workup',
+  description: 'Complete pre-operative workup',
+  patientId: 'pt_abc123',
+});
+
+// Sub-task
+const { data: sub } = await clinik.tasks.create({
+  status: 'requested',
+  intent: 'order',
+  code: 'lab-order',
+  description: 'Pre-op labs',
+  patientId: 'pt_abc123',
+  partOf: [parent.id!],
+});
+```
+
+## Search Tasks
+
+```ts
+// Tasks assigned to a specific owner
+const { data } = await clinik.tasks.search({
+  ownerId: 'prac_lab_tech',
+  status: 'requested',
+  priority: 'urgent',
+});
+
+// All tasks for a patient
+const { data: patientTasks } = await clinik.tasks.search({
+  patientId: 'pt_abc123',
+  sort: '-date',
+});
+```

@@ -1,0 +1,76 @@
+---
+title: Vision Prescriptions
+description: SDK reference for vision prescription operations.
+---
+
+# clinik.visionPrescriptions
+
+Vision prescriptions (FHIR `VisionPrescription`) represent optical prescriptions for eyeglasses and contact lenses, including detailed lens specifications.
+
+## create
+
+```ts
+const { data, meta } = await clinik.visionPrescriptions.create(request): Promise<ApiResponse<VisionPrescription>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | active, cancelled, draft |
+| `patientId` | `string` | Yes | Patient reference |
+| `dateWritten` | `string` | Yes | Date the prescription was written |
+| `prescriberId` | `string` | Yes | Prescribing practitioner ID |
+| `lensSpecification` | `Array<object>` | Yes | Lens specifications (min 1) |
+| `encounterId` | `string` | No | Encounter context |
+| `created` | `string` | No | When created (defaults to now) |
+
+### lensSpecification
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `product` | `string` | Yes | Product type (e.g. "lens", "contact") |
+| `eye` | `string` | Yes | right or left |
+| `sphere` | `number` | No | Lens power (diopters) |
+| `cylinder` | `number` | No | Cylinder power |
+| `axis` | `number` | No | Cylinder axis (degrees) |
+| `add` | `number` | No | Added power for multifocal |
+| `power` | `number` | No | Contact lens power |
+| `backCurve` | `number` | No | Contact lens back curve |
+| `diameter` | `number` | No | Contact lens diameter |
+| `color` | `string` | No | Lens color |
+| `brand` | `string` | No | Lens brand |
+| `note` | `string` | No | Additional notes |
+| `prism` | `Array<{ amount, base }>` | No | Prism corrections |
+
+## Example
+
+```ts
+const { data } = await clinik.visionPrescriptions.create({
+  status: 'active',
+  patientId: 'pt_abc123',
+  dateWritten: '2025-03-15',
+  prescriberId: 'prac_optometrist',
+  lensSpecification: [
+    {
+      product: 'lens',
+      eye: 'right',
+      sphere: -2.25,
+      cylinder: -0.75,
+      axis: 180,
+      add: 1.75,
+      prism: [{ amount: 0.5, base: 'down' }],
+    },
+    {
+      product: 'lens',
+      eye: 'left',
+      sphere: -2.00,
+      cylinder: -1.25,
+      axis: 175,
+      add: 1.75,
+    },
+  ],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `patientId`, `status`, `prescriberId`, `dateFrom`, `dateTo` filters.

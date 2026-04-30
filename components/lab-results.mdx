@@ -1,11 +1,11 @@
 ---
 title: LabResultsWidget
-description: Lab report viewer with result interpretation.
+description: Lab report ordering widget with LOINC codes and category support.
 ---
 
 # LabResultsWidget
 
-Displays lab reports (DiagnosticReport) with individual result values and interpretation flags.
+Orders lab reports (FHIR DiagnosticReport) with LOINC coding, category classification, and effective date/period support.
 
 ## Usage
 
@@ -13,8 +13,9 @@ Displays lab reports (DiagnosticReport) with individual result values and interp
 import { LabResultsWidget } from '@clinikapi/react';
 
 <LabResultsWidget
-  proxyUrl={`/api/clinik/patients/${patientId}/labs`}
-  onError={(err) => console.error(err)}
+  proxyUrl="/api/clinik"
+  patientId="pt_abc123"
+  theme="light"
 />
 ```
 
@@ -22,27 +23,60 @@ import { LabResultsWidget } from '@clinikapi/react';
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `proxyUrl` | `string` | Yes | Backend proxy URL returning lab reports |
-| `className` | `string` | No | CSS class name |
-| `onError` | `(error: Error) => void` | No | Error callback |
-
-## Proxy Endpoint
-
-```ts
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const { data } = await clinik.labs.search({
-    patientId: params.id,
-    sort: '-date',
-    count: 20,
-  });
-  return Response.json(data);
-}
-```
+| `proxyUrl` | `string` | Yes | Backend proxy URL |
+| `patientId` | `string` | Yes | Patient ID |
+| `theme` | `'light' \| 'dark'` | No | Color theme |
 
 ## Features
 
-- Report list with status badges (preliminary, final, amended)
-- Individual result values with reference ranges
-- Abnormal value highlighting (H, L, HH, LL flags)
-- Conclusion text display
-- Attached document links
+- Lab order creation with LOINC codes
+- Category classification (LAB, RAD, PAT)
+- Status tracking (registered → preliminary → final)
+- Support for `effectiveDateTime` and `effectivePeriod`
+- `basedOn` references to ServiceRequest orders
+- Media/image attachments
+- Conclusion text and coded findings
+- Linked observation results (`resultIds`)
+- Specimen references
+- Attached documents (`presentedForm`)
+
+## Proxy Action
+
+The widget sends `labs.create` with:
+
+```json
+{
+  "action": "labs.create",
+  "data": {
+    "patientId": "pt_abc123",
+    "status": "preliminary",
+    "code": {
+      "system": "http://loinc.org",
+      "code": "24331-1",
+      "display": "Lipid Panel"
+    },
+    "category": "LAB",
+    "effectiveDateTime": "2025-01-15T10:30:00Z"
+  }
+}
+```
+
+## Categories
+
+| Code | Description |
+|------|-------------|
+| `LAB` | Laboratory |
+| `RAD` | Radiology |
+| `PAT` | Pathology |
+
+## Reading Lab Results
+
+For displaying lab results, your proxy should return enriched data:
+
+```ts
+// Proxy endpoint for reading labs
+const { data } = await clinik.labs.read(labId, {
+  include: ['Observation'],
+});
+// Returns: report with linked observations, conclusion, effectivePeriod, etc.
+```

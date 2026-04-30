@@ -1,0 +1,94 @@
+---
+title: Payment Reconciliations
+description: Track payment settlements with line-item detail and processing notes.
+---
+
+# Payment Reconciliations
+
+Payment Reconciliations (FHIR `PaymentReconciliation`) provide detailed payment settlement information from payers to providers. They include line-item breakdowns showing how individual claims were settled.
+
+## Record a Payment Settlement
+
+```ts
+const { data: reconciliation } = await clinik.paymentReconciliations.create({
+  status: 'active',
+  paymentDate: '2024-03-15',
+  paymentAmount: { value: 4750.00, currency: 'USD' },
+  paymentIssuerId: 'org_blueShield',
+  outcome: 'complete',
+  disposition: 'Monthly settlement — March 2024',
+  period: { start: '2024-03-01', end: '2024-03-31' },
+  detail: [
+    {
+      type: 'payment',
+      date: '2024-03-15',
+      amount: { value: 2500.00, currency: 'USD' },
+      payeeId: 'Practitioner/prac_drSmith',
+      requestId: 'Claim/clm_visit001',
+    },
+    {
+      type: 'payment',
+      date: '2024-03-15',
+      amount: { value: 1800.00, currency: 'USD' },
+      payeeId: 'Practitioner/prac_drJones',
+      requestId: 'Claim/clm_visit002',
+    },
+    {
+      type: 'adjustment',
+      date: '2024-03-15',
+      amount: { value: 450.00, currency: 'USD' },
+    },
+  ],
+  processNote: [
+    { type: 'display', text: 'All claims for March settled. Adjustment for overpayment on CLM-2024-002.' },
+  ],
+});
+```
+
+## Partial Payment
+
+```ts
+const { data: partial } = await clinik.paymentReconciliations.create({
+  status: 'active',
+  paymentDate: '2024-03-20',
+  paymentAmount: { value: 800.00, currency: 'USD' },
+  paymentIssuerId: 'org_aetna',
+  outcome: 'partial',
+  disposition: 'Partial payment — pending additional documentation',
+  detail: [
+    {
+      type: 'payment',
+      amount: { value: 800.00, currency: 'USD' },
+      requestId: 'Claim/clm_surgery456',
+    },
+  ],
+  processNote: [
+    { text: 'Remaining $2,200 pending operative report submission' },
+  ],
+});
+```
+
+## Search Payment Reconciliations
+
+```ts
+// All reconciliations by outcome
+const { data } = await clinik.paymentReconciliations.search({
+  outcome: 'complete',
+});
+
+// Filter by date range
+const { data: q1 } = await clinik.paymentReconciliations.search({
+  dateFrom: '2024-01-01',
+  dateTo: '2024-03-31',
+  status: 'active',
+});
+```
+
+## Outcome Values
+
+| Outcome | Description |
+|---------|-------------|
+| `queued` | Payment is queued for processing |
+| `complete` | Payment fully processed |
+| `error` | Error during processing |
+| `partial` | Partial payment issued |

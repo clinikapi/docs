@@ -1,11 +1,11 @@
 ---
 title: PrescriptionWidget
-description: Prescription list and detail viewer.
+description: Quick medication entry widget for creating medication records.
 ---
 
 # PrescriptionWidget
 
-Displays a patient's prescriptions with dosage details, refill status, and medication information.
+A quick-entry widget for creating medication records. For full prescription creation with dosage, priority, and category, use [PrescriptionForm](/components/prescription-form).
 
 ## Usage
 
@@ -13,8 +13,9 @@ Displays a patient's prescriptions with dosage details, refill status, and medic
 import { PrescriptionWidget } from '@clinikapi/react';
 
 <PrescriptionWidget
-  proxyUrl={`/api/clinik/patients/${patientId}/prescriptions`}
-  onError={(err) => console.error(err)}
+  proxyUrl="/api/clinik"
+  patientId="pt_abc123"
+  theme="light"
 />
 ```
 
@@ -22,27 +23,36 @@ import { PrescriptionWidget } from '@clinikapi/react';
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `proxyUrl` | `string` | Yes | Backend proxy URL returning prescriptions |
-| `className` | `string` | No | CSS class name |
-| `onError` | `(error: Error) => void` | No | Error callback |
-
-## Proxy Endpoint
-
-```ts
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const { data } = await clinik.prescriptions.search({
-    patientId: params.id,
-    sort: '-date',
-  });
-  return Response.json(data);
-}
-```
+| `proxyUrl` | `string` | Yes | Backend proxy URL |
+| `patientId` | `string` | Yes | Patient ID |
+| `theme` | `'light' \| 'dark'` | No | Color theme |
 
 ## Features
 
-- Active/inactive prescription filtering
-- Medication name and code display
-- Dosage instructions (text and structured)
-- Refill count and supply duration
-- Prescriber information
-- Status badges (active, on-hold, completed, cancelled)
+- Quick medication name entry
+- Creates a Medication resource with active status
+- Supports free-text medication names and RxNorm codes
+- Manufacturer and form fields available via the SDK
+
+## PrescriptionWidget vs PrescriptionForm
+
+| Widget | Use Case |
+|--------|----------|
+| PrescriptionWidget | Quick medication catalog entry (Medication resource) |
+| PrescriptionForm | Full prescription with dosage, priority, category, refills (MedicationRequest resource) |
+
+## Proxy Action
+
+The widget sends `medications.create` with:
+
+```json
+{
+  "action": "medications.create",
+  "data": {
+    "code": "Amoxicillin 500mg",
+    "status": "active"
+  }
+}
+```
+
+The enriched Medication resource also supports `manufacturer`, `amount`, `ingredient`, and `batch` fields through the SDK.

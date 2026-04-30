@@ -1,0 +1,121 @@
+---
+title: Goals
+description: Set and track patient care goals with measurable targets.
+---
+
+# Goals
+
+Goals (FHIR `Goal`) represent intended objectives for a patient's care. They support measurable targets, achievement tracking, and lifecycle management — from initial proposal through completion.
+
+## Create a Clinical Goal
+
+```ts
+const { data: goal } = await clinik.goals.create({
+  lifecycleStatus: 'active',
+  description: 'Reduce HbA1c to below 7%',
+  patientId: 'pt_abc123',
+  achievementStatus: 'in-progress',
+  category: ['treatment'],
+  priority: 'high-priority',
+  startDate: '2024-01-01',
+  target: [
+    {
+      measure: 'HbA1c',
+      detailQuantity: { value: 7, unit: '%' },
+      dueDate: '2024-06-30',
+    },
+  ],
+  expressedById: 'prac_dr456',
+  addressesIds: ['cond_diabetes789'],
+  note: 'Patient motivated, starting metformin and dietary changes',
+});
+```
+
+## Behavioral Goals
+
+```ts
+const { data: exerciseGoal } = await clinik.goals.create({
+  lifecycleStatus: 'active',
+  description: 'Walk 30 minutes daily, 5 days per week',
+  patientId: 'pt_abc123',
+  category: ['behavioral'],
+  priority: 'medium-priority',
+  startDate: '2024-02-01',
+  target: [
+    {
+      measure: 'Exercise frequency',
+      detailString: '5 days per week, 30 minutes each',
+      dueDate: '2024-04-01',
+    },
+  ],
+});
+```
+
+## Weight Management Goal
+
+```ts
+const { data: weightGoal } = await clinik.goals.create({
+  lifecycleStatus: 'active',
+  description: 'Achieve target weight of 180 lbs',
+  patientId: 'pt_abc123',
+  category: ['dietary'],
+  target: [
+    {
+      measure: 'Body weight',
+      detailQuantity: { value: 180, unit: 'lbs' },
+      dueDate: '2024-12-31',
+    },
+  ],
+});
+```
+
+## Update Goal Progress
+
+```ts
+await clinik.goals.update(goal.id, {
+  achievementStatus: 'improving',
+  note: 'HbA1c dropped from 9.2% to 8.1% after 3 months',
+});
+
+// Mark goal as achieved
+await clinik.goals.update(goal.id, {
+  lifecycleStatus: 'completed',
+  achievementStatus: 'achieved',
+  statusReason: 'HbA1c measured at 6.8% — target met',
+});
+```
+
+## Search Goals
+
+```ts
+// Find all active goals for a patient
+const { data } = await clinik.goals.search({
+  patientId: 'pt_abc123',
+  lifecycleStatus: 'active',
+});
+
+// Find goals by achievement status
+const { data: achieved } = await clinik.goals.search({
+  patientId: 'pt_abc123',
+  achievementStatus: 'achieved',
+});
+
+// Find goals by category
+const { data: dietary } = await clinik.goals.search({
+  patientId: 'pt_abc123',
+  category: 'dietary',
+});
+```
+
+## Lifecycle Status Values
+
+| Status | Description |
+|--------|-------------|
+| `proposed` | Goal has been suggested |
+| `planned` | Goal is planned but not yet started |
+| `accepted` | Goal has been accepted by the patient |
+| `active` | Goal is being actively pursued |
+| `on-hold` | Goal pursuit is temporarily paused |
+| `completed` | Goal has been completed |
+| `cancelled` | Goal was cancelled before completion |
+| `rejected` | Goal was rejected by the patient |

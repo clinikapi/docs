@@ -1,0 +1,67 @@
+---
+title: Eligibility Responses
+description: SDK reference for eligibility response operations.
+---
+
+# clinik.eligibilityResponses
+
+Eligibility Responses (FHIR `CoverageEligibilityResponse`) contain the results of an eligibility check. ClinikAPI exposes the most commonly used fields — use the [FHIR passthrough](/sdk/fhir-passthrough) for advanced eligibility scenarios.
+
+## create
+
+```ts
+const { data, meta } = await clinik.eligibilityResponses.create(request): Promise<ApiResponse<CoverageEligibilityResponse>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | active, cancelled, draft |
+| `purpose` | `string[]` | Yes | Purpose codes |
+| `patientId` | `string` | Yes | Patient ID |
+| `created` | `string` | No | When created (defaults to now) |
+| `requestId` | `string` | No | CoverageEligibilityRequest ID |
+| `outcome` | `string` | Yes | queued, complete, error, partial |
+| `insurerId` | `string` | Yes | Insurer Organization ID |
+| `disposition` | `string` | No | Disposition message |
+| `insurance` | `Array` | No | Insurance details |
+| `preAuthRef` | `string` | No | Pre-authorization reference |
+| `error` | `Array` | No | Processing errors |
+
+### Insurance Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `coverageId` | `string` | Yes | Coverage resource ID |
+| `inforce` | `boolean` | No | Whether coverage is in force |
+| `benefitPeriod` | `{ start?, end? }` | No | Benefit period |
+
+### Error Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `code` | `string` | Yes | Error code |
+
+## Example
+
+```ts
+const { data } = await clinik.eligibilityResponses.create({
+  status: 'active',
+  purpose: ['benefits'],
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins_bluecross',
+  requestId: 'eligreq_xyz456',
+  outcome: 'complete',
+  disposition: 'Coverage is active with standard benefits',
+  insurance: [
+    {
+      coverageId: 'cov_primary789',
+      inforce: true,
+      benefitPeriod: { start: '2024-01-01', end: '2024-12-31' },
+    },
+  ],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `disposition`. Search supports `patientId`, `status`, `outcome`, `requestId` filters.

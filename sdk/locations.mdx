@@ -1,0 +1,65 @@
+---
+title: Locations
+description: SDK reference for location operations.
+---
+
+# clinik.locations
+
+Locations represent physical places where healthcare services are provided — clinics, hospitals, rooms, buildings, or mobile units.
+
+## create
+
+```ts
+const { data, meta } = await clinik.locations.create(request): Promise<ApiResponse<Location>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | `string` | Yes | Location name |
+| `status` | `string` | No | active, suspended, inactive (default: active) |
+| `description` | `string` | No | Additional details about the location |
+| `mode` | `string` | No | instance (specific place) or kind (class of locations) |
+| `type` | `string[]` | No | Location type codes |
+| `alias` | `string[]` | No | Alternate names |
+| `phone` | `string` | No | Phone number |
+| `email` | `string` | No | Email address |
+| `address` | `Address` | No | Physical address |
+| `physicalType` | `string` | No | Physical form (building, wing, room, bed, etc.) |
+| `position` | `object` | No | GPS coordinates (longitude, latitude, altitude) |
+| `managingOrganizationId` | `string` | No | Organization that manages this location |
+| `partOfId` | `string` | No | Parent location ID |
+| `hoursOfOperation` | `Array` | No | Operating hours (daysOfWeek, allDay, openingTime, closingTime) |
+| `availabilityExceptions` | `string` | No | Description of availability exceptions |
+
+## Example
+
+```ts
+const { data } = await clinik.locations.create({
+  name: 'Sunrise Medical Center — Main Building',
+  status: 'active',
+  description: 'Primary care facility with 3 floors and 40 exam rooms',
+  mode: 'instance',
+  type: ['HOSP'],
+  phone: '555-0100',
+  email: 'info@sunrise-medical.com',
+  address: {
+    line: ['100 Health Blvd'],
+    city: 'Austin',
+    state: 'TX',
+    postalCode: '78701',
+    country: 'US',
+  },
+  physicalType: 'building',
+  position: { longitude: -97.7431, latitude: 30.2672 },
+  managingOrganizationId: 'org_sunrise',
+  hoursOfOperation: [
+    { daysOfWeek: ['mon', 'tue', 'wed', 'thu', 'fri'], openingTime: '08:00:00', closingTime: '18:00:00' },
+    { daysOfWeek: ['sat'], openingTime: '09:00:00', closingTime: '13:00:00' },
+  ],
+  availabilityExceptions: 'Closed on federal holidays',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `name`, `status`, `type`, `address` filters.

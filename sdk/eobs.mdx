@@ -1,0 +1,93 @@
+---
+title: Explanation of Benefits
+description: SDK reference for explanation of benefit operations.
+---
+
+# clinik.eobs
+
+Explanation of Benefits (FHIR `ExplanationOfBenefit`) provide a complete picture of claim adjudication. ClinikAPI exposes the most commonly used fields — use the [FHIR passthrough](/sdk/fhir-passthrough) for advanced EOB scenarios.
+
+## create
+
+```ts
+const { data, meta } = await clinik.eobs.create(request): Promise<ApiResponse<ExplanationOfBenefit>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | active, cancelled, draft |
+| `type` | `string` | Yes | institutional, oral, pharmacy, professional, vision |
+| `use` | `string` | Yes | claim, preauthorization, predetermination |
+| `patientId` | `string` | Yes | Patient ID |
+| `created` | `string` | No | When created (defaults to now) |
+| `insurerId` | `string` | Yes | Insurer Organization ID |
+| `providerId` | `string` | Yes | Provider (Practitioner/Organization ID) |
+| `outcome` | `string` | Yes | queued, complete, error, partial |
+| `disposition` | `string` | No | Disposition message |
+| `claimId` | `string` | No | Claim ID |
+| `claimResponseId` | `string` | No | ClaimResponse ID |
+| `billablePeriod` | `{ start?, end? }` | No | Billable period |
+| `insurance` | `Array` | Yes | Insurance coverage (min 1) |
+| `item` | `Array` | No | Line items with adjudication |
+| `total` | `Array` | No | Totals by category |
+| `payment` | `object` | No | Payment details |
+| `processNote` | `Array` | No | Processing notes |
+
+### Insurance Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `focal` | `boolean` | Yes | Whether this is the focal coverage |
+| `coverageId` | `string` | Yes | Coverage resource ID |
+
+### Item Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `sequence` | `number` | Yes | Sequence number |
+| `productOrService` | `string` | Yes | Product or service code |
+| `quantity` | `{ value, unit? }` | No | Quantity |
+| `unitPrice` | `{ value, currency? }` | No | Unit price |
+| `net` | `{ value, currency? }` | No | Net amount |
+| `adjudication` | `Array` | No | Adjudication details |
+
+## Example
+
+```ts
+const { data } = await clinik.eobs.create({
+  status: 'active',
+  type: 'professional',
+  use: 'claim',
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins_bluecross',
+  providerId: 'Practitioner/prac_dr456',
+  outcome: 'complete',
+  claimId: 'claim_xyz456',
+  insurance: [{ focal: true, coverageId: 'cov_primary789' }],
+  item: [
+    {
+      sequence: 1,
+      productOrService: '99214',
+      unitPrice: { value: 200.00, currency: 'USD' },
+      net: { value: 200.00, currency: 'USD' },
+      adjudication: [
+        { category: 'submitted', amount: { value: 200.00, currency: 'USD' } },
+        { category: 'benefit', amount: { value: 144.00, currency: 'USD' } },
+      ],
+    },
+  ],
+  total: [
+    { category: 'submitted', amount: { value: 200.00, currency: 'USD' } },
+    { category: 'benefit', amount: { value: 144.00, currency: 'USD' } },
+  ],
+  payment: {
+    type: 'complete',
+    amount: { value: 144.00, currency: 'USD' },
+    date: '2024-04-01',
+  },
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `disposition`. Search supports `patientId`, `status`, `use`, `outcome`, `claimId` filters.

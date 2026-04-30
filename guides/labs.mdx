@@ -35,6 +35,56 @@ const { data: lab } = await clinik.labs.create({
 });
 ```
 
+## Effective Period
+
+For reports that span a time range (e.g. 24-hour urine collection):
+
+```ts
+const { data } = await clinik.labs.create({
+  status: 'final',
+  code: { system: 'http://loinc.org', code: '21482-5', display: '24 hour urine protein' },
+  patientId: 'pt_abc123',
+  category: 'LAB',
+  effectivePeriod: {
+    start: '2025-01-14T08:00:00Z',
+    end: '2025-01-15T08:00:00Z',
+  },
+  conclusion: 'Protein within normal range.',
+});
+```
+
+## Based On (ServiceRequest)
+
+Link a report to the order that requested it:
+
+```ts
+const { data } = await clinik.labs.create({
+  status: 'final',
+  code: { system: 'http://loinc.org', code: '24323-8', display: 'CMP' },
+  patientId: 'pt_abc123',
+  basedOn: ['sr_lab_order_001'],
+  // ...
+});
+```
+
+## Media / Images
+
+Attach images or media to the report:
+
+```ts
+const { data } = await clinik.labs.create({
+  status: 'final',
+  code: 'Chest X-Ray',
+  patientId: 'pt_abc123',
+  category: 'RAD',
+  media: [
+    { comment: 'PA view', linkId: 'media_xray_pa' },
+    { comment: 'Lateral view', linkId: 'media_xray_lat' },
+  ],
+  conclusion: 'No acute cardiopulmonary disease.',
+});
+```
+
 ## Categories
 
 | Code | Description |
@@ -59,24 +109,27 @@ const { data: glucose } = await clinik.observations.create({
   referenceRange: { low: { value: 70, unit: 'mg/dL' }, high: { value: 100, unit: 'mg/dL' } },
 });
 
-const { data: creatinine } = await clinik.observations.create({
-  status: 'final',
-  code: { system: 'http://loinc.org', code: '2160-0', display: 'Creatinine' },
-  patientId: 'pt_abc123',
-  category: 'laboratory',
-  valueQuantity: { value: 1.1, unit: 'mg/dL' },
-  interpretation: 'N',
-  referenceRange: { low: { value: 0.7, unit: 'mg/dL' }, high: { value: 1.3, unit: 'mg/dL' } },
-});
-
 // Create the report linking them
 const { data: report } = await clinik.labs.create({
   status: 'final',
   code: { system: 'http://loinc.org', code: '24323-8', display: 'CMP' },
   patientId: 'pt_abc123',
   category: 'LAB',
-  resultIds: [glucose.id!, creatinine.id!],
+  resultIds: [glucose.id!],
   conclusion: 'All values within normal limits.',
+});
+```
+
+## Update a Lab Report
+
+```ts
+await clinik.labs.update('lab_abc123', {
+  status: 'amended',
+  conclusion: 'Updated: Glucose slightly elevated on recheck.',
+  conclusionCodes: [
+    { system: 'http://snomed.info/sct', code: '166922008', display: 'Glucose elevated' },
+  ],
+  resultsInterpreter: 'prac_senior_doc',
 });
 ```
 

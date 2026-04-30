@@ -1,0 +1,82 @@
+---
+title: Device Requests
+description: Order and request devices for patient care.
+---
+
+# Device Requests
+
+Device Requests (FHIR `DeviceRequest`) represent orders or proposals for a device to be provided or used for a patient. They support the full ordering lifecycle from proposal through completion.
+
+## Create a Device Request
+
+```ts
+const { data: request } = await clinik.deviceRequests.create({
+  intent: 'order',
+  code: 'Continuous Glucose Monitor',
+  patientId: 'pt_abc123',
+  status: 'active',
+  priority: 'routine',
+  requesterId: 'prac_dr456',
+  occurrenceDateTime: '2024-03-01',
+  reasonCode: ['Type 2 Diabetes — glucose monitoring'],
+  note: 'Patient to use CGM for 14-day glucose monitoring cycle',
+});
+```
+
+## Using Coded Devices
+
+You can use coded values for precise device identification:
+
+```ts
+const { data } = await clinik.deviceRequests.create({
+  intent: 'order',
+  code: {
+    system: 'http://snomed.info/sct',
+    code: '706689003',
+    display: 'Continuous glucose monitoring system',
+  },
+  patientId: 'pt_abc123',
+  priority: 'urgent',
+  requesterId: 'prac_dr456',
+});
+```
+
+## Request Lifecycle
+
+```ts
+// Draft → Active → Completed
+await clinik.deviceRequests.update(request.id, {
+  status: 'completed',
+  note: 'CGM delivered and activated for patient',
+});
+```
+
+## Search Device Requests
+
+```ts
+// Find all active device requests for a patient
+const { data } = await clinik.deviceRequests.search({
+  patientId: 'pt_abc123',
+  status: 'active',
+});
+
+// Find all orders
+const { data: orders } = await clinik.deviceRequests.search({
+  intent: 'order',
+  status: 'active',
+});
+```
+
+## Intent Values
+
+| Intent | Description |
+|--------|-------------|
+| `proposal` | Suggestion for device use |
+| `plan` | Planned device use |
+| `directive` | Patient or related person request |
+| `order` | Formal order for device |
+| `original-order` | Original order from requester |
+| `reflex-order` | Auto-generated order |
+| `filler-order` | Order from fulfiller |
+| `instance-order` | Specific instance of an order |
+| `option` | Option for consideration |

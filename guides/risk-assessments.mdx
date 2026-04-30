@@ -1,0 +1,124 @@
+---
+title: Risk Assessments
+description: Record and manage clinical risk evaluations — cardiovascular risk, fall risk, cancer screening, and more.
+---
+
+# Risk Assessments
+
+Risk assessments (FHIR `RiskAssessment`) capture the results of clinical risk evaluations. They record the method used, the predictions made, and any recommended mitigation actions.
+
+## Create a Risk Assessment
+
+```ts
+const { data: risk } = await clinik.riskAssessments.create({
+  status: 'final',
+  patientId: 'pt_abc123',
+  performerId: 'prac_def456',
+  method: 'Framingham Risk Score',
+  code: 'cardiovascular-risk',
+  conditionId: 'cond_hypertension',
+  prediction: [
+    {
+      outcome: 'Myocardial infarction',
+      probabilityDecimal: 0.12,
+      qualitativeRisk: 'moderate',
+      rationale: '10-year ASCVD risk based on age, cholesterol, blood pressure, smoking status',
+    },
+  ],
+  mitigation: 'Start statin therapy. Lifestyle modifications recommended.',
+  reasonCode: ['Hypertension', 'Hyperlipidemia'],
+});
+```
+
+## Common Use Cases
+
+### Cardiovascular Risk Score
+
+```ts
+const { data } = await clinik.riskAssessments.create({
+  status: 'final',
+  patientId: 'pt_abc123',
+  performerId: 'prac_cardiologist',
+  method: 'ASCVD Pooled Cohort Equations',
+  code: '10-year-ascvd-risk',
+  prediction: [
+    {
+      outcome: 'Atherosclerotic cardiovascular disease event',
+      probabilityDecimal: 0.15,
+      qualitativeRisk: 'high',
+      rationale: 'Age 62, male, total cholesterol 240, HDL 38, systolic BP 148, on BP meds, non-diabetic, smoker',
+    },
+  ],
+  mitigation: 'High-intensity statin therapy. Smoking cessation counseling. Blood pressure optimization.',
+});
+```
+
+### Fall Risk Assessment
+
+```ts
+const { data } = await clinik.riskAssessments.create({
+  status: 'final',
+  patientId: 'pt_elderly',
+  performerId: 'prac_nurse',
+  method: 'Morse Fall Scale',
+  code: 'fall-risk',
+  prediction: [
+    {
+      outcome: 'Fall',
+      qualitativeRisk: 'high',
+      rationale: 'Score 55: history of falling, secondary diagnosis, ambulatory aid, IV therapy, impaired gait',
+    },
+  ],
+  mitigation: 'Fall precautions: bed alarm, non-slip footwear, call light within reach, hourly rounding',
+});
+```
+
+### Cancer Screening Risk
+
+```ts
+const { data } = await clinik.riskAssessments.create({
+  status: 'final',
+  patientId: 'pt_abc123',
+  performerId: 'prac_oncologist',
+  method: 'Gail Model',
+  code: 'breast-cancer-risk',
+  prediction: [
+    {
+      outcome: 'Invasive breast cancer',
+      probabilityDecimal: 0.023,
+      qualitativeRisk: 'moderate',
+      relativeRisk: 1.8,
+      rationale: '5-year risk based on age, family history, reproductive history, prior biopsies',
+    },
+  ],
+  mitigation: 'Annual mammography. Consider MRI screening. Discuss chemoprevention options.',
+  reasonCode: ['Family history of breast cancer', 'Prior atypical ductal hyperplasia'],
+});
+```
+
+## Update Predictions
+
+```ts
+const { data } = await clinik.riskAssessments.update(risk.id, {
+  status: 'amended',
+  prediction: [
+    {
+      outcome: 'Myocardial infarction',
+      probabilityDecimal: 0.08,
+      qualitativeRisk: 'moderate',
+      rationale: 'Revised after 6 months of statin therapy and lifestyle changes',
+    },
+  ],
+  mitigation: 'Continue current statin therapy. Reassess in 6 months.',
+});
+```
+
+## Search Risk Assessments
+
+```ts
+const { data } = await clinik.riskAssessments.search({
+  patientId: 'pt_abc123',
+  status: 'final',
+  method: 'Framingham',
+});
+```

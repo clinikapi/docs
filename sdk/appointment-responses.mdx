@@ -1,0 +1,50 @@
+---
+title: Appointment Responses
+description: SDK reference for appointment response operations.
+---
+
+# clinik.appointmentResponses
+
+Appointment responses represent a participant's reply to an appointment — accepting, declining, tentatively accepting, or requesting a new time.
+
+## create
+
+```ts
+const { data, meta } = await clinik.appointmentResponses.create(request): Promise<ApiResponse<AppointmentResponse>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `appointmentId` | `string` | Yes | The appointment this response relates to |
+| `participantStatus` | `string` | Yes | accepted, declined, tentative, needs-action |
+| `actorId` | `string` | No | The participant (Patient/Practitioner reference) |
+| `participantType` | `string` | No | Role of participant |
+| `start` | `string` | No | Proposed new start time |
+| `end` | `string` | No | Proposed new end time |
+| `comment` | `string` | No | Additional comments |
+
+## Example
+
+```ts
+// Accept an appointment
+const { data } = await clinik.appointmentResponses.create({
+  appointmentId: 'appt_abc123',
+  participantStatus: 'accepted',
+  actorId: 'Practitioner/prac_def456',
+  comment: 'Confirmed — see you then.',
+});
+
+// Propose a new time
+const { data: counter } = await clinik.appointmentResponses.create({
+  appointmentId: 'appt_abc123',
+  participantStatus: 'tentative',
+  actorId: 'Patient/pt_xyz789',
+  start: '2025-02-03T10:00:00Z',
+  end: '2025-02-03T10:30:00Z',
+  comment: 'Can we move to Monday morning instead?',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `appointmentId`, `actorId`, `participantStatus` filters.

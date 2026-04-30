@@ -1,0 +1,142 @@
+---
+title: Medication Statements
+description: Record patient-reported medication usage and adherence.
+---
+
+# Medication Statements
+
+Medication Statements (FHIR `MedicationStatement`) record what medications a patient is taking or has taken — as reported by the patient, clinician, or other source. Unlike prescriptions, these are informational records, not orders.
+
+## Record a Medication Statement
+
+```ts
+const { data: stmt } = await clinik.medicationStatements.create({
+  status: 'active',
+  medication: 'Metformin 500mg Tablet',
+  patientId: 'pt_abc123',
+  category: 'community',
+  effectivePeriod: {
+    start: '2024-01-15',
+  },
+  dosageText: 'Take 1 tablet twice daily with meals',
+  informationSourceId: 'Patient/pt_abc123',
+  reasonCode: ['Type 2 diabetes management'],
+  note: 'Patient reports good adherence, no side effects',
+});
+```
+
+## Patient-Reported Medications
+
+During intake, record all medications a patient reports taking:
+
+```ts
+// Over-the-counter medication
+const { data: otc } = await clinik.medicationStatements.create({
+  status: 'active',
+  medication: 'Ibuprofen 200mg',
+  patientId: 'pt_abc123',
+  category: 'community',
+  dosageText: 'Takes 1-2 tablets as needed for headaches',
+  informationSourceId: 'Patient/pt_abc123',
+  dateAsserted: '2024-03-15',
+});
+
+// Supplement
+const { data: supplement } = await clinik.medicationStatements.create({
+  status: 'active',
+  medication: 'Vitamin D3 2000 IU',
+  patientId: 'pt_abc123',
+  category: 'community',
+  dosageText: 'Takes 1 capsule daily',
+  informationSourceId: 'Patient/pt_abc123',
+});
+```
+
+## Discontinued Medication
+
+```ts
+const { data: stopped } = await clinik.medicationStatements.create({
+  status: 'stopped',
+  medication: {
+    system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+    code: '197361',
+    display: 'Lisinopril 10 MG Oral Tablet',
+  },
+  patientId: 'pt_abc123',
+  effectivePeriod: {
+    start: '2023-06-01',
+    end: '2024-02-28',
+  },
+  statusReason: ['Switched to alternative due to persistent cough'],
+  note: 'Replaced with Losartan 50mg',
+});
+```
+
+## Link to Prescriptions
+
+Connect a medication statement to the authorizing prescription:
+
+```ts
+const { data } = await clinik.medicationStatements.create({
+  status: 'active',
+  medication: 'Atorvastatin 20mg Tablet',
+  patientId: 'pt_abc123',
+  basedOn: ['MedicationRequest/rx_order456'],
+  dosageText: 'Take 1 tablet at bedtime',
+  reasonCode: ['Hyperlipidemia'],
+});
+```
+
+## Update a Statement
+
+```ts
+await clinik.medicationStatements.update('ms_abc123', {
+  status: 'completed',
+  effectivePeriod: {
+    start: '2024-01-15',
+    end: '2024-06-15',
+  },
+  note: 'Course completed as prescribed',
+});
+```
+
+## Search Medication Statements
+
+```ts
+// All active medications for a patient
+const { data } = await clinik.medicationStatements.search({
+  patientId: 'pt_abc123',
+  status: 'active',
+});
+
+// Filter by category
+const { data: community } = await clinik.medicationStatements.search({
+  patientId: 'pt_abc123',
+  category: 'community',
+});
+
+// Search by medication
+const { data: metformin } = await clinik.medicationStatements.search({
+  medication: 'metformin',
+});
+```
+
+## Statement Statuses
+
+| Status | Description |
+|--------|-------------|
+| `active` | Patient is currently taking the medication |
+| `completed` | Course of medication is finished |
+| `stopped` | Medication was discontinued |
+| `on-hold` | Medication is temporarily paused |
+| `intended` | Patient intends to start the medication |
+| `not-taken` | Patient is not taking the medication |
+
+## Prescriptions vs Statements
+
+| Resource | FHIR Type | Purpose |
+|----------|-----------|---------|
+| Prescription | `MedicationRequest` | Medication order (what was prescribed) |
+| Medication Statement | `MedicationStatement` | Medication usage (what the patient is actually taking) |
+
+A prescription is an order from a provider. A medication statement is a record of what the patient reports taking — which may include OTC drugs, supplements, or medications prescribed elsewhere.

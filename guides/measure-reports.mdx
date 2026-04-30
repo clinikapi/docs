@@ -1,0 +1,87 @@
+---
+title: Measure Reports
+description: Submit and track quality measure results for populations and individual patients.
+---
+
+# Measure Reports
+
+Measure Reports (FHIR `MeasureReport`) contain the results of evaluating a measure. They can report on individual patients, patient lists, or summary population data.
+
+## Submit a Summary Report
+
+```ts
+const { data: report } = await clinik.measureReports.create({
+  status: 'complete',
+  type: 'summary',
+  measureId: 'diabetes-hba1c-control',
+  period: { start: '2024-01-01', end: '2024-03-31' },
+  reporterId: 'org_clinic789',
+  group: [{
+    code: 'hba1c-control',
+    population: [
+      { code: 'initial-population', count: 500 },
+      { code: 'denominator', count: 480 },
+      { code: 'denominator-exclusion', count: 20 },
+      { code: 'numerator', count: 72 },
+    ],
+    measureScore: { value: 0.15, unit: '%' },
+  }],
+});
+```
+
+## Submit an Individual Patient Report
+
+```ts
+const { data } = await clinik.measureReports.create({
+  status: 'complete',
+  type: 'individual',
+  measureId: 'diabetes-hba1c-control',
+  patientId: 'pt_abc123',
+  period: { start: '2024-01-01', end: '2024-03-31' },
+  date: '2024-04-01T10:00:00Z',
+  group: [{
+    code: 'hba1c-control',
+    population: [
+      { code: 'initial-population', count: 1 },
+      { code: 'numerator', count: 0 },
+    ],
+    measureScore: { value: 7.2, unit: '%' },
+  }],
+});
+```
+
+## Submit a Pending Report
+
+```ts
+const { data } = await clinik.measureReports.create({
+  status: 'pending',
+  type: 'summary',
+  measureId: 'breast-cancer-screening',
+  period: { start: '2024-01-01', end: '2024-06-30' },
+});
+
+// Later, update the status
+const { data: updated } = await clinik.measureReports.update('report_abc123', {
+  status: 'complete',
+});
+```
+
+## Search Measure Reports
+
+```ts
+// All reports for a measure
+const { data } = await clinik.measureReports.search({
+  measureId: 'diabetes-hba1c-control',
+});
+
+// Reports for a specific patient
+const { data: patientReports } = await clinik.measureReports.search({
+  patientId: 'pt_abc123',
+});
+
+// Reports in a date range
+const { data: q1 } = await clinik.measureReports.search({
+  dateFrom: '2024-01-01',
+  dateTo: '2024-03-31',
+});
+```

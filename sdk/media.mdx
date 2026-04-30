@@ -1,0 +1,71 @@
+---
+title: Media
+description: SDK reference for media operations.
+---
+
+# clinik.media
+
+Media (FHIR `Media`) captures images, videos, and audio recordings from clinical encounters. Track diagnostic images, wound photos, ultrasound recordings, and other clinical media.
+
+## create
+
+```ts
+const { data, meta } = await clinik.media.create(request): Promise<ApiResponse<Media>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | preparation, in-progress, not-done, on-hold, stopped, completed |
+| `type` | `string` | No | image, video, audio |
+| `modality` | `string` | No | Acquisition equipment type |
+| `view` | `string` | No | Imaging view |
+| `patientId` | `string` | No | Patient ID |
+| `encounterId` | `string` | No | Encounter ID |
+| `createdDateTime` | `string` | No | When the media was created |
+| `issued` | `string` | No | When the media was issued |
+| `operatorId` | `string` | No | Operator Practitioner ID |
+| `reasonCode` | `string[]` | No | Reason codes |
+| `bodySite` | `string` | No | Body site |
+| `deviceName` | `string` | No | Device name |
+| `deviceId` | `string` | No | Device ID |
+| `height` | `number` | No | Image height in pixels |
+| `width` | `number` | No | Image width in pixels |
+| `frames` | `number` | No | Number of frames |
+| `duration` | `number` | No | Duration in seconds |
+| `content` | `object` | Yes | Media content (see below) |
+| `note` | `string` | No | Additional notes |
+| `basedOn` | `string[]` | No | ServiceRequest/CarePlan IDs |
+
+### Content Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `contentType` | `string` | Yes | MIME type (e.g. image/jpeg, video/mp4) |
+| `data` | `string` | No | Base64-encoded content |
+| `url` | `string` | No | URL to the media |
+| `title` | `string` | No | Title of the media |
+
+## Example
+
+```ts
+const { data } = await clinik.media.create({
+  status: 'completed',
+  type: 'image',
+  patientId: 'pt_abc123',
+  encounterId: 'enc_visit456',
+  operatorId: 'prac_dr789',
+  bodySite: 'Left knee',
+  height: 1920,
+  width: 1080,
+  content: {
+    contentType: 'image/jpeg',
+    url: 'https://storage.example.com/images/knee-xray-001.jpg',
+    title: 'Left knee X-ray — AP view',
+  },
+  note: 'Pre-operative imaging for total knee replacement evaluation',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status` and `note`. Search supports `patientId`, `status`, `type`, `modality`, `dateFrom`, `dateTo` filters.

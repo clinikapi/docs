@@ -1,0 +1,52 @@
+---
+title: Slots
+description: SDK reference for scheduling slot operations.
+---
+
+# clinik.slots
+
+Slots represent available time periods on a schedule that can be booked as appointments. They define when a practitioner, location, or service is available.
+
+## create
+
+```ts
+const { data, meta } = await clinik.slots.create(request): Promise<ApiResponse<Slot>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `scheduleId` | `string` | Yes | The schedule this slot belongs to |
+| `status` | `string` | Yes | busy, free, busy-unavailable, busy-tentative |
+| `start` | `string` | Yes | Start time (ISO 8601) |
+| `end` | `string` | Yes | End time (ISO 8601) |
+| `serviceCategory` | `string` | No | Service category |
+| `serviceType` | `string` | No | Service type |
+| `specialty` | `string` | No | Required specialty |
+| `appointmentType` | `string` | No | Type of appointment that can be booked |
+| `overbooked` | `boolean` | No | Whether the slot is overbooked |
+| `comment` | `string` | No | Additional comments |
+
+## Example
+
+```ts
+// Create available slots for a practitioner's schedule
+const { data: slot } = await clinik.slots.create({
+  scheduleId: 'sched_dr_smith_mon',
+  status: 'free',
+  start: '2025-02-03T09:00:00Z',
+  end: '2025-02-03T09:30:00Z',
+  serviceType: 'General consultation',
+  specialty: 'Family Medicine',
+  appointmentType: 'routine',
+  comment: 'Available for new patients',
+});
+
+// Mark a slot as busy
+await clinik.slots.update('slot_abc123', {
+  status: 'busy',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `scheduleId`, `status`, `serviceType`, `specialty`, `dateFrom`, `dateTo` filters.

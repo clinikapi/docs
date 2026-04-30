@@ -14,29 +14,62 @@ const { data, meta } = await clinik.assessments.create(request: AssessmentCreate
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `status` | `string` | Yes | in-progress, completed |
+| `statusReason` | `string` | No | Reason for current status |
 | `patientId` | `string` | Yes | Patient reference |
 | `encounterId` | `string` | No | Encounter reference |
 | `practitionerId` | `string` | No | Assessor reference |
+| `code` | `string` | No | Kind of assessment (initial-assessment, follow-up, discharge) |
 | `description` | `string` | No | Description of the assessment |
 | `summary` | `string` | Yes | Clinical summary |
-| `findings` | `Array<{ code?, text }>` | No | Clinical findings |
+| `findings` | `AssessmentFinding[]` | No | Clinical findings with optional basis |
 | `note` | `string` | No | Additional notes |
 | `effectiveDateTime` | `string` | No | When assessment was made |
+| `date` | `string` | No | When documented (defaults to now) |
+| `previousAssessmentId` | `string` | No | Reference to previous assessment |
+| `problemIds` | `string[]` | No | Condition/AllergyIntolerance IDs being assessed |
+| `investigations` | `AssessmentInvestigation[]` | No | Sets of investigations |
+| `protocol` | `string[]` | No | Clinical protocol URIs followed |
+| `prognosis` | `Array<{ code?, text }>` | No | Prognosis codes |
+| `supportingInfoIds` | `string[]` | No | Supporting information references |
+
+### Finding Structure
+
+```ts
+findings: [
+  { code: 'I10', text: 'Essential hypertension', basis: 'Blood pressure readings' },
+  { text: 'No signs of end-organ damage' },
+]
+```
+
+### Investigation Structure
+
+```ts
+investigations: [
+  { name: 'Initial labs', itemIds: ['obs_glucose', 'obs_creatinine'] },
+  { name: 'Imaging', itemIds: ['dr_chest_xray'] },
+]
+```
 
 ## Example
 
 ```ts
 const { data: assessment } = await clinik.assessments.create({
   status: 'completed',
+  code: 'initial-assessment',
   patientId: 'pt_abc123',
   encounterId: 'enc_xyz789',
   practitionerId: 'prac_def456',
-  summary: 'Patient presents with well-controlled hypertension. Continue current medication regimen.',
+  summary: 'Patient presents with well-controlled hypertension.',
   findings: [
-    { code: 'I10', text: 'Essential hypertension - well controlled' },
+    { code: 'I10', text: 'Essential hypertension — well controlled', basis: 'BP 128/82' },
     { text: 'No signs of end-organ damage' },
   ],
-  note: 'Follow up in 3 months. Continue lisinopril 10mg daily.',
+  investigations: [
+    { name: 'Lab panel', itemIds: ['obs_cmp_001', 'obs_cbc_001'] },
+  ],
+  problemIds: ['cond_hypertension_001'],
+  prognosis: [{ text: 'Good — well controlled with current regimen' }],
+  note: 'Follow up in 3 months.',
 });
 ```
 

@@ -22,6 +22,8 @@ const { data: rx } = await clinik.prescriptions.create({
   intent: 'order',
   status: 'active',
   priority: 'routine',
+  category: 'outpatient',
+  authoredOn: '2026-04-29T10:00:00Z',
   dosageText: 'Take 1 tablet by mouth once daily',
   dosage: {
     dose: { value: 10, unit: 'mg' },
@@ -36,6 +38,92 @@ const { data: rx } = await clinik.prescriptions.create({
   substitutionAllowed: true,
   reason: 'Essential hypertension',
   note: 'Monitor blood pressure weekly',
+  courseOfTherapy: 'continuous',
+});
+```
+
+## New Fields
+
+### Status Reason
+
+Explain why a prescription is on-hold, cancelled, or stopped:
+
+```ts
+await clinik.prescriptions.update('rx_abc123', {
+  status: 'on-hold',
+  statusReason: 'Patient reported dizziness — holding pending follow-up',
+});
+```
+
+### Category
+
+Classify the medication usage context:
+
+```ts
+const { data } = await clinik.prescriptions.create({
+  patientId: 'pt_abc123',
+  prescriberId: 'prac_def456',
+  medication: 'Metformin 500mg',
+  category: 'discharge', // inpatient, outpatient, community, discharge
+  // ...
+});
+```
+
+### Do Not Perform
+
+Create a "do not administer" order:
+
+```ts
+const { data } = await clinik.prescriptions.create({
+  patientId: 'pt_abc123',
+  prescriberId: 'prac_def456',
+  medication: 'Aspirin',
+  doNotPerform: true,
+  reason: 'Patient has aspirin allergy',
+  // ...
+});
+```
+
+### Performer
+
+Specify who should administer the medication:
+
+```ts
+const { data } = await clinik.prescriptions.create({
+  patientId: 'pt_abc123',
+  prescriberId: 'prac_def456',
+  medication: 'Insulin Glargine 100 units/mL',
+  performerId: 'prac_nurse789',
+  // ...
+});
+```
+
+### Course of Therapy
+
+Indicate the overall pattern of medication administration:
+
+```ts
+const { data } = await clinik.prescriptions.create({
+  patientId: 'pt_abc123',
+  prescriberId: 'prac_def456',
+  medication: 'Prednisone 10mg',
+  courseOfTherapy: 'acute', // continuous, acute, seasonal
+  // ...
+});
+```
+
+### Prior Prescription
+
+Link to a prescription being replaced:
+
+```ts
+const { data } = await clinik.prescriptions.create({
+  patientId: 'pt_abc123',
+  prescriberId: 'prac_def456',
+  medication: 'Lisinopril 20 MG Oral Tablet',
+  priorPrescriptionId: 'rx_old456',
+  reason: 'Dose increase — blood pressure not controlled at 10mg',
+  // ...
 });
 ```
 
@@ -86,12 +174,19 @@ You can provide dosage as free text, structured data, or both:
 // Put a prescription on hold
 const { data: updated } = await clinik.prescriptions.update('rx_abc123', {
   status: 'on-hold',
-  note: 'Patient reported dizziness — holding pending follow-up',
+  statusReason: 'Patient reported dizziness — holding pending follow-up',
+});
+
+// Change priority
+await clinik.prescriptions.update('rx_abc123', {
+  priority: 'urgent',
+  performerId: 'prac_nurse789',
 });
 
 // Cancel a prescription
 await clinik.prescriptions.update('rx_abc123', {
   status: 'cancelled',
+  statusReason: 'Replaced with alternative medication',
 });
 ```
 
@@ -105,10 +200,39 @@ const { data: results } = await clinik.prescriptions.search({
 });
 
 for (const rx of results.data) {
-  console.log(rx.medicationCodeableConcept?.coding?.[0]?.display);
+  console.log(`${rx.medication} — ${rx.dosageText}`);
+  console.log(`  Category: ${rx.category}, Course: ${rx.courseOfTherapy}`);
 }
 ```
 
 ## Status Lifecycle
 
 `draft` → `active` → `on-hold` → `completed` / `cancelled` / `stopped`
+
+Use `statusReason` to document why a prescription changed status.
+
+## Complete Field Reference
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `patientId` | `string` | Patient reference (required) |
+| `prescriberId` | `string` | Prescribing practitioner (required) |
+| `medication` | `string \| CodeableConcept` | Medication code or name (required) |
+| `intent` | `string` | proposal, plan, order, original-order |
+| `status` | `string` | active, on-hold, cancelled, completed, draft |
+| `statusReason` | `string` | Reason for current status |
+| `priority` | `string` | routine, urgent, asap, stat |
+| `category` | `string` | inpatient, outpatient, community, discharge |
+| `doNotPerform` | `boolean` | True if prohibiting the medication |
+| `authoredOn` | `string` | When authored (ISO 8601, defaults to now) |
+| `performerId` | `string` | Intended performer of administration |
+| `courseOfTherapy` | `string` | continuous, acute, seasonal |
+| `priorPrescriptionId` | `string` | Reference to replaced prescription |
+| `dosageText` | `string` | Human-readable dosage instructions |
+| `dosage` | `object` | Structured dosage (dose, frequency, period, route) |
+| `refills` | `number` | Number of refills (0-99) |
+| `quantity` | `{ value, unit }` | Quantity to dispense |
+| `supplyDays` | `number` | Expected supply duration in days |
+| `substitutionAllowed` | `boolean` | Allow generic substitution |
+| `reason` | `string` | Clinical reason for the prescription |
+| `note` | `string` | Additional notes for the pharmacist |

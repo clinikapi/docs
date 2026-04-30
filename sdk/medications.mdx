@@ -18,6 +18,8 @@ const { data, meta } = await clinik.medications.create(request: MedicationCreate
 | `code` | `string \| { system?, code, display? }` | Yes | RxNorm, SNOMED CT, or free-text name |
 | `status` | `'active' \| 'inactive'` | No | Medication status (default: active) |
 | `form` | `string` | No | Dosage form (e.g. "tablet", "capsule", "injection") |
+| `manufacturer` | `string` | No | Manufacturer name |
+| `amount` | `{ numerator: { value, unit }, denominator: { value, unit } }` | No | Total amount in package |
 | `ingredient` | `Array` | No | Active and inactive ingredients |
 | `batch` | `{ lotNumber?, expirationDate? }` | No | Batch/lot information |
 

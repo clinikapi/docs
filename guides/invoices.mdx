@@ -1,0 +1,123 @@
+---
+title: Invoices
+description: Create and manage healthcare billing invoices.
+---
+
+# Invoices
+
+Invoices (FHIR `Invoice`) represent billing documents for healthcare services rendered. ClinikAPI simplifies the most common invoice fields — for advanced scenarios like complex price components or tax calculations, use the [FHIR passthrough](/guides/raw-fhir).
+
+## Create an Invoice
+
+```ts
+const { data: invoice } = await clinik.invoices.create({
+  status: 'issued',
+  patientId: 'pt_abc123',
+  type: 'professional-services',
+  issuerId: 'org_clinic456',
+  date: '2024-03-15',
+  lineItem: [
+    {
+      sequence: 1,
+      chargeItemCode: '99213',
+      priceComponent: [
+        { type: 'base', amount: { value: 150.00, currency: 'USD' } },
+      ],
+    },
+    {
+      sequence: 2,
+      chargeItemCode: '85025',
+      priceComponent: [
+        { type: 'base', amount: { value: 45.00, currency: 'USD' } },
+      ],
+    },
+  ],
+  totalNet: { value: 195.00, currency: 'USD' },
+  totalGross: { value: 195.00, currency: 'USD' },
+  paymentTerms: 'Net 30',
+});
+```
+
+## Draft Invoice
+
+Create a draft invoice and issue it later:
+
+```ts
+const { data: draft } = await clinik.invoices.create({
+  status: 'draft',
+  patientId: 'pt_abc123',
+  type: 'facility-charges',
+  lineItem: [
+    {
+      sequence: 1,
+      chargeItemCode: 'room-charge-semi-private',
+      priceComponent: [
+        { type: 'base', amount: { value: 1200.00, currency: 'USD' } },
+      ],
+    },
+  ],
+  totalGross: { value: 1200.00, currency: 'USD' },
+});
+
+// Issue the invoice when ready
+await clinik.invoices.update(draft.id, { status: 'issued' });
+```
+
+## Cancel an Invoice
+
+```ts
+await clinik.invoices.update('inv_abc123', {
+  status: 'cancelled',
+  cancelledReason: 'Duplicate invoice — services already billed under INV-2024-001',
+});
+```
+
+## Search Invoices
+
+```ts
+// All invoices for a patient
+const { data } = await clinik.invoices.search({
+  patientId: 'pt_abc123',
+});
+
+// Filter by status and date range
+const { data: issued } = await clinik.invoices.search({
+  status: 'issued',
+  dateFrom: '2024-01-01',
+  dateTo: '2024-03-31',
+});
+
+// Filter by issuer
+const { data: byClinic } = await clinik.invoices.search({
+  issuerId: 'org_clinic456',
+  status: 'balanced',
+});
+```
+
+## Invoice Statuses
+
+| Status | Description |
+|--------|-------------|
+| `draft` | Invoice is being prepared |
+| `issued` | Invoice has been sent to the recipient |
+| `balanced` | Invoice has been fully paid |
+| `cancelled` | Invoice has been cancelled |
+
+## Complete Field Reference
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | draft, issued, balanced, cancelled |
+| `patientId` | `string` | No | Patient the invoice is for |
+| `type` | `string` | No | Invoice type |
+| `recipientId` | `string` | No | Recipient reference |
+| `date` | `string` | No | Invoice date (defaults to now) |
+| `issuerId` | `string` | No | Issuing Organization ID |
+| `accountId` | `string` | No | Account ID |
+| `participant` | `Array` | No | Participants involved |
+| `lineItem` | `Array` | No | Line items with pricing |
+| `totalNet` | `{ value, currency? }` | No | Total net amount |
+| `totalGross` | `{ value, currency? }` | No | Total gross amount |
+| `paymentTerms` | `string` | No | Payment terms |
+| `cancelledReason` | `string` | No | Reason for cancellation |
+| `note` | `string` | No | Additional notes |

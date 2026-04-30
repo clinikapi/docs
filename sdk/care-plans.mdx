@@ -1,0 +1,80 @@
+---
+title: Care Plans
+description: SDK reference for care plan operations.
+---
+
+# clinik.carePlans
+
+Care plans (FHIR `CarePlan`) represent planned healthcare activities for a patient, including goals, activities, and care team coordination.
+
+## create
+
+```ts
+const { data, meta } = await clinik.carePlans.create(request): Promise<ApiResponse<CarePlan>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | draft, active, on-hold, revoked, completed |
+| `intent` | `string` | Yes | proposal, plan, order, option |
+| `patientId` | `string` | Yes | Patient ID |
+| `encounterId` | `string` | No | Encounter context |
+| `title` | `string` | No | Human-readable title |
+| `description` | `string` | No | Description of the care plan |
+| `category` | `string[]` | No | Category tags |
+| `period` | `{ start?, end? }` | No | Time period covered |
+| `created` | `string` | No | When created (defaults to now) |
+| `authorId` | `string` | No | Author Practitioner ID |
+| `contributorIds` | `string[]` | No | Contributor Practitioner IDs |
+| `careTeamIds` | `string[]` | No | CareTeam IDs |
+| `addressesIds` | `string[]` | No | Condition IDs this plan addresses |
+| `goalIds` | `string[]` | No | Goal IDs |
+| `note` | `string` | No | Additional notes |
+| `activity` | `Array` | No | Planned activities |
+| `basedOn` | `string[]` | No | CarePlan IDs this is based on |
+| `replaces` | `string[]` | No | CarePlan IDs this replaces |
+| `partOf` | `string[]` | No | CarePlan IDs this is part of |
+
+### Activity Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `description` | `string` | Yes | Activity description |
+| `status` | `string` | Yes | not-started, scheduled, in-progress, completed, cancelled |
+| `code` | `string` | No | Activity code |
+| `scheduledString` | `string` | No | Scheduled timing as text |
+| `performerId` | `string` | No | Performer Practitioner ID |
+| `referenceId` | `string` | No | Reference to another resource |
+
+## Example
+
+```ts
+const { data } = await clinik.carePlans.create({
+  status: 'active',
+  intent: 'plan',
+  patientId: 'pt_abc123',
+  title: 'Diabetes Management Plan',
+  description: 'Comprehensive care plan for Type 2 diabetes management',
+  category: ['diabetes-management'],
+  authorId: 'prac_dr456',
+  activity: [
+    {
+      description: 'HbA1c test every 3 months',
+      status: 'scheduled',
+      code: 'lab-test',
+      scheduledString: 'Every 3 months',
+    },
+    {
+      description: 'Dietary consultation',
+      status: 'not-started',
+      performerId: 'prac_dietitian789',
+    },
+  ],
+  goalIds: ['goal_target_a1c'],
+  note: 'Patient motivated to improve glycemic control',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `patientId`, `status`, `category`, `authorId` filters.

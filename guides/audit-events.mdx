@@ -1,0 +1,138 @@
+---
+title: Audit Events
+description: Record and query security-relevant events for compliance and audit trails.
+---
+
+# Audit Events
+
+Audit Events (FHIR `AuditEvent`) record security-relevant events in your healthcare system. They are essential for HIPAA compliance, tracking who accessed what data and when. Audit events are **immutable** — once created, they cannot be modified.
+
+## Record a REST Access Event
+
+```ts
+const { data: event } = await clinik.auditEvents.create({
+  type: 'rest',
+  subtype: ['read'],
+  action: 'R',
+  recorded: new Date().toISOString(),
+  outcome: '0',
+  agent: [{
+    who: 'prac_dr456',
+    name: 'Dr. Sarah Chen',
+    requestor: true,
+    role: 'Practitioner',
+    networkAddress: '10.0.1.42',
+  }],
+  source: {
+    observer: 'EHR Application',
+    site: 'Main Campus',
+    type: 'Application Server',
+  },
+  entity: [{
+    what: 'Patient/pt_abc123',
+    type: '1',
+    role: '1',
+    name: 'Patient Record',
+    description: 'Accessed patient demographics',
+  }],
+});
+```
+
+## Record a Login Event
+
+```ts
+const { data } = await clinik.auditEvents.create({
+  type: 'login',
+  action: 'E',
+  recorded: '2024-06-15T08:30:00Z',
+  outcome: '0',
+  agent: [{
+    who: 'user_nurse789',
+    name: 'Nurse Johnson',
+    requestor: true,
+    role: 'Nurse',
+    networkAddress: '192.168.1.50',
+  }],
+  source: {
+    observer: 'Authentication Service',
+    site: 'Cloud',
+  },
+});
+```
+
+## Record a Failed Access Attempt
+
+```ts
+const { data } = await clinik.auditEvents.create({
+  type: 'rest',
+  action: 'R',
+  recorded: new Date().toISOString(),
+  outcome: '8',
+  outcomeDesc: 'Access denied — insufficient privileges for restricted record',
+  agent: [{
+    who: 'user_intern001',
+    name: 'Medical Intern',
+    requestor: true,
+    role: 'Intern',
+  }],
+  source: {
+    observer: 'Authorization Service',
+    site: 'Cloud',
+  },
+  entity: [{
+    what: 'Patient/pt_restricted999',
+    type: '1',
+    role: '1',
+    name: 'Restricted Patient Record',
+  }],
+});
+```
+
+## Record a Data Export Event
+
+```ts
+const { data } = await clinik.auditEvents.create({
+  type: 'export',
+  action: 'R',
+  recorded: new Date().toISOString(),
+  outcome: '0',
+  purposeOfEvent: ['HIPAA Operations', 'Quality Reporting'],
+  agent: [{
+    who: 'admin_user001',
+    name: 'System Administrator',
+    requestor: true,
+    role: 'Admin',
+  }],
+  source: {
+    observer: 'Bulk Export Service',
+    site: 'Cloud',
+    type: 'Application Server',
+  },
+  entity: [{
+    type: '2',
+    role: '3',
+    name: 'Bulk Export Job',
+    description: 'Exported 1,200 patient records for quality reporting',
+  }],
+});
+```
+
+## Search Audit Events
+
+```ts
+// All events with a specific action
+const { data } = await clinik.auditEvents.search({
+  action: 'R',
+});
+
+// Failed events
+const { data: failures } = await clinik.auditEvents.search({
+  outcome: '8',
+});
+
+// Events in a date range
+const { data: recent } = await clinik.auditEvents.search({
+  dateFrom: '2024-06-01',
+  dateTo: '2024-06-30',
+});
+```

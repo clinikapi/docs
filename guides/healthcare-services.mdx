@@ -1,0 +1,82 @@
+---
+title: Healthcare Services
+description: Define and manage clinical services with availability, specialties, and referral methods.
+---
+
+# Healthcare Services
+
+Healthcare services (FHIR `HealthcareService`) describe the services offered by an organization — what specialties are available, when they're available, how to refer patients, and what languages are supported.
+
+## Create a Service
+
+```ts
+const { data: svc } = await clinik.healthcareServices.create({
+  name: 'Cardiology Consultation',
+  providedById: 'org_sunrise_medical',
+  category: ['specialist'],
+  type: ['cardiology-consultation'],
+  specialty: ['Cardiology'],
+  appointmentRequired: true,
+  availableTime: [
+    {
+      daysOfWeek: ['mon', 'wed', 'fri'],
+      availableStartTime: '09:00:00',
+      availableEndTime: '17:00:00',
+    },
+    {
+      daysOfWeek: ['tue', 'thu'],
+      availableStartTime: '08:00:00',
+      availableEndTime: '12:00:00',
+    },
+  ],
+  notAvailable: [
+    { description: 'Holiday closure', during: { start: '2025-12-24', end: '2025-12-26' } },
+  ],
+  availabilityExceptions: 'Closed on federal holidays',
+  referralMethod: ['phone', 'fax', 'electronic'],
+  communication: ['en', 'es'],
+  comment: 'Accepts new patients. Referral required.',
+});
+```
+
+## Availability
+
+Define when the service is available and when it's not:
+
+```ts
+// Available times
+availableTime: [
+  { daysOfWeek: ['mon', 'tue', 'wed', 'thu', 'fri'], availableStartTime: '08:00:00', availableEndTime: '17:00:00' },
+  { daysOfWeek: ['sat'], availableStartTime: '09:00:00', availableEndTime: '13:00:00' },
+]
+
+// Blocked periods
+notAvailable: [
+  { description: 'Annual conference', during: { start: '2025-03-15', end: '2025-03-18' } },
+  { description: 'Facility maintenance', during: { start: '2025-06-01', end: '2025-06-02' } },
+]
+```
+
+## Search Services
+
+```ts
+// Find cardiology services
+const { data } = await clinik.healthcareServices.search({
+  specialty: 'Cardiology',
+  active: true,
+});
+
+// Find services by type
+const { data: labs } = await clinik.healthcareServices.search({
+  type: 'laboratory',
+});
+```
+
+## Healthcare Services vs Practitioner Roles
+
+| Resource | Purpose |
+|----------|---------|
+| HealthcareService | What services an organization offers |
+| PractitionerRole | What role a specific practitioner plays |
+
+A practitioner role links a practitioner to an organization and defines their role. A healthcare service defines what the organization offers regardless of who specifically provides it.

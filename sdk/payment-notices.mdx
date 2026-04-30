@@ -1,0 +1,46 @@
+---
+title: Payment Notices
+description: SDK reference for payment notice operations.
+---
+
+# clinik.paymentNotices
+
+Payment Notices (FHIR `PaymentNotice`) communicate payment status information between payers and providers. Use them to notify recipients about payment events tied to a `PaymentReconciliation`.
+
+## create
+
+```ts
+const { data, meta } = await clinik.paymentNotices.create(request): Promise<ApiResponse<PaymentNotice>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | active, cancelled, draft |
+| `created` | `string` | No | When created (defaults to now) |
+| `providerId` | `string` | No | Practitioner/Organization reference |
+| `paymentId` | `string` | Yes | PaymentReconciliation ID |
+| `paymentDate` | `string` | No | Date of payment |
+| `payeeId` | `string` | No | Practitioner/Organization reference |
+| `recipientId` | `string` | Yes | Recipient Organization ID |
+| `amount` | `{ value, currency? }` | Yes | Payment amount |
+| `paymentStatus` | `string` | No | e.g. paid, cleared |
+| `requestId` | `string` | No | Reference to any request |
+| `responseId` | `string` | No | Reference to any response |
+
+## Example
+
+```ts
+const { data } = await clinik.paymentNotices.create({
+  status: 'active',
+  paymentId: 'pmtrec_abc123',
+  recipientId: 'org_ins456',
+  amount: { value: 1250.00, currency: 'USD' },
+  paymentDate: '2024-03-15',
+  paymentStatus: 'paid',
+  providerId: 'Practitioner/prac_dr789',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `paymentStatus`. Search supports `status`, `dateFrom`, `dateTo`, `providerId` filters.

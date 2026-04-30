@@ -1,0 +1,86 @@
+---
+title: Claim Responses
+description: SDK reference for claim response operations.
+---
+
+# clinik.claimResponses
+
+Claim responses (FHIR `ClaimResponse`) represent adjudication results from insurers in response to submitted claims. ClinikAPI exposes the most commonly used fields — use the [FHIR passthrough](/sdk/fhir-passthrough) for advanced adjudication scenarios.
+
+## create
+
+```ts
+const { data, meta } = await clinik.claimResponses.create(request): Promise<ApiResponse<ClaimResponse>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | active, cancelled, draft |
+| `type` | `string` | Yes | Claim type |
+| `use` | `string` | Yes | claim, preauthorization, predetermination |
+| `patientId` | `string` | Yes | Patient ID |
+| `created` | `string` | No | When created (defaults to now) |
+| `insurerId` | `string` | Yes | Insurer Organization ID |
+| `requestId` | `string` | No | Claim ID this responds to |
+| `outcome` | `string` | Yes | queued, complete, error, partial |
+| `disposition` | `string` | No | Disposition message |
+| `preAuthRef` | `string` | No | Pre-authorization reference |
+| `payeeType` | `string` | No | Payee type |
+| `item` | `Array` | No | Adjudicated line items |
+| `total` | `Array` | No | Totals by category |
+| `payment` | `object` | No | Payment details |
+| `processNote` | `Array` | No | Processing notes |
+| `note` | `string` | No | Additional notes |
+
+### Item Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `itemSequence` | `number` | Yes | Corresponding claim item sequence |
+| `adjudication` | `Array` | Yes | Adjudication details |
+
+### Adjudication Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `category` | `string` | Yes | Category (e.g. submitted, eligible, benefit, copay) |
+| `amount` | `{ value, currency? }` | No | Amount |
+
+## Example
+
+```ts
+const { data } = await clinik.claimResponses.create({
+  status: 'active',
+  type: 'professional',
+  use: 'claim',
+  patientId: 'pt_abc123',
+  insurerId: 'org_ins789',
+  requestId: 'claim_xyz456',
+  outcome: 'complete',
+  disposition: 'Claim processed successfully',
+  item: [
+    {
+      itemSequence: 1,
+      adjudication: [
+        { category: 'submitted', amount: { value: 150.00, currency: 'USD' } },
+        { category: 'eligible', amount: { value: 135.00, currency: 'USD' } },
+        { category: 'benefit', amount: { value: 108.00, currency: 'USD' } },
+        { category: 'copay', amount: { value: 27.00, currency: 'USD' } },
+      ],
+    },
+  ],
+  total: [
+    { category: 'submitted', amount: { value: 195.00, currency: 'USD' } },
+    { category: 'benefit', amount: { value: 156.00, currency: 'USD' } },
+  ],
+  payment: {
+    type: 'complete',
+    amount: { value: 156.00, currency: 'USD' },
+    date: '2024-04-01',
+  },
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status` and `disposition`. Search supports `patientId`, `status`, `use`, `outcome`, `requestId` filters.

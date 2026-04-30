@@ -1,0 +1,51 @@
+---
+title: Device Requests
+description: SDK reference for device request operations.
+---
+
+# clinik.deviceRequests
+
+Device requests represent orders or proposals for a device to be used on a patient.
+
+## create
+
+```ts
+const { data, meta } = await clinik.deviceRequests.create(request): Promise<ApiResponse<DeviceRequest>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `intent` | `string` | Yes | proposal, plan, directive, order, etc. |
+| `code` | `string \| object` | Yes | Device being requested |
+| `patientId` | `string` | Yes | Patient ID |
+| `status` | `string` | No | draft, active, on-hold, revoked, completed |
+| `encounterId` | `string` | No | Encounter during which request was made |
+| `priority` | `string` | No | routine, urgent, asap, stat |
+| `occurrenceDateTime` | `string` | No | When device should be used |
+| `occurrencePeriod` | `object` | No | Period when device should be used |
+| `authoredOn` | `string` | No | When request was authored (defaults to now) |
+| `requesterId` | `string` | No | Practitioner who made the request |
+| `performerId` | `string` | No | Who should fulfill the request |
+| `performerType` | `string` | No | Type of performer |
+| `reasonCode` | `string[]` | No | Reason codes |
+| `note` | `string` | No | Additional notes |
+| `basedOn` | `string[]` | No | Based-on resource IDs |
+
+## Example
+
+```ts
+const { data } = await clinik.deviceRequests.create({
+  intent: 'order',
+  code: 'Continuous Glucose Monitor',
+  patientId: 'pt_abc123',
+  status: 'active',
+  priority: 'routine',
+  requesterId: 'prac_dr456',
+  reasonCode: ['Type 2 Diabetes monitoring'],
+  note: 'Patient to use CGM for 14-day glucose monitoring cycle',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `priority`, `note`. Search supports `patientId`, `status`, `intent`, `code` filters.

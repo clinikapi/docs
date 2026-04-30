@@ -20,6 +20,11 @@ const { data, meta } = await clinik.patients.create(request: PatientCreateReques
 | `gender` | `'male' \| 'female' \| 'other' \| 'unknown'` | No | Administrative gender |
 | `birthDate` | `string` | No | Date of birth (YYYY-MM-DD) |
 | `address` | `object` | No | Address with line, city, state, postalCode, country |
+| `maritalStatus` | `string` | No | Marital status (married, single, divorced, widowed) |
+| `photo` | `object` | No | Photo with url, data (base64), contentType |
+| `contact` | `Array` | No | Emergency contacts (relationship, name, phone, email) |
+| `languages` | `Array<{ language, preferred? }>` | No | Languages the patient speaks |
+| `generalPractitionerId` | `string` | No | Reference to the patient's GP (Practitioner ID) |
 
 ## read
 

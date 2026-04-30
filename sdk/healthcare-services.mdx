@@ -1,0 +1,59 @@
+---
+title: Healthcare Services
+description: SDK reference for healthcare service operations.
+---
+
+# clinik.healthcareServices
+
+Healthcare services describe the services offered by an organization — specialties, availability, referral methods, and eligibility requirements.
+
+## create
+
+```ts
+const { data, meta } = await clinik.healthcareServices.create(request): Promise<ApiResponse<HealthcareService>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | `string` | Yes | Service name |
+| `active` | `boolean` | No | Whether active (default: true) |
+| `providedById` | `string` | No | Organization providing the service |
+| `category` | `string[]` | No | Broad categories |
+| `type` | `string[]` | No | Service types |
+| `specialty` | `string[]` | No | Specialties handled |
+| `locationNames` | `string[]` | No | Location names |
+| `comment` | `string` | No | Additional description |
+| `phone` | `string` | No | Contact phone |
+| `email` | `string` | No | Contact email |
+| `appointmentRequired` | `boolean` | No | Whether appointment is required |
+| `availableTime` | `Array` | No | Availability schedules |
+| `notAvailable` | `Array` | No | Unavailable periods |
+| `availabilityExceptions` | `string` | No | Free-text exceptions |
+| `program` | `string[]` | No | Programs this service is part of |
+| `referralMethod` | `string[]` | No | Accepted referral methods |
+| `communication` | `string[]` | No | Languages offered |
+
+## Example
+
+```ts
+const { data } = await clinik.healthcareServices.create({
+  name: 'Cardiology Consultation',
+  providedById: 'org_sunrise_medical',
+  category: ['specialist'],
+  type: ['cardiology'],
+  specialty: ['Cardiology'],
+  appointmentRequired: true,
+  availableTime: [
+    { daysOfWeek: ['mon', 'wed', 'fri'], availableStartTime: '09:00:00', availableEndTime: '17:00:00' },
+  ],
+  notAvailable: [
+    { description: 'Holiday closure', during: { start: '2025-12-24', end: '2025-12-26' } },
+  ],
+  referralMethod: ['phone', 'fax', 'electronic'],
+  communication: ['en', 'es'],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `name`, `type`, `specialty`, `active` filters.

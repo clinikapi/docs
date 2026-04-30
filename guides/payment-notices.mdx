@@ -1,0 +1,62 @@
+---
+title: Payment Notices
+description: Notify recipients about payment events and status changes.
+---
+
+# Payment Notices
+
+Payment Notices (FHIR `PaymentNotice`) communicate payment status information between payers and providers. They link to a `PaymentReconciliation` and notify the recipient organization about the payment event.
+
+## Send a Payment Notice
+
+```ts
+const { data: notice } = await clinik.paymentNotices.create({
+  status: 'active',
+  paymentId: 'pmtrec_settlement789',
+  recipientId: 'org_sunriseMedical',
+  amount: { value: 1250.00, currency: 'USD' },
+  paymentDate: '2024-03-15',
+  paymentStatus: 'paid',
+  providerId: 'Organization/org_blueShield',
+});
+```
+
+## Payment Notice with Request/Response References
+
+Link the notice to the original claim and its adjudication:
+
+```ts
+const { data: notice } = await clinik.paymentNotices.create({
+  status: 'active',
+  paymentId: 'pmtrec_q1settlement',
+  recipientId: 'org_cardiology',
+  amount: { value: 3500.00, currency: 'USD' },
+  paymentDate: '2024-03-31',
+  paymentStatus: 'cleared',
+  requestId: 'Claim/clm_knee123',
+  responseId: 'ClaimResponse/clmresp_knee123',
+});
+```
+
+## Search Payment Notices
+
+```ts
+// All notices for a provider
+const { data } = await clinik.paymentNotices.search({
+  providerId: 'Organization/org_blueShield',
+});
+
+// Filter by date range
+const { data: recent } = await clinik.paymentNotices.search({
+  dateFrom: '2024-01-01',
+  dateTo: '2024-03-31',
+  status: 'active',
+});
+```
+
+## Payment Status Values
+
+| Status | Description |
+|--------|-------------|
+| `paid` | Payment has been made |
+| `cleared` | Payment has cleared |

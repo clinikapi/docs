@@ -1,0 +1,70 @@
+---
+title: Conditions
+description: SDK reference for condition and diagnosis operations.
+---
+
+# clinik.conditions
+
+Conditions represent clinical diagnoses, problems, and health concerns, mapped to the FHIR `Condition` resource.
+
+## create
+
+```ts
+const { data, meta } = await clinik.conditions.create(request): Promise<ApiResponse<Condition>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `patientId` | `string` | Yes | Patient ID |
+| `clinicalStatus` | `string` | No | active, recurrence, relapse, inactive, remission, resolved |
+| `verificationStatus` | `string` | No | unconfirmed, provisional, differential, confirmed, refuted |
+| `category` | `string[]` | No | problem-list-item, encounter-diagnosis |
+| `severity` | `string` | No | mild, moderate, severe |
+| `code` | `string \| CodeableConcept` | No | ICD-10, SNOMED, or free text |
+| `bodySite` | `string[]` | No | Body sites affected |
+| `encounterId` | `string` | No | Encounter context |
+| `onsetDateTime` | `string` | No | When the condition started |
+| `onsetString` | `string` | No | Onset description |
+| `abatementDateTime` | `string` | No | When the condition resolved |
+| `abatementString` | `string` | No | Abatement description |
+| `recordedDate` | `string` | No | When recorded |
+| `recorderId` | `string` | No | Practitioner who recorded |
+| `asserterId` | `string` | No | Who asserted the condition |
+| `stage` | `Array` | No | Staging information |
+| `evidence` | `Array` | No | Supporting evidence |
+| `note` | `string` | No | Additional notes |
+
+### Stage Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `summary` | `string` | No | Stage summary (e.g. "Stage II") |
+| `type` | `string` | No | Stage type (clinical, pathological) |
+
+### Evidence Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `code` | `string[]` | No | Evidence codes |
+| `detailIds` | `string[]` | No | Reference IDs to supporting evidence |
+
+## Example
+
+```ts
+const { data } = await clinik.conditions.create({
+  patientId: 'pt_abc123',
+  clinicalStatus: 'active',
+  verificationStatus: 'confirmed',
+  category: ['encounter-diagnosis'],
+  code: {
+    system: 'http://hl7.org/fhir/sid/icd-10-cm',
+    code: 'E11.9',
+    display: 'Type 2 diabetes mellitus',
+  },
+  onsetDateTime: '2023-08-15',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `patientId`, `clinicalStatus`, `verificationStatus`, `category`, `severity`, `code` filters.

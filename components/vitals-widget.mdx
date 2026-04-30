@@ -1,11 +1,11 @@
 ---
 title: VitalsWidget
-description: Vital signs display with trend charts.
+description: Vital signs recording widget with heart rate and blood pressure input.
 ---
 
 # VitalsWidget
 
-Displays patient vital signs with trend visualization.
+Records patient vital signs as FHIR Observation resources. Supports heart rate, blood pressure, and other vital measurements with validation.
 
 ## Usage
 
@@ -13,8 +13,9 @@ Displays patient vital signs with trend visualization.
 import { VitalsWidget } from '@clinikapi/react';
 
 <VitalsWidget
-  proxyUrl={`/api/clinik/patients/${patientId}/vitals`}
-  onError={(err) => console.error(err)}
+  proxyUrl="/api/clinik"
+  patientId="pt_abc123"
+  theme="light"
 />
 ```
 
@@ -22,33 +23,46 @@ import { VitalsWidget } from '@clinikapi/react';
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `proxyUrl` | `string` | Yes | Backend proxy URL returning observations |
-| `className` | `string` | No | CSS class name |
-| `onError` | `(error: Error) => void` | No | Error callback |
+| `proxyUrl` | `string` | Yes | Backend proxy URL |
+| `patientId` | `string` | Yes | Patient ID |
+| `theme` | `'light' \| 'dark'` | No | Color theme |
 
-## Proxy Endpoint
+## Form Fields
 
-Return vital-signs observations for the patient:
+| Field | Validation | FHIR Mapping |
+|-------|-----------|--------------|
+| Heart Rate | 20-250 bpm | Observation (LOINC 8867-4) |
+| Blood Pressure | Required format | Observation (LOINC 85354-9) with systolic/diastolic components |
 
-```ts
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const { data } = await clinik.observations.search({
-    patientId: params.id,
-    status: 'final',
-    sort: '-date',
-    count: 50,
-  });
-  return Response.json(data);
+## Supported Observation Fields
+
+The widget creates observations using the enriched Observation schema:
+
+- `status` — always `final`
+- `code` — LOINC vital sign code
+- `patientId` — patient reference
+- `category` — `vital-signs`
+- `valueQuantity` — numeric value with unit
+- `component` — for multi-component observations (e.g. BP systolic/diastolic)
+- `interpretation` — H (high), L (low), N (normal)
+- `referenceRange` — normal reference ranges
+- `effectiveDateTime` — when the measurement was taken
+- `issued` — when this version was made available
+
+## Proxy Action
+
+The widget sends `observations.create` with:
+
+```json
+{
+  "action": "observations.create",
+  "data": {
+    "patientId": "pt_abc123",
+    "status": "final",
+    "code": { "system": "http://loinc.org", "code": "8867-4", "display": "Heart rate" },
+    "category": "vital-signs",
+    "valueQuantity": { "value": 72, "unit": "bpm" },
+    "effectiveDateTime": "2025-01-15T10:00:00Z"
+  }
 }
 ```
-
-## Displayed Vitals
-
-- Heart rate (LOINC 8867-4)
-- Blood pressure (LOINC 85354-9)
-- Temperature (LOINC 8310-5)
-- Respiratory rate (LOINC 9279-1)
-- Oxygen saturation (LOINC 2708-6)
-- Weight (LOINC 29463-7)
-- Height (LOINC 8302-2)
-- BMI (LOINC 39156-5)

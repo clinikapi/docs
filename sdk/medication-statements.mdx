@@ -1,0 +1,54 @@
+---
+title: Medication Statements
+description: SDK reference for medication statement operations.
+---
+
+# clinik.medicationStatements
+
+Medication Statements (FHIR `MedicationStatement`) record what medications a patient is taking or has taken — as reported by the patient, clinician, or other source. Unlike prescriptions, these are informational records, not orders.
+
+## create
+
+```ts
+const { data, meta } = await clinik.medicationStatements.create(request: MedicationStatementCreateRequest): Promise<ApiResponse<MedicationStatement>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | active, completed, stopped, on-hold, intended, not-taken |
+| `medication` | `string \| { system?, code, display? }` | Yes | Medication code or name |
+| `patientId` | `string` | Yes | Patient ID |
+| `encounterId` | `string` | No | Encounter ID |
+| `statusReason` | `string[]` | No | Reasons for current status |
+| `category` | `string` | No | Category (inpatient, outpatient, community) |
+| `effectiveDateTime` | `string` | No | When the medication was taken |
+| `effectivePeriod` | `{ start?, end? }` | No | Period of medication use |
+| `dateAsserted` | `string` | No | When the statement was asserted |
+| `informationSourceId` | `string` | No | Who provided the info |
+| `reasonCode` | `string[]` | No | Reason codes for taking the medication |
+| `dosageText` | `string` | No | Dosage instructions |
+| `note` | `string` | No | Additional notes |
+| `basedOn` | `string[]` | No | MedicationRequest/CarePlan/ServiceRequest IDs |
+| `partOf` | `string[]` | No | Part of other resource IDs |
+
+## Example
+
+```ts
+const { data } = await clinik.medicationStatements.create({
+  status: 'active',
+  medication: 'Metformin 500mg Tablet',
+  patientId: 'pt_abc123',
+  category: 'community',
+  effectivePeriod: {
+    start: '2024-01-15',
+  },
+  dosageText: 'Take 1 tablet twice daily with meals',
+  informationSourceId: 'Patient/pt_abc123',
+  reasonCode: ['Type 2 diabetes management'],
+  note: 'Patient reports good adherence, no side effects',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Update supports `status`, `statusReason`, `note`, `effectiveDateTime`, `effectivePeriod`. Search supports `patientId`, `status`, `medication`, `category` filters.

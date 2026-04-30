@@ -1,0 +1,73 @@
+---
+title: Risk Assessments
+description: SDK reference for risk assessment operations.
+---
+
+# clinik.riskAssessments
+
+Risk assessments (FHIR `RiskAssessment`) capture the results of clinical risk evaluations — cardiovascular risk scores, fall risk assessments, cancer screening results, and other predictive analyses.
+
+## create
+
+```ts
+const { data, meta } = await clinik.riskAssessments.create(request): Promise<ApiResponse<RiskAssessment>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | registered, preliminary, final, amended |
+| `patientId` | `string` | Yes | Patient reference |
+| `encounterId` | `string` | No | Encounter context |
+| `method` | `string` | No | Assessment method |
+| `code` | `string` | No | Assessment code |
+| `occurrenceDateTime` | `string` | No | When the assessment occurred |
+| `conditionId` | `string` | No | Condition being assessed |
+| `performerId` | `string` | No | Performing practitioner ID |
+| `reasonCode` | `string[]` | No | Reason codes |
+| `prediction` | `Array<object>` | No | Risk predictions |
+| `mitigation` | `string` | No | Mitigation actions |
+| `note` | `string` | No | Additional notes |
+| `basedOnId` | `string` | No | Based on reference |
+
+### prediction
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `outcome` | `string` | Predicted outcome |
+| `probabilityDecimal` | `number` | Probability (0-1) |
+| `qualitativeRisk` | `string` | Qualitative risk level |
+| `relativeRisk` | `number` | Relative risk ratio |
+| `rationale` | `string` | Explanation of the prediction |
+
+## Example
+
+```ts
+const { data } = await clinik.riskAssessments.create({
+  status: 'final',
+  patientId: 'pt_abc123',
+  performerId: 'prac_def456',
+  method: 'Framingham Risk Score',
+  code: 'cardiovascular-risk',
+  conditionId: 'cond_hypertension',
+  prediction: [
+    {
+      outcome: 'Myocardial infarction',
+      probabilityDecimal: 0.12,
+      qualitativeRisk: 'moderate',
+      rationale: '10-year ASCVD risk based on age, cholesterol, blood pressure, smoking status',
+    },
+    {
+      outcome: 'Stroke',
+      probabilityDecimal: 0.08,
+      qualitativeRisk: 'low',
+      rationale: 'Based on CHA2DS2-VASc score of 2',
+    },
+  ],
+  mitigation: 'Start statin therapy. Lifestyle modifications: diet, exercise, smoking cessation.',
+  reasonCode: ['Hypertension', 'Hyperlipidemia', 'Family history of CAD'],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `patientId`, `status`, `method`, `conditionId` filters.

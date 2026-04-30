@@ -1,0 +1,66 @@
+---
+title: ConditionTracker
+description: Record conditions and diagnoses with clinical status, severity, and onset tracking.
+---
+
+# ConditionTracker
+
+Record patient conditions and diagnoses as FHIR Condition resources. Supports clinical status tracking, severity levels, verification status, and onset date recording.
+
+## Usage
+
+```tsx
+import { ConditionTracker } from '@clinikapi/react';
+
+<ConditionTracker
+  proxyUrl="/api/clinik"
+  patientId="pt_abc123"
+  theme="light"
+/>
+```
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `proxyUrl` | `string` | Yes | Backend proxy URL |
+| `patientId` | `string` | Yes | Patient ID |
+| `theme` | `'light' \| 'dark'` | No | Color theme |
+
+## Form Fields
+
+| Field | Description |
+|-------|-------------|
+| Code | Condition name or ICD-10 code (e.g. "Hypertension", "I10") |
+| Clinical status | active, inactive, resolved |
+| Verification status | confirmed, unconfirmed |
+| Severity | mild, moderate, severe |
+| Onset date/time | When the condition started |
+| Note | Additional clinical notes |
+
+## Clinical Status Values
+
+| Status | Description |
+|--------|-------------|
+| `active` | Condition is currently active |
+| `inactive` | Condition is no longer active but not resolved |
+| `resolved` | Condition has been resolved |
+
+## Proxy Action
+
+The widget sends `conditions.create` with:
+
+```json
+{
+  "action": "conditions.create",
+  "data": {
+    "patientId": "pt_abc123",
+    "code": "Hypertension",
+    "clinicalStatus": "active",
+    "verificationStatus": "confirmed",
+    "severity": "moderate",
+    "onsetDateTime": "2025-01-15T10:00:00Z",
+    "note": "Patient reports elevated blood pressure over the past 3 months"
+  }
+}
+```

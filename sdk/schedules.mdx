@@ -1,0 +1,45 @@
+---
+title: Schedules
+description: SDK reference for schedule operations.
+---
+
+# clinik.schedules
+
+Schedules define a container for time slots that may be available for booking appointments. They link practitioners, locations, or services to their availability windows.
+
+## create
+
+```ts
+const { data, meta } = await clinik.schedules.create(request): Promise<ApiResponse<Schedule>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `active` | `boolean` | No | Whether the schedule is active (default: true) |
+| `serviceCategory` | `string[]` | No | Broad categorization of services |
+| `serviceType` | `string[]` | No | Specific service types available |
+| `specialty` | `string[]` | No | Practitioner specialties |
+| `actorIds` | `string[]` | Yes | References to Practitioner, Location, etc. |
+| `planningHorizon` | `object` | No | Period the schedule covers ({start, end}) |
+| `comment` | `string` | No | Additional comments |
+
+## Example
+
+```ts
+const { data } = await clinik.schedules.create({
+  active: true,
+  serviceCategory: ['General Practice'],
+  serviceType: ['Consultation', 'Follow-up'],
+  specialty: ['Family Medicine'],
+  actorIds: ['Practitioner/dr_smith', 'Location/room_101'],
+  planningHorizon: {
+    start: '2025-03-01T00:00:00Z',
+    end: '2025-06-30T23:59:59Z',
+  },
+  comment: 'Dr. Smith Monday-Friday schedule for Q2 2025',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `actorId`, `serviceType`, `specialty`, `active`, `dateFrom`, `dateTo` filters.

@@ -1,0 +1,55 @@
+---
+title: Persons
+description: SDK reference for person operations.
+---
+
+# clinik.persons
+
+Persons represent a common demographic record that may be linked to multiple patient, practitioner, or related person records across the system.
+
+## create
+
+```ts
+const { data, meta } = await clinik.persons.create(request): Promise<ApiResponse<Person>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `firstName` | `string` | Yes | First name |
+| `lastName` | `string` | Yes | Last name |
+| `phone` | `string` | No | Phone number |
+| `email` | `string` | No | Email address |
+| `gender` | `string` | No | male, female, other, unknown |
+| `birthDate` | `string` | No | Date of birth (YYYY-MM-DD) |
+| `address` | `Address` | No | Physical address |
+| `photo` | `object` | No | Photo ({url, data, contentType}) |
+| `managingOrganizationId` | `string` | No | Managing organization ID |
+| `active` | `boolean` | No | Whether active (default: true) |
+| `link` | `Array` | No | Links to other records ({targetId, assurance}) |
+
+## Example
+
+```ts
+const { data } = await clinik.persons.create({
+  firstName: 'Maria',
+  lastName: 'Garcia',
+  phone: '555-0142',
+  email: 'maria.garcia@example.com',
+  gender: 'female',
+  birthDate: '1985-07-22',
+  address: {
+    line: ['456 Oak Avenue'],
+    city: 'San Antonio',
+    state: 'TX',
+    postalCode: '78205',
+  },
+  managingOrganizationId: 'org_sunrise',
+  link: [
+    { targetId: 'Patient/pt_maria_garcia', assurance: 'level4' },
+  ],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `name`, `email`, `phone`, `active` filters.

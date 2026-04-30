@@ -1,0 +1,132 @@
+---
+title: Service Requests
+description: Create and manage clinical orders — lab orders, imaging requests, referrals, and procedures.
+---
+
+# Service Requests
+
+Service requests (FHIR `ServiceRequest`) represent orders for clinical services — lab orders, imaging requests, referrals, procedure orders, and other clinical activities that need to be fulfilled.
+
+## Create a Service Request
+
+```ts
+const { data: order } = await clinik.serviceRequests.create({
+  status: 'active',
+  intent: 'order',
+  patientId: 'pt_abc123',
+  encounterId: 'enc_xyz789',
+  code: {
+    system: 'http://loinc.org',
+    code: '24323-8',
+    display: 'Comprehensive Metabolic Panel',
+  },
+  category: ['laboratory'],
+  priority: 'urgent',
+  requesterId: 'prac_def456',
+  occurrenceDateTime: '2025-02-01T08:00:00Z',
+  reasonCode: ['Pre-operative assessment'],
+  note: 'Fasting required — draw before 10am',
+  patientInstruction: 'Do not eat or drink after midnight',
+});
+```
+
+## Common Use Cases
+
+### Lab Order
+
+```ts
+const { data } = await clinik.serviceRequests.create({
+  status: 'active',
+  intent: 'order',
+  patientId: 'pt_abc123',
+  code: { system: 'http://loinc.org', code: '24331-1', display: 'Lipid Panel' },
+  category: ['laboratory'],
+  priority: 'routine',
+  requesterId: 'prac_def456',
+});
+```
+
+### Imaging Request
+
+```ts
+const { data } = await clinik.serviceRequests.create({
+  status: 'active',
+  intent: 'order',
+  patientId: 'pt_abc123',
+  code: 'MRI Brain without contrast',
+  category: ['imaging'],
+  priority: 'urgent',
+  requesterId: 'prac_def456',
+  reasonCode: ['Persistent headaches', 'Rule out intracranial pathology'],
+  bodySite: ['Brain'],
+});
+```
+
+### Referral
+
+```ts
+const { data } = await clinik.serviceRequests.create({
+  status: 'active',
+  intent: 'order',
+  patientId: 'pt_abc123',
+  code: 'Cardiology consultation',
+  category: ['referral'],
+  priority: 'routine',
+  requesterId: 'prac_pcp',
+  performerType: 'Cardiologist',
+  reasonCode: ['Uncontrolled hypertension despite dual therapy'],
+  patientInstruction: 'Bring your home blood pressure log to the appointment',
+});
+```
+
+### Do Not Perform
+
+```ts
+const { data } = await clinik.serviceRequests.create({
+  status: 'active',
+  intent: 'order',
+  patientId: 'pt_abc123',
+  code: 'Aspirin administration',
+  doNotPerform: true,
+  reasonCode: ['Aspirin allergy'],
+});
+```
+
+## Status Lifecycle
+
+`draft` → `active` → `on-hold` → `completed` / `revoked`
+
+## Linking to Tasks
+
+Service requests are often fulfilled by tasks:
+
+```ts
+// Create the order
+const { data: order } = await clinik.serviceRequests.create({
+  status: 'active', intent: 'order',
+  patientId: 'pt_abc123',
+  code: 'CBC',
+  category: ['laboratory'],
+});
+
+// Create a task to fulfill it
+const { data: task } = await clinik.tasks.create({
+  status: 'requested', intent: 'order',
+  patientId: 'pt_abc123',
+  basedOn: [`ServiceRequest/${order.id}`],
+  code: 'lab-draw',
+  description: 'Draw blood for CBC',
+});
+```
+
+## Search Service Requests
+
+```ts
+const { data } = await clinik.serviceRequests.search({
+  patientId: 'pt_abc123',
+  status: 'active',
+  category: 'laboratory',
+  priority: 'urgent',
+  sort: '-date',
+});
+```

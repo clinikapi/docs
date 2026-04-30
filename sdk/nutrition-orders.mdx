@@ -1,0 +1,82 @@
+---
+title: Nutrition Orders
+description: SDK reference for nutrition order operations.
+---
+
+# clinik.nutritionOrders
+
+Nutrition orders (FHIR `NutritionOrder`) represent dietary orders for patients — oral diets, supplements, and enteral formulas.
+
+## create
+
+```ts
+const { data, meta } = await clinik.nutritionOrders.create(request): Promise<ApiResponse<NutritionOrder>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | draft, active, on-hold, revoked, completed |
+| `intent` | `string` | Yes | proposal, plan, directive, order |
+| `patientId` | `string` | Yes | Patient reference |
+| `encounterId` | `string` | No | Encounter context |
+| `dateTime` | `string` | No | Order date (defaults to now) |
+| `ordererId` | `string` | No | Ordering practitioner ID |
+| `allergyIntoleranceIds` | `string[]` | No | Allergy references |
+| `foodPreferenceModifier` | `string[]` | No | Food preferences |
+| `excludeFoodModifier` | `string[]` | No | Foods to exclude |
+| `oralDiet` | `object` | No | Oral diet specification |
+| `supplement` | `Array<object>` | No | Supplement orders |
+| `enteralFormula` | `object` | No | Enteral formula order |
+| `note` | `string` | No | Additional notes |
+
+### oralDiet
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | `string[]` | Diet types (e.g. "low-sodium", "diabetic") |
+| `instruction` | `string` | Preparation instructions |
+| `nutrient` | `Array<{ modifier?, amount? }>` | Nutrient modifications |
+
+### supplement
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | `string` | Supplement type |
+| `productName` | `string` | Product name |
+| `quantity` | `{ value, unit? }` | Amount per serving |
+| `instruction` | `string` | Administration instructions |
+
+### enteralFormula
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `baseFormulaType` | `string` | Formula type |
+| `baseFormulaProductName` | `string` | Product name |
+| `additiveType` | `string` | Additive type |
+| `routeOfAdministration` | `string` | Route (e.g. "nasogastric tube") |
+| `administrationInstruction` | `string` | Instructions |
+
+## Example
+
+```ts
+const { data } = await clinik.nutritionOrders.create({
+  status: 'active',
+  intent: 'order',
+  patientId: 'pt_abc123',
+  ordererId: 'prac_def456',
+  oralDiet: {
+    type: ['diabetic', 'low-sodium'],
+    instruction: 'No added salt. Limit carbohydrates to 45g per meal.',
+    nutrient: [
+      { modifier: 'Sodium', amount: { value: 2000, unit: 'mg' } },
+      { modifier: 'Carbohydrate', amount: { value: 135, unit: 'g' } },
+    ],
+  },
+  excludeFoodModifier: ['shellfish', 'peanuts'],
+  note: 'Patient has a history of diabetic ketoacidosis',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `patientId`, `status`, `dateFrom`, `dateTo` filters.

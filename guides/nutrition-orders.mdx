@@ -1,0 +1,98 @@
+---
+title: Nutrition Orders
+description: Create and manage dietary orders — oral diets, supplements, and enteral formulas.
+---
+
+# Nutrition Orders
+
+Nutrition orders (FHIR `NutritionOrder`) represent dietary prescriptions for patients. They cover oral diets with specific nutrient modifications, nutritional supplements, and enteral (tube feeding) formulas.
+
+## Create a Nutrition Order
+
+```ts
+const { data: order } = await clinik.nutritionOrders.create({
+  status: 'active',
+  intent: 'order',
+  patientId: 'pt_abc123',
+  ordererId: 'prac_def456',
+  oralDiet: {
+    type: ['diabetic', 'low-sodium'],
+    instruction: 'No added salt. Limit carbohydrates to 45g per meal.',
+    nutrient: [
+      { modifier: 'Sodium', amount: { value: 2000, unit: 'mg' } },
+      { modifier: 'Carbohydrate', amount: { value: 135, unit: 'g' } },
+    ],
+  },
+  excludeFoodModifier: ['shellfish', 'peanuts'],
+  note: 'Patient has a history of diabetic ketoacidosis',
+});
+```
+
+## Common Use Cases
+
+### Oral Diet with Allergies
+
+```ts
+const { data } = await clinik.nutritionOrders.create({
+  status: 'active',
+  intent: 'order',
+  patientId: 'pt_abc123',
+  ordererId: 'prac_def456',
+  allergyIntoleranceIds: ['allergy_gluten', 'allergy_dairy'],
+  oralDiet: {
+    type: ['gluten-free', 'dairy-free'],
+    instruction: 'Strict gluten-free and dairy-free diet',
+  },
+  foodPreferenceModifier: ['vegetarian'],
+});
+```
+
+### Nutritional Supplement
+
+```ts
+const { data } = await clinik.nutritionOrders.create({
+  status: 'active',
+  intent: 'order',
+  patientId: 'pt_abc123',
+  supplement: [
+    {
+      type: 'High-protein oral supplement',
+      productName: 'Ensure High Protein',
+      quantity: { value: 1, unit: 'bottle' },
+      instruction: 'One bottle with each meal, three times daily',
+    },
+  ],
+  note: 'Patient is malnourished — BMI 17.5',
+});
+```
+
+### Enteral Formula (Tube Feeding)
+
+```ts
+const { data } = await clinik.nutritionOrders.create({
+  status: 'active',
+  intent: 'order',
+  patientId: 'pt_abc123',
+  encounterId: 'enc_icu789',
+  enteralFormula: {
+    baseFormulaType: 'Standard polymeric formula',
+    baseFormulaProductName: 'Jevity 1.5 Cal',
+    additiveType: 'Fiber',
+    routeOfAdministration: 'Nasogastric tube',
+    administrationInstruction: 'Continuous infusion at 50mL/hr, advance by 25mL/hr every 8 hours to goal of 75mL/hr',
+  },
+});
+```
+
+## Status Lifecycle
+
+`draft` → `active` → `on-hold` → `completed` / `revoked`
+
+## Search Nutrition Orders
+
+```ts
+const { data } = await clinik.nutritionOrders.search({
+  patientId: 'pt_abc123',
+  status: 'active',
+});
+```

@@ -1,0 +1,109 @@
+---
+title: Slots
+description: Manage scheduling slots — define available time periods for booking appointments.
+---
+
+# Slots
+
+Slots (FHIR `Slot`) represent available time periods on a practitioner's or location's schedule. They define when appointments can be booked and are the building blocks of a scheduling system.
+
+## Create Available Slots
+
+```ts
+// Generate morning slots for a practitioner
+const slots = [];
+for (let hour = 9; hour < 12; hour++) {
+  const { data } = await clinik.slots.create({
+    scheduleId: 'sched_dr_smith_mon',
+    status: 'free',
+    start: `2025-02-03T${String(hour).padStart(2, '0')}:00:00Z`,
+    end: `2025-02-03T${String(hour).padStart(2, '0')}:30:00Z`,
+    serviceType: 'General consultation',
+    specialty: 'Family Medicine',
+    appointmentType: 'routine',
+  });
+  slots.push(data);
+}
+```
+
+## Slot Status Values
+
+| Status | Description |
+|--------|-------------|
+| `free` | Available for booking |
+| `busy` | Already booked |
+| `busy-unavailable` | Blocked (lunch, meeting, etc.) |
+| `busy-tentative` | Tentatively held |
+
+## Book a Slot
+
+When an appointment is booked, update the slot status:
+
+```ts
+// Mark slot as busy when appointment is confirmed
+await clinik.slots.update('slot_abc123', {
+  status: 'busy',
+});
+```
+
+## Block Time
+
+Block out time for non-appointment activities:
+
+```ts
+const { data } = await clinik.slots.create({
+  scheduleId: 'sched_dr_smith_mon',
+  status: 'busy-unavailable',
+  start: '2025-02-03T12:00:00Z',
+  end: '2025-02-03T13:00:00Z',
+  comment: 'Lunch break',
+});
+```
+
+## Overbooked Slots
+
+Flag slots that have been double-booked:
+
+```ts
+await clinik.slots.update('slot_abc123', {
+  status: 'busy',
+  overbooked: true,
+  comment: 'Double-booked — urgent add-on',
+});
+```
+
+## Search Available Slots
+
+```ts
+// Find free slots for a schedule
+const { data } = await clinik.slots.search({
+  scheduleId: 'sched_dr_smith_mon',
+  status: 'free',
+  dateFrom: '2025-02-03',
+  dateTo: '2025-02-07',
+});
+
+// Find slots by specialty
+const { data: cardio } = await clinik.slots.search({
+  specialty: 'Cardiology',
+  status: 'free',
+  dateFrom: '2025-02-01',
+});
+```
+
+## Scheduling Workflow
+
+1. Create a `Schedule` for a practitioner/location (via FHIR passthrough)
+2. Create `Slot` resources defining available time periods
+3. When a patient books, create an `Appointment` and update the slot to `busy`
+4. If cancelled, update the slot back to `free`
+
+## Slots vs Appointments
+
+| Resource | Purpose |
+|----------|---------|
+| Slot | Defines available time windows |
+| Appointment | Represents a booked visit |
+| AppointmentResponse | Participant's reply to an appointment |
+
+Slots are the supply side of scheduling. Appointments are the demand side.

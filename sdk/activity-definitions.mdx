@@ -1,0 +1,64 @@
+---
+title: Activity Definitions
+description: SDK reference for activity definition operations.
+---
+
+# clinik.activityDefinitions
+
+Activity definitions (FHIR `ActivityDefinition`) describe clinical activities that can be performed — templates for orders, referrals, procedures, and other clinical actions.
+
+## create
+
+```ts
+const { data, meta } = await clinik.activityDefinitions.create(request): Promise<ApiResponse<ActivityDefinition>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | draft, active, retired |
+| `name` | `string` | No | Computer-friendly name |
+| `title` | `string` | No | Human-friendly title |
+| `description` | `string` | No | Description of the activity |
+| `purpose` | `string` | No | Why this definition exists |
+| `usage` | `string` | No | Clinical usage notes |
+| `kind` | `string` | No | Resource kind (Appointment, MedicationRequest, ServiceRequest, Task) |
+| `code` | `string \| CodeableConcept` | No | Activity code |
+| `intent` | `string` | No | proposal, plan, directive, order |
+| `priority` | `string` | No | routine, urgent, asap, stat |
+| `doNotPerform` | `boolean` | No | True if should NOT be performed |
+| `timingDateTime` | `string` | No | When the activity should occur |
+| `timingPeriod` | `{ start?, end? }` | No | Time window for the activity |
+| `locationId` | `string` | No | Location ID |
+| `participant` | `Array<{ type, role? }>` | No | Participants |
+| `quantity` | `{ value, unit? }` | No | Quantity |
+| `bodySite` | `string[]` | No | Body sites |
+| `publisher` | `string` | No | Publisher name |
+| `date` | `string` | No | Publication date |
+| `version` | `string` | No | Business version |
+| `url` | `string` | No | Canonical URL |
+| `experimental` | `boolean` | No | For testing only |
+| `topic` | `string[]` | No | Topic categories |
+
+## Example
+
+```ts
+const { data } = await clinik.activityDefinitions.create({
+  status: 'active',
+  name: 'blood-glucose-check',
+  title: 'Blood Glucose Check',
+  kind: 'ServiceRequest',
+  code: { system: 'http://loinc.org', code: '2339-0', display: 'Glucose [Mass/volume] in Blood' },
+  intent: 'order',
+  priority: 'routine',
+  description: 'Routine blood glucose monitoring for diabetic patients',
+  participant: [{ type: 'practitioner', role: 'Lab Technician' }],
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `status`, `name`, `title`, `kind`, `code` filters.
+
+<Note>
+  For advanced ActivityDefinition features like dynamicValue, expression, library, or relatedArtifact, use the [FHIR Passthrough](/sdk/fhir-passthrough).
+</Note>

@@ -1,0 +1,67 @@
+---
+title: Tasks
+description: SDK reference for task operations.
+---
+
+# clinik.tasks
+
+Tasks represent clinical workflow items — lab orders, referral follow-ups, care coordination activities, and other actionable items that need to be tracked through a lifecycle.
+
+## create
+
+```ts
+const { data, meta } = await clinik.tasks.create(request): Promise<ApiResponse<Task>>
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | draft, requested, received, accepted, rejected, ready, cancelled, in-progress, on-hold, failed, completed |
+| `intent` | `string` | Yes | unknown, proposal, plan, order, original-order, reflex-order, filler-order, instance-order, option |
+| `statusReason` | `string` | No | Reason for current status |
+| `businessStatus` | `string` | No | Business-specific status (e.g. "Specimen collected") |
+| `priority` | `string` | No | routine, urgent, asap, stat |
+| `code` | `string` | No | Task type code |
+| `description` | `string` | No | Human-readable description |
+| `focusId` | `string` | No | What the task is acting on |
+| `patientId` | `string` | No | Beneficiary of the task |
+| `encounterId` | `string` | No | Encounter context |
+| `executionPeriod` | `{ start?, end? }` | No | Execution time window |
+| `authoredOn` | `string` | No | When authored (defaults to now) |
+| `requesterId` | `string` | No | Who is requesting |
+| `ownerId` | `string` | No | Who is responsible |
+| `reasonCode` | `string` | No | Why the task is needed |
+| `note` | `string` | No | Additional notes |
+| `basedOn` | `string[]` | No | Request IDs this task fulfills |
+| `partOf` | `string[]` | No | Parent task IDs |
+| `input` | `TaskInputOutput[]` | No | Task inputs |
+| `output` | `TaskInputOutput[]` | No | Task outputs |
+| `restriction` | `object` | No | Fulfillment restrictions |
+
+## Example
+
+```ts
+const { data: task } = await clinik.tasks.create({
+  status: 'requested',
+  intent: 'order',
+  priority: 'urgent',
+  code: 'lab-order',
+  description: 'Order CBC and CMP for pre-operative assessment',
+  patientId: 'pt_abc123',
+  encounterId: 'enc_xyz789',
+  requesterId: 'prac_def456',
+  ownerId: 'prac_lab_tech',
+  executionPeriod: {
+    start: '2025-02-01T08:00:00Z',
+    end: '2025-02-01T17:00:00Z',
+  },
+  input: [
+    { type: 'lab-panel', valueString: 'CBC' },
+    { type: 'lab-panel', valueString: 'CMP' },
+  ],
+  note: 'Patient is NPO after midnight. Draw labs before 10am.',
+});
+```
+
+## read / update / delete / search
+
+Same pattern as other resources. Search supports `patientId`, `ownerId`, `requesterId`, `status`, `priority`, `code` filters.
