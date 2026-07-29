@@ -11,6 +11,37 @@ description: Drop-in clinical UI widgets for your frontend using the proxy patte
 npm install @clinikapi/react
 ```
 
+Then import the stylesheet once, anywhere in your app:
+
+```ts
+import '@clinikapi/react/styles.css';
+```
+
+That is the entire setup. The widgets are built on [shadcn/ui](https://ui.shadcn.com) + Radix, and every rule in the stylesheet is scoped to the widgets' own root element — it cannot restyle your pages, and you do not need Tailwind (or any particular build setup) to use it.
+
+<Note>
+  **Upgrading from 0.2.x?** The widgets were rebuilt on shadcn/ui in 0.3.0. Add the `styles.css` import above — without it they render unstyled. No component props changed.
+</Note>
+
+## Theming
+
+Widgets read a set of `--ck-*` CSS custom properties, so you can match your brand without touching component code. Values are HSL channels, the same convention shadcn/ui uses:
+
+```css
+.clinik-root {
+  --ck-primary: 173 80% 40%;   /* teal */
+  --ck-radius: 0.375rem;       /* squarer corners */
+}
+```
+
+Every widget also takes a `theme` prop — `'light'` (default), `'dark'`, `'glassmorphism'`, or `'inherit'`. Pass `theme="inherit"` in an app that already uses shadcn/ui and the widgets map straight onto your own `--primary` / `--border` / `--radius` variables:
+
+```tsx
+<PatientDashboard proxyUrl="/api/clinik" theme="inherit" />
+```
+
+This is opt-in rather than automatic, because an app that is not using shadcn/ui may define `--primary` in a different format (a hex, say), which would render the widgets incorrectly.
+
 ## The Proxy Pattern
 
 React widgets run in the browser and cannot use the SDK directly (that would expose your API key). Instead, they talk to your backend through a `proxyUrl`:
