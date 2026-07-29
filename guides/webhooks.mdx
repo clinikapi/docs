@@ -41,6 +41,12 @@ prescription.deleted
 }
 ```
 
+`data.tenantId` identifies the tenant partition that produced the event: the sub-organization ID when the triggering API key belongs to a sub-org, otherwise your organization ID. Use it to route events per customer behind a single endpoint.
+
+## Sub-Organization Filtering
+
+Webhooks are registered at the organization level, and by default an endpoint receives events from **all** of your traffic — organization keys and every sub-organization. When adding an endpoint you can optionally pin it to a single sub-organization: a pinned endpoint only receives events produced by that sub-org's API keys. Either way, `data.tenantId` always carries the originating tenant.
+
 ## Headers
 
 | Header | Description |

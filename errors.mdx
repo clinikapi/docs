@@ -109,6 +109,34 @@ const { data, meta } = await clinik.patients.search();
 console.log(meta.rateLimitRemaining); // 498
 ```
 
+## Monthly Quotas & Overage
+
+Separate from the per-minute rate limit, every organization has **one shared monthly request pool** — all API keys and all sub-organizations draw from the same quota. On paid plans only **live** requests are billable; test traffic is metered but free. On the Sandbox plan every request counts. The pool resets on the 1st of each month (UTC).
+
+Quota state is returned on every authenticated response:
+
+| Header | Description |
+|--------|-------------|
+| `X-Quota-Limit` | Requests included in your plan per month |
+| `X-Quota-Used` | Billable requests used this month (org-wide) |
+| `X-Quota-Remaining` | Billable requests left before the limit |
+| `X-Quota-Billable` | Whether this request counted against the pool |
+| `X-Quota-Overage` | Requests past the limit this month (only when over) |
+| `X-Quota-Reset` | ISO timestamp when the pool resets |
+
+What happens at the limit depends on your **overage billing** setting (Dashboard → Billing):
+
+- **Overage billing off** (default): requests past the quota are rejected with `429` and code `MONTHLY_QUOTA_EXCEEDED` until the month resets. Your bill never exceeds your plan price.
+- **Overage billing on** (paid plans): traffic keeps flowing and extra requests are added to your next invoice at your plan's overage rate ($0.003/request).
+
+```json
+{
+  "error": "Quota exceeded",
+  "message": "Monthly request quota reached (600,000 included requests). Enable overage billing or upgrade your plan at https://dashboard.clinikapi.com/billing to keep serving traffic.",
+  "code": "MONTHLY_QUOTA_EXCEEDED"
+}
+```
+
 ## PHI Sanitization
 
 Error responses never contain Protected Health Information (PHI). Field values are stripped from validation error messages — only field names and constraint descriptions are included.
