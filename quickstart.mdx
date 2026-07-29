@@ -5,7 +5,7 @@ description: Create your first patient in under 5 minutes.
 
 # Quickstart
 
-Get up and running with ClinikAPI in three steps.
+Get up and running with ClinikAPI in three steps. The API lives at `https://api.clinikapi.com/v1` — the SDK targets it by default, so there is nothing to configure.
 
 ## 1. Get Your API Key
 
@@ -72,6 +72,14 @@ async function main() {
 
 main();
 ```
+
+<Note>
+**Search is eventually consistent.** A freshly created resource can take a few
+seconds (typically ~10s) to appear in `search` results, while `read(id)` works
+immediately. Always use the `id` returned by `create` for read-after-write —
+never poll search to confirm a write. See
+[Data Consistency](/data-consistency) for the patterns.
+</Note>
 
 ## Response Format
 

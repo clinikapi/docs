@@ -33,6 +33,20 @@ const { data: patient } = await clinik.patients.create({
 console.log(patient.id); // "pt_abc123"
 ```
 
+## Base URL
+
+All API endpoints are served from:
+
+```
+https://api.clinikapi.com/v1
+```
+
+- Resource endpoints: `https://api.clinikapi.com/v1/patients`, `/v1/encounters`, and so on for every resource below
+- `GET /v1/metadata` — the FHIR CapabilityStatement (public, no key required)
+- `GET https://api.clinikapi.com/health` — service liveness (outside `/v1`, no key required)
+
+The `@clinikapi/sdk` client targets this base URL by default — no configuration needed.
+
 ## 62 FHIR R4 Resources
 
 Full CRUD + search + pagination out of the box, organized by FHIR domain:

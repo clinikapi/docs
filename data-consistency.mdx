@@ -1,0 +1,62 @@
+---
+title: "Data Consistency"
+description: "What is immediately consistent, what is eventually consistent, and how to write code that never notices the difference"
+---
+
+ClinikAPI's FHIR data store gives different consistency guarantees for
+different operations, and your integration should be written with them in
+mind.
+
+## The rules
+
+| Operation | Consistency |
+|---|---|
+| `create` → response | **Immediate** — the returned resource includes its permanent `id` |
+| `read(id)` | **Immediate** — a resource is readable by ID the moment `create` returns |
+| `update` / `patch` → `read(id)` | **Immediate** |
+| `search(...)` / `list(...)` | **Eventually consistent** — new or changed resources typically appear in results within seconds (commonly ~10s), not instantly |
+| `delete` → `search` | **Eventually consistent** — a deleted resource may briefly linger in search results (but `read(id)` returns 404 immediately) |
+
+## What this means for your code
+
+<Note>
+**Golden rule: use the `id` you were given.** Every `create` returns the
+resource with its permanent `id`. Read-after-write must always go through
+`read(id)` — never through `search` — and you should never poll `search` to
+confirm that a create succeeded. If `create` returned `200`, the resource
+exists.
+</Note>
+
+```ts
+// ✅ Correct: read-after-write by ID
+const { data: patient } = await clinik.patients.create({
+  firstName: 'Jane',
+  lastName: 'Doe',
+});
+const { data: fresh } = await clinik.patients.read(patient.id!); // always works
+
+// ❌ Wrong: searching for something you just created
+await clinik.patients.create({ firstName: 'Jane', lastName: 'Doe' });
+const { data: results } = await clinik.patients.search({ name: 'Doe' });
+// results may not include the new patient yet — this is not a bug
+```
+
+## Practical patterns
+
+- **After a form submit**, render the confirmation screen from the `create`
+  response itself (you already have the full resource) instead of re-querying
+  a list.
+- **List screens** that need to show a just-created item immediately should
+  merge the `create` response into their local state (optimistic append), then
+  reconcile on the next natural refresh.
+- **Batch imports**: track the returned IDs as your source of truth for what
+  was written; use search only for later exploration, not verification.
+- **Deletes**: hide the row locally on a successful `delete` — don't wait for
+  it to disappear from search results.
+
+## Why
+
+FHIR search runs against an index that is updated asynchronously — the
+standard trade-off that lets search stay fast over millions of resources. The
+document store itself (create/read/update/delete by ID) is strongly
+consistent.

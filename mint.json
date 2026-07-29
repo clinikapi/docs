@@ -36,7 +36,7 @@
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": ["introduction", "quickstart", "authentication", "errors"]
+      "pages": ["introduction", "quickstart", "authentication", "errors", "data-consistency"]
     },
     {
       "group": "Guides",
