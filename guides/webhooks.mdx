@@ -52,10 +52,19 @@ prescription.deleted
     "resourceType": "patient",
     "resourceId": "pt_abc123",
     "action": "created",
-    "tenantId": "org_def456"
+    "tenantId": "org_def456",
+    "environment": "live"
   }
 }
 ```
+
+`data.environment` is `live` or `test`, depending on which key produced the
+event. **Check it.** Webhooks are registered per organisation, not per
+environment, so one endpoint receives sandbox and production events alike —
+and `resourceId` only exists in the datastore its own environment writes to, so
+fetching a test resource with a live key returns 404. Branch on it before you
+let an event drive real work: sandbox testing should not send a patient a real
+appointment reminder.
 
 `data.tenantId` identifies the tenant partition that produced the event: the sub-organization ID when the triggering API key belongs to a sub-org, otherwise your organization ID. Use it to route events per customer behind a single endpoint.
 
