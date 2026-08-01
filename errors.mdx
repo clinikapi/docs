@@ -49,6 +49,7 @@ ClinikAPI uses standard HTTP status codes and returns structured error responses
 | `VALIDATION_ERROR` | Request body failed schema validation |
 | `INVALID_JSON` | Request body was not valid JSON |
 | `METHOD_OVERRIDE_REJECTED` | Request carried an HTTP method-override header |
+| `SANDBOX_QUOTA_EXCEEDED` | Monthly sandbox (test-key) allowance used up |
 | `RATE_LIMITED` | Plan request limit exceeded |
 | `NOT_FOUND` | Resource not found |
 | `INTERNAL_ERROR` | Unexpected server error |
@@ -155,11 +156,34 @@ Separate from the per-minute rate limit, every organization has **one shared mon
 | Team | 3,000,000 | No — live only |
 | Enterprise | Unlimited | No — live only |
 
-**Test keys have no monthly ceiling on a paid plan.** A `clk_test_*` key writes
-to the sandbox datastore, and none of that traffic is counted or billed — it is
-still bounded by the per-minute rate limit, but not by the monthly pool. On the
-Sandbox plan there is no live environment, so those test requests are exactly
-what consume the 1,000.
+### The sandbox pool
+
+Test traffic is free, but not unlimited. Every paid plan gets a **separate
+monthly sandbox allowance equal to its live allowance** — Pro includes 600,000
+live requests *and* 600,000 sandbox requests. They are independent pools:
+spending one never touches the other.
+
+| Plan | Live requests | Sandbox requests |
+|------|--------------|------------------|
+| Sandbox (free) | — | 1,000 (the shared pool above) |
+| Starter | 60,000 | 60,000 |
+| Pro | 600,000 | 600,000 |
+| Team | 3,000,000 | 3,000,000 |
+| Enterprise | Unlimited | Unlimited |
+
+Sandbox usage comes back on responses to a test key:
+
+| Header | Description |
+|--------|-------------|
+| `X-Sandbox-Limit` | Sandbox requests included per month |
+| `X-Sandbox-Used` | Sandbox requests used this month (org-wide) |
+| `X-Sandbox-Remaining` | Sandbox requests left before the cap |
+
+Exhausting it returns `429` with code `SANDBOX_QUOTA_EXCEEDED`. **Overage
+billing does not extend it** — sandbox traffic is never billed, so there is
+nothing to invoice; the pool simply resets on the 1st. On the Sandbox plan
+there is no separate pool at all, because test requests are already what
+consume the 1,000.
 
 Quota state is returned on every authenticated response:
 
