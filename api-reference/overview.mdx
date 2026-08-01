@@ -56,6 +56,11 @@ List endpoints return paginated results:
 
 Use `count` (default: 20, max: 100) and `cursor` query parameters to paginate.
 
+`count` is clamped rather than rejected: a value above 100 returns 100, and a
+missing, zero, negative or non-numeric value returns the default 20. A `cursor`
+that isn't a positive number starts from the beginning. Read `hasMore` and the
+returned `cursor` rather than assuming you got the page size you asked for.
+
 ## Content Types
 
 | Header | Value |

@@ -47,9 +47,22 @@ ClinikAPI uses standard HTTP status codes and returns structured error responses
 | `KEY_REVOKED` | Key has been revoked |
 | `KEY_EXPIRED` | Key has passed its expiration date |
 | `VALIDATION_ERROR` | Request body failed schema validation |
+| `INVALID_JSON` | Request body was not valid JSON |
+| `METHOD_OVERRIDE_REJECTED` | Request carried an HTTP method-override header |
 | `RATE_LIMITED` | Plan request limit exceeded |
 | `NOT_FOUND` | Resource not found |
 | `INTERNAL_ERROR` | Unexpected server error |
+
+## Method Override Is Not Supported
+
+Send the HTTP method you mean. Requests carrying `X-HTTP-Method-Override`,
+`X-HTTP-Method` or `X-Method-Override` are rejected with `400` and
+`METHOD_OVERRIDE_REJECTED`, whatever the value.
+
+A request whose real method disagrees with the one being executed breaks two
+guarantees this API depends on: that a `GET` never modifies data, and that the
+audit log records the operation that actually happened. The SDK never sends
+these headers.
 
 ## SDK Error Handling
 
