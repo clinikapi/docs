@@ -15,6 +15,22 @@ Webhooks notify your application in real-time when resources change. Every webho
 4. Select which events to subscribe to
 5. Save — you'll receive a webhook secret for signature verification
 
+### Endpoint requirements
+
+The endpoint must be reachable on the public internet over `https://`. URLs
+that resolve to a non-routable address are rejected — loopback, link-local
+(including cloud metadata addresses), private and carrier-grade-NAT ranges,
+and internal names such as `*.internal` or `*.local`. Credentials embedded in
+the URL (`https://user:pass@…`) are rejected too; use the signing secret to
+authenticate us instead.
+
+This is enforced again at delivery time, not only when you save the webhook,
+so an endpoint whose DNS later points somewhere internal stops receiving
+deliveries rather than turning us into a proxy for it.
+
+**Redirects are not followed.** A `3xx` response counts as a failed delivery
+and is retried. Register the final URL.
+
 ## Event Format
 
 Events follow the pattern `{resource}.{action}`:
@@ -51,36 +67,64 @@ Webhooks are registered at the organization level, and by default an endpoint re
 
 | Header | Description |
 |--------|-------------|
-| `X-Clinik-Signature` | HMAC-SHA256 hex signature of the payload |
+| `X-Clinik-Signature` | HMAC-SHA256 hex signature of the raw body |
+| `X-Clinik-Signature-V2` | `t=<unix>,v1=<hex>` — signature over `<t>.<body>`. Prefer this |
 | `X-Clinik-Timestamp` | Unix timestamp (seconds) when the webhook was sent |
 | `X-Clinik-Event` | Event type (e.g. `patient.created`) |
 | `X-Clinik-Delivery-Id` | Unique delivery ID for deduplication |
 
 ## Verifying Signatures
 
-Always verify the signature before processing a webhook:
+Always verify the signature before processing a webhook. Verify against the
+**raw request body** — re-serializing parsed JSON changes the bytes and the
+signature will not match.
+
+Prefer `X-Clinik-Signature-V2`: it covers the timestamp as well as the body, so
+you can reject a stale replay. `X-Clinik-Signature` covers the body alone and
+remains supported for existing integrations, but on its own it cannot tell a
+fresh delivery from a replayed one.
 
 ```ts
 import crypto from 'crypto';
 
-function verifyWebhook(payload: string, signature: string, secret: string): boolean {
+const TOLERANCE_SECONDS = 300; // reject anything older than 5 minutes
+
+function verifyWebhook(rawBody: string, header: string, secret: string): boolean {
+  // header looks like: t=1700000000,v1=<hex>
+  const parts = Object.fromEntries(
+    header.split(',').map((kv) => kv.split('=', 2) as [string, string]),
+  );
+  const timestamp = Number(parts.t);
+  const received = parts.v1 ?? '';
+  if (!Number.isFinite(timestamp) || !received) return false;
+
+  // Freshness — this is the part the timestamp buys you.
+  if (Math.abs(Math.floor(Date.now() / 1000) - timestamp) > TOLERANCE_SECONDS) return false;
+
   const expected = crypto
     .createHmac('sha256', secret)
-    .update(payload)
+    .update(`${timestamp}.${rawBody}`)
     .digest('hex');
-  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+
+  // timingSafeEqual THROWS when the two buffers differ in length, and the
+  // signature is attacker-controlled — compare lengths first, or a malformed
+  // header crashes your handler instead of returning 401.
+  const a = Buffer.from(received, 'utf8');
+  const b = Buffer.from(expected, 'utf8');
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
-// In your webhook handler
-app.post('/webhooks/clinikapi', (req, res) => {
-  const signature = req.headers['x-clinik-signature'];
-  const isValid = verifyWebhook(req.body, signature, process.env.CLINIK_WEBHOOK_SECRET);
+// In your webhook handler — note express.raw(), not express.json()
+app.post('/webhooks/clinikapi', express.raw({ type: 'application/json' }), (req, res) => {
+  const header = req.headers['x-clinik-signature-v2'] as string;
+  const rawBody = req.body.toString('utf8');
+  const isValid = header && verifyWebhook(rawBody, header, process.env.CLINIK_WEBHOOK_SECRET!);
 
   if (!isValid) {
     return res.status(401).send('Invalid signature');
   }
 
-  const event = JSON.parse(req.body);
+  const event = JSON.parse(rawBody);
   switch (event.event) {
     case 'patient.created':
       // Handle new patient
@@ -142,9 +186,19 @@ Failed deliveries are retried with exponential backoff:
 
 After 5 failed attempts, the delivery is marked as failed. You can view delivery logs in the Dashboard under **Analytics > Webhook Logs**.
 
+Retries are **per endpoint**. If you have several webhooks subscribed to the
+same event and one of them fails, only that one is retried — the endpoints that
+already received the event are not sent it again.
+
+A delivery refused because the destination is not routable is **not** retried:
+the address will not become valid on its own. Fix the URL and the next event
+delivers normally.
+
 ## Best Practices
 
 - Always return `200` quickly — process events asynchronously
-- Use the `X-Clinik-Delivery-Id` header for idempotency
-- Verify signatures on every request
+- Verify `X-Clinik-Signature-V2` on every request, against the raw body
+- Reject deliveries whose timestamp is outside your tolerance window
+- Deduplicate on `X-Clinik-Delivery-Id` — delivery is at-least-once, so the
+  same event can legitimately arrive twice
 - Use specific event subscriptions instead of `*` when possible
