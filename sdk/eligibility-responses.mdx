@@ -19,7 +19,7 @@ const { data, meta } = await clinik.eligibilityResponses.create(request): Promis
 | `purpose` | `string[]` | Yes | Purpose codes |
 | `patientId` | `string` | Yes | Patient ID |
 | `created` | `string` | No | When created (defaults to now) |
-| `requestId` | `string` | No | CoverageEligibilityRequest ID |
+| `requestId` | `string` | Yes | CoverageEligibilityRequest this responds to |
 | `outcome` | `string` | Yes | queued, complete, error, partial |
 | `insurerId` | `string` | Yes | Insurer Organization ID |
 | `disposition` | `string` | No | Disposition message |

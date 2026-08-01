@@ -3092,7 +3092,7 @@ components:
 
     EligibilityResponseCreate:
       type: object
-      required: [status, purpose, patientId, outcome, insurerId]
+      required: [status, purpose, patientId, requestId, outcome, insurerId]
       properties:
         status:
           type: string

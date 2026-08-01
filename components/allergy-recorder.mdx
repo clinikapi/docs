@@ -59,13 +59,15 @@ The widget sends `allergies.create` with:
     "patientId": "pt_abc123",
     "code": "Penicillin",
     "type": "allergy",
-    "category": "medication",
+    "category": ["medication"],
     "criticality": "high",
     "clinicalStatus": "active",
-    "reaction": {
-      "manifestation": "Anaphylaxis",
-      "severity": "severe"
-    }
+    "reaction": [
+      {
+        "manifestation": ["Anaphylaxis"],
+        "severity": "severe"
+      }
+    ]
   }
 }
 ```

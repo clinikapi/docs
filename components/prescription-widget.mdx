@@ -25,34 +25,42 @@ import { PrescriptionWidget } from '@clinikapi/react';
 |------|------|----------|-------------|
 | `proxyUrl` | `string` | Yes | Backend proxy URL |
 | `patientId` | `string` | Yes | Patient ID |
+| `prescriberId` | `string` | No | Prescribing practitioner ID |
 | `theme` | `'light' \| 'dark'` | No | Color theme |
 
 ## Features
 
 - Quick medication name entry
-- Creates a Medication resource with active status
+- Creates a prescription (MedicationRequest) linked to the patient
 - Supports free-text medication names and RxNorm codes
-- Manufacturer and form fields available via the SDK
+- Dosage, refills and priority available via PrescriptionForm or the SDK
 
 ## PrescriptionWidget vs PrescriptionForm
 
 | Widget | Use Case |
 |--------|----------|
-| PrescriptionWidget | Quick medication catalog entry (Medication resource) |
-| PrescriptionForm | Full prescription with dosage, priority, category, refills (MedicationRequest resource) |
+| PrescriptionWidget | Quick one-field prescribing — medication name only |
+| PrescriptionForm | Full prescription with dosage, priority, category, refills |
+
+Both write a **MedicationRequest**. To add to the medication *catalog* instead,
+call `medications.create` from your own backend — no widget does that.
 
 ## Proxy Action
 
-The widget sends `medications.create` with:
+The widget sends `prescriptions.create` with:
 
 ```json
 {
-  "action": "medications.create",
+  "action": "prescriptions.create",
   "data": {
-    "code": "Amoxicillin 500mg",
-    "status": "active"
+    "patientId": "pt_abc123",
+    "prescriberId": "prac_def456",
+    "medication": "Amoxicillin 500mg",
+    "status": "active",
+    "intent": "order"
   }
 }
 ```
 
-The enriched Medication resource also supports `manufacturer`, `amount`, `ingredient`, and `batch` fields through the SDK.
+When `prescriberId` isn't supplied the widget sends `"unknown"`, so allowlist
+the action and fill in the real prescriber from your session in the proxy.

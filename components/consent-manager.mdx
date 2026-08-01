@@ -58,14 +58,14 @@ The widget sends `consents.sign` with:
     "status": "active",
     "scope": "patient-privacy",
     "category": "hipaa-notice",
-    "verification": [{
-      "verified": true,
-      "verifiedWith": "pt_abc123",
-      "verificationDate": "2025-01-15T10:00:00Z"
-    }]
+    "policyRule": "hipaa-auth"
   }
 }
 ```
+
+Every Consent must carry a `policyRule` or a `policyUri` — FHIR invariant
+ppc-1 rejects one that has neither. Pass your own policy reference from the
+proxy if `hipaa-auth` isn't the right identifier for your organization.
 
 ## Advanced: Provisions with Data Control
 

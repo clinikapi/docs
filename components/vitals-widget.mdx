@@ -51,7 +51,8 @@ The widget creates observations using the enriched Observation schema:
 
 ## Proxy Action
 
-The widget sends `observations.create` with:
+The widget sends `observations.create` with both readings as components of a
+single vitals panel:
 
 ```json
 {
@@ -59,10 +60,16 @@ The widget sends `observations.create` with:
   "data": {
     "patientId": "pt_abc123",
     "status": "final",
-    "code": { "system": "http://loinc.org", "code": "8867-4", "display": "Heart rate" },
+    "code": "Vitals Panel",
     "category": "vital-signs",
-    "valueQuantity": { "value": 72, "unit": "bpm" },
-    "effectiveDateTime": "2025-01-15T10:00:00Z"
+    "component": [
+      { "code": "Heart rate", "valueQuantity": { "value": 72, "unit": "beats/min" } },
+      { "code": "Blood pressure", "valueString": "120/80 mmHg" }
+    ]
   }
 }
 ```
+
+To record LOINC-coded observations one per measurement instead, call
+`observations.create` yourself with a `code` object and `valueQuantity` — the
+schema supports both shapes.
