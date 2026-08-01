@@ -1,0 +1,193 @@
+---
+title: Webhooks in Practice
+description: Build a real integration on webhooks — the handler shape, the four things that bite, and worked scenarios.
+---
+
+# Webhooks in Practice
+
+[The webhooks reference](/guides/webhooks) covers the payload, the headers and
+the settings. This page is about actually building on them: what a correct
+handler looks like, why each part of it exists, and the mistakes that only show
+up in production.
+
+## The mental model: a doorbell, not a delivery
+
+A webhook tells you *that* something changed and gives you its id. It does not
+carry the record:
+
+```json
+{
+  "id": "evt_msaygdno_y4n1ox",
+  "event": "appointment.created",
+  "timestamp": "2026-08-02T09:15:00.000Z",
+  "data": {
+    "resourceType": "appointment",
+    "resourceId": "b79ea396-6161-4f8b-9004-5ba29d9f3744",
+    "action": "created",
+    "tenantId": "6ed948b8-7fe0-48e4-9521-0606cdab7cd4",
+    "environment": "live"
+  }
+}
+```
+
+No patient name, no phone number, no appointment time. That is deliberate. A
+webhook body travels to an endpoint we do not control and cannot audit, so it
+carries an identifier rather than PHI: an intercepted delivery leaks a UUID,
+not a patient. You fetch the record yourself, with your own key, over an
+authenticated connection that *is* logged.
+
+So every handler has the same shape:
+
+**verify → deduplicate → check environment → fetch → act.**
+
+## A complete handler
+
+```ts
+import crypto from 'crypto';
+
+const TOLERANCE_SECONDS = 300;
+
+export async function POST(req: Request) {
+  // 1. VERIFY — against the RAW body. Re-serializing parsed JSON changes the
+  //    bytes and the signature will never match.
+  const raw = await req.text();
+  if (!verify(raw, req.headers.get('x-clinik-signature-v2'), process.env.CLINIK_WEBHOOK_SECRET!)) {
+    return new Response('invalid signature', { status: 401 });
+  }
+
+  const { id, event, data } = JSON.parse(raw);
+
+  // 2. DEDUPLICATE — delivery is at-least-once, so this event can legitimately
+  //    arrive more than once. Without this, a retry sends a second reminder.
+  if (await seen(id)) return new Response('ok');
+  await remember(id);
+
+  // 3. ENVIRONMENT — one endpoint receives sandbox and production events alike.
+  //    Skip anything that is not real before it can trigger real work.
+  if (data.environment !== 'live') return new Response('ok');
+
+  // 4. FETCH — the payload has ids, not data.
+  if (event === 'appointment.created') {
+    const { data: appt } = await clinik.appointments.read(data.resourceId);
+    const { data: patient } = await clinik.patients.read(appt.patientId);
+
+    // 5. ACT — but queue it. Slow handlers get retried.
+    await queue.publish('reminder', { to: patient.phone, at: appt.start });
+  }
+
+  return new Response('ok');
+}
+
+function verify(rawBody: string, header: string | null, secret: string): boolean {
+  if (!header) return false;
+  const parts = Object.fromEntries(header.split(',').map((kv) => kv.split('=', 2)));
+  const timestamp = Number(parts.t);
+  const received = parts.v1 ?? '';
+  if (!Number.isFinite(timestamp) || !received) return false;
+  if (Math.abs(Math.floor(Date.now() / 1000) - timestamp) > TOLERANCE_SECONDS) return false;
+
+  const expected = crypto.createHmac('sha256', secret)
+    .update(`${timestamp}.${rawBody}`).digest('hex');
+
+  // timingSafeEqual THROWS on a length mismatch, and the signature is
+  // attacker-controlled — compare lengths first or a junk header crashes you.
+  const a = Buffer.from(received, 'utf8');
+  const b = Buffer.from(expected, 'utf8');
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+```
+
+## The four things that bite
+
+<AccordionGroup>
+<Accordion title="Verifying the parsed body instead of the raw one">
+`JSON.parse` then `JSON.stringify` reorders keys and changes whitespace, so the
+bytes you hash are not the bytes we signed. In Express this means
+`express.raw({ type: 'application/json' })`, not `express.json()`. Symptom:
+every signature fails, and it looks like the secret is wrong.
+</Accordion>
+
+<Accordion title="Assuming exactly-once delivery">
+Delivery is **at-least-once**. A handler that times out *after* doing its work
+still gets retried, because we never saw the 200. Deduplicate on
+`X-Clinik-Delivery-Id` (also the payload's `id`) before acting. Skipping this is
+how one booking becomes three text messages.
+</Accordion>
+
+<Accordion title="Letting sandbox events drive real work">
+Webhooks are registered per organisation, not per key, so an endpoint receives
+test and live events alike. Every integration test you run fires the same
+`appointment.created` as a real booking. Check `data.environment`, and pin your
+production endpoint to **live** when you register it so sandbox traffic never
+reaches it at all.
+
+There is a second reason to care: `resourceId` only exists in the datastore its
+own environment writes to. Fetching a test resource with a live key returns
+`404`.
+</Accordion>
+
+<Accordion title="Doing the work before responding">
+Failed deliveries retry on a 30s → 2min → 8min → 32min → 2h backoff. A handler
+that spends 20 seconds generating a PDF invites duplicates and eventually gets
+marked failed. Return `200` as soon as the event is verified and durable, then
+process asynchronously.
+</Accordion>
+</AccordionGroup>
+
+## Worked scenarios
+
+### Appointment reminders
+
+Subscribe to `appointment.created` and `appointment.updated`. On create,
+schedule a reminder 24 hours out; on update, reschedule it; on
+`appointment.deleted`, cancel it. Because the reminder is keyed to the
+appointment id, the update path is idempotent by construction.
+
+This is the case that most clearly beats polling — not for latency, but because
+you would otherwise diff every clinic's appointment list on a timer, forever.
+
+### Critical result escalation
+
+Subscribe to `lab.created`, fetch the report, and page the on-call clinician
+when a value is out of range.
+
+Here latency genuinely matters. A critical potassium result sitting in a
+one-minute polling gap is a patient-safety issue, not a performance one — and
+the gap is unbounded if your poller is mid-restart.
+
+```ts
+if (event === 'lab.created') {
+  const { data: report } = await clinik.labs.read(data.resourceId);
+  if (isCritical(report)) await page(onCallFor(report.patientId), report);
+}
+```
+
+### One platform, many clinics
+
+If you resell to multiple practices, give each one a **sub-organization**. You
+then have two options, and the right one depends on your architecture:
+
+- **One endpoint, route on `data.tenantId`.** It carries the sub-org id, not
+  your parent organization id, so it is a clean routing key.
+- **One endpoint per clinic, pinned to that sub-org.** Their events never reach
+  another clinic's infrastructure — useful when each customer has their own
+  deployment, or when you want the isolation to be structural rather than a
+  line of code.
+
+### Keeping a billing system in sync
+
+Subscribe to `charge-item.created` and `invoice.updated` and push into your
+accounting system. Nobody re-keys anything, and the FHIR record stays the
+source of truth.
+
+## Before you go live
+
+- Register the **final** URL. Redirects are not followed — a `301` to a
+  trailing slash makes every delivery a failure.
+- The endpoint must be publicly reachable over HTTPS. Loopback, private ranges
+  and internal hostnames are rejected at registration *and* at delivery.
+- Subscribe to the specific events you handle rather than `*`. It is cheaper
+  for both of us, and it makes the delivery log readable when something breaks.
+- Watch **Analytics → Webhook Logs** in the dashboard after your first
+  deployment. Every attempt is recorded with its status and response, and a
+  refused delivery tells you exactly why.

@@ -25,18 +25,41 @@
     "url": "https://dashboard.clinikapi.com"
   },
   "tabs": [
-    { "name": "API Reference", "url": "api-reference" },
-    { "name": "SDK", "url": "sdk" },
-    { "name": "Components", "url": "components" }
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    },
+    {
+      "name": "SDK",
+      "url": "sdk"
+    },
+    {
+      "name": "Components",
+      "url": "components"
+    }
   ],
   "anchors": [
-    { "name": "GitHub", "icon": "github", "url": "https://github.com/clinikapi" },
-    { "name": "Status", "icon": "signal", "url": "https://status.clinikapi.com" }
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/clinikapi"
+    },
+    {
+      "name": "Status",
+      "icon": "signal",
+      "url": "https://status.clinikapi.com"
+    }
   ],
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": ["introduction", "quickstart", "authentication", "errors", "data-consistency"]
+      "pages": [
+        "introduction",
+        "quickstart",
+        "authentication",
+        "errors",
+        "data-consistency"
+      ]
     },
     {
       "group": "Guides",
@@ -104,13 +127,16 @@
         "guides/measure-reports",
         "guides/immunization-recommendations",
         "guides/webhooks",
+        "guides/webhooks-in-practice",
         "guides/bulk-operations",
         "guides/raw-fhir"
       ]
     },
     {
       "group": "API Reference",
-      "pages": ["api-reference/overview"]
+      "pages": [
+        "api-reference/overview"
+      ]
     },
     {
       "group": "Patients",
@@ -841,7 +867,11 @@
     },
     {
       "group": "Legal",
-      "pages": ["legal/baa", "legal/privacy", "legal/terms"]
+      "pages": [
+        "legal/baa",
+        "legal/privacy",
+        "legal/terms"
+      ]
     }
   ],
   "openapi": "api-reference/openapi.yaml",
