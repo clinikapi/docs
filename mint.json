@@ -856,5 +856,11 @@
   "feedback": {
     "thumbsRating": true,
     "suggestEdit": true
+  },
+  "analytics": {
+    "posthog": {
+      "apiKey": "phc_817t39VWvmzFeNxvLBBOVQM0CnsuX5INS2qERVGXmIY",
+      "apiHost": "https://eu.i.posthog.com"
+    }
   }
 }
