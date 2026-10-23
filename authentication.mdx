@@ -84,13 +84,16 @@ Keys are cached for 60 seconds to minimize database lookups.
 
 ## Key Scopes
 
-API keys can be scoped to specific permissions:
+Every API key carries scopes, and the API checks them on each request:
 
-- `read` — GET operations only
-- `write` — POST, PATCH, DELETE operations
-- `*` — full access (default)
+- `read` — GET operations
+- `write` — POST, PATCH and DELETE operations
 
-Scopes are set when creating the key in the Dashboard.
+Keys created in the Dashboard carry both `read` and `write`. A request outside a key's scopes is refused with
+`403` and the error code `INSUFFICIENT_SCOPE`. A key with no scopes at all is refused.
+
+Live keys (`clk_live_`) can be created only by an organization owner or admin, and only on a paid plan. Test keys
+(`clk_test_`) are available on every plan.
 
 ## Security Best Practices
 

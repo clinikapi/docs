@@ -46,12 +46,14 @@ ClinikAPI uses standard HTTP status codes and returns structured error responses
 | `INVALID_KEY` | Key not found in the database |
 | `KEY_REVOKED` | Key has been revoked |
 | `KEY_EXPIRED` | Key has passed its expiration date |
+| `INSUFFICIENT_SCOPE` | The key's scopes do not cover this request (`read` for GET, `write` for POST, PATCH and DELETE) |
 | `VALIDATION_ERROR` | Request body failed schema validation |
 | `INVALID_JSON` | Request body was not valid JSON |
 | `METHOD_OVERRIDE_REJECTED` | Request carried an HTTP method-override header |
 | `SANDBOX_QUOTA_EXCEEDED` | Monthly sandbox (test-key) allowance used up |
 | `RATE_LIMITED` | Plan request limit exceeded |
 | `NOT_FOUND` | Resource not found |
+| `TENANT_TAG_INTEGRITY` | A FHIR PATCH could not be applied safely (`409`); resend it without touching `meta` |
 | `INTERNAL_ERROR` | Unexpected server error |
 
 ## Method Override Is Not Supported
