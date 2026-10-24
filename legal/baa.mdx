@@ -3,13 +3,17 @@ title: Business Associate Agreement
 description: HIPAA Business Associate Agreement for ClinikAPI customers.
 ---
 
-# Business Associate Agreement
+# Business Associate Agreement overview
 
-ClinikAPI provides a HIPAA Business Associate Agreement (BAA) for all paid plans (Starter and above).
+This page is an overview of our Business Associate Agreement. The executed agreement is provided when you sign.
+
+*Last updated: October 24, 2026.*
+
+Bettar Platforms, Inc., through ClinikAPI, provides a HIPAA Business Associate Agreement (BAA) for all paid plans (Pro, Team and Enterprise). ClinikAPI is a product of Bettar Platforms, Inc., a Delaware corporation with its registered office at 8 The Green, Suite B, Dover, DE 19901, United States.
 
 ## What is a BAA?
 
-A BAA is a legally binding contract required by HIPAA when a covered entity (your organization) shares Protected Health Information (PHI) with a business associate (ClinikAPI). It defines:
+A BAA is a legally binding contract required by HIPAA when a covered entity (your organization) shares Protected Health Information (PHI) with a business associate (Bettar Platforms, Inc., through ClinikAPI). It defines:
 
 - How PHI may be used and disclosed
 - Safeguards required to protect PHI
@@ -18,15 +22,14 @@ A BAA is a legally binding contract required by HIPAA when a covered entity (you
 
 ## Requesting a BAA
 
-BAAs are available on all paid plans:
+BAAs are available on all paid plans. Current plan amounts are on the [pricing page](https://clinikapi.com/pricing).
 
 | Plan | BAA Available |
 |------|---------------|
-| Sandbox (free) | No |
-| Starter ($49/mo) | Yes |
-| Pro ($499/mo) | Yes |
-| Team ($1,999/mo) | Yes |
-| Enterprise (custom) | Yes (custom terms) |
+| Free | No (synthetic data only) |
+| Pro | Yes |
+| Team | Yes |
+| Enterprise | Yes (custom terms) |
 
 To request a BAA:
 
@@ -38,15 +41,15 @@ Enterprise customers receive a customized BAA with additional terms.
 
 ## Technical Safeguards
 
-ClinikAPI implements the following safeguards as documented in the BAA:
+Bettar Platforms, Inc., through ClinikAPI, implements the following safeguards as documented in the BAA:
 
 - **Encryption at rest**: AES-256 with cloud-managed KMS keys
 - **Encryption in transit**: TLS 1.2+ on all API endpoints
 - **Access controls**: API key authentication with tenant isolation
 - **Audit logging**: Every API request logged with FHIR resource context
 - **Data isolation**: Tenant-tagged resources with enforced `_tag` filtering
-- **Breach notification**: Within 60 days of discovery per HIPAA requirements
+- **Breach notification**: Within 15 business days of discovery for the business associate agreement, and within 24 hours for a personal-data breach under the data processing agreement
 
 ## Contact
 
-For BAA questions or custom enterprise agreements, contact [compliance@clinikapi.com](mailto:compliance@clinikapi.com).
+For BAA questions or custom enterprise agreements, contact [legal@clinikapi.com](mailto:legal@clinikapi.com).
