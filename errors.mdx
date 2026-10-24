@@ -18,7 +18,7 @@ ClinikAPI uses standard HTTP status codes and returns structured error responses
     {
       "severity": "error",
       "code": "invalid",
-      "diagnostics": "firstName: Required"
+      "diagnostics": "firstName: Invalid input: expected string, received undefined"
     }
   ]
 }
@@ -33,7 +33,8 @@ ClinikAPI uses standard HTTP status codes and returns structured error responses
 | `403` | Forbidden — key doesn't have required scope |
 | `404` | Not Found — resource doesn't exist or belongs to another tenant |
 | `409` | Conflict — resource version conflict |
-| `422` | Validation Error — request body failed Zod validation |
+| `413` | Payload Too Large — request body is larger than 5 MB |
+| `422` | Validation Error — request body failed validation |
 | `429` | Rate Limited — too many requests for your plan |
 | `500` | Internal Error — something went wrong on our end |
 
@@ -49,12 +50,35 @@ ClinikAPI uses standard HTTP status codes and returns structured error responses
 | `INSUFFICIENT_SCOPE` | The key's scopes do not cover this request (`read` for GET, `write` for POST, PATCH and DELETE) |
 | `VALIDATION_ERROR` | Request body failed schema validation |
 | `INVALID_JSON` | Request body was not valid JSON |
+| `PAYLOAD_TOO_LARGE` | Request body is larger than 5 MB (`413`) |
 | `METHOD_OVERRIDE_REJECTED` | Request carried an HTTP method-override header |
 | `SANDBOX_QUOTA_EXCEEDED` | Monthly sandbox (test-key) allowance used up |
 | `RATE_LIMITED` | Plan request limit exceeded |
 | `NOT_FOUND` | Resource not found |
 | `TENANT_TAG_INTEGRITY` | A FHIR PATCH could not be applied safely (`409`); resend it without touching `meta` |
 | `INTERNAL_ERROR` | Unexpected server error |
+
+## Request Size Limit
+
+Request bodies are limited to **5 MB** on every endpoint, including bulk import and the raw FHIR passthrough. A larger body is refused with `413` and `PAYLOAD_TOO_LARGE` before it is read:
+
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "too-costly",
+      "diagnostics": "Request body exceeds the 5 MB limit for this endpoint."
+    }
+  ],
+  "error": "Request body exceeds the 5 MB limit for this endpoint.",
+  "code": "PAYLOAD_TOO_LARGE",
+  "requestId": "req_k8f3a7x2"
+}
+```
+
+Split large imports or Bundles into several requests.
 
 ## Method Override Is Not Supported
 

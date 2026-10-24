@@ -45,6 +45,39 @@ components:
       name: x-api-key
       description: Your ClinikAPI secret key (clk_live_* or clk_test_*)
 
+  responses:
+    PayloadTooLarge:
+      description: The request body is larger than 5 MB. Applies to every endpoint.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              resourceType:
+                type: string
+                example: OperationOutcome
+              issue:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    severity:
+                      type: string
+                      example: error
+                    code:
+                      type: string
+                      example: too-costly
+                    diagnostics:
+                      type: string
+              error:
+                type: string
+                example: Request body exceeds the 5 MB limit for this endpoint.
+              code:
+                type: string
+                example: PAYLOAD_TOO_LARGE
+              requestId:
+                type: string
+
   schemas:
     ApiResponse:
       type: object
@@ -5264,6 +5297,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PatientCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Patient created
           content:
@@ -5351,6 +5386,8 @@ paths:
               type: object
               description: Partial patient fields to update
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Patient updated
           content:
@@ -5382,6 +5419,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PractitionerCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Practitioner created
           content:
@@ -5446,6 +5485,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Practitioner updated
     delete:
@@ -5473,6 +5514,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PractitionerRoleCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Practitioner role created
     get:
@@ -5510,6 +5553,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Practitioner role updated
     delete:
@@ -5537,6 +5582,8 @@ paths:
             schema:
               $ref: '#/components/schemas/EncounterCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Encounter created
         '422':
@@ -5584,6 +5631,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Encounter updated
     delete:
@@ -5611,6 +5660,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ObservationCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Observation created
         '422':
@@ -5658,6 +5709,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Observation updated
     delete:
@@ -5685,6 +5738,8 @@ paths:
             schema:
               $ref: '#/components/schemas/MedicationCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Medication created
     get:
@@ -5722,6 +5777,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Medication updated
     delete:
@@ -5749,6 +5806,8 @@ paths:
             schema:
               $ref: '#/components/schemas/AppointmentCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Appointment created
     get:
@@ -5790,6 +5849,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Appointment updated
     delete:
@@ -5817,6 +5878,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PrescriptionCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Prescription created
     get:
@@ -5863,6 +5926,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Prescription updated
     delete:
@@ -5890,6 +5955,8 @@ paths:
             schema:
               $ref: '#/components/schemas/IntakeCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Intake submitted
     get:
@@ -5930,6 +5997,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Intake updated
     delete:
@@ -5957,6 +6026,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ConsentCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Consent signed
     get:
@@ -5997,6 +6068,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Consent updated
     delete:
@@ -6024,6 +6097,8 @@ paths:
             schema:
               $ref: '#/components/schemas/LabCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Lab report created
     get:
@@ -6065,6 +6140,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Lab report updated
     delete:
@@ -6092,6 +6169,8 @@ paths:
             schema:
               $ref: '#/components/schemas/NoteCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Note created
     get:
@@ -6144,6 +6223,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Note updated
     delete:
@@ -6171,6 +6252,8 @@ paths:
             schema:
               $ref: '#/components/schemas/AssessmentCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Assessment created
     get:
@@ -6219,6 +6302,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Assessment updated
     delete:
@@ -6246,6 +6331,8 @@ paths:
             schema:
               $ref: '#/components/schemas/DocumentCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Document created
     get:
@@ -6294,6 +6381,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Document updated
     delete:
@@ -6321,6 +6410,8 @@ paths:
             schema:
               $ref: '#/components/schemas/AppointmentResponseCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Appointment response created
     get:
@@ -6369,6 +6460,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Appointment response updated
     delete:
@@ -6396,6 +6489,8 @@ paths:
             schema:
               $ref: '#/components/schemas/TaskCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Task created
         '422':
@@ -6459,6 +6554,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Task updated
     delete:
@@ -6486,6 +6583,8 @@ paths:
             schema:
               $ref: '#/components/schemas/SlotCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Slot created
     get:
@@ -6537,6 +6636,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Slot updated
     delete:
@@ -6564,6 +6665,8 @@ paths:
             schema:
               $ref: '#/components/schemas/OrganizationCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Organization created
     get:
@@ -6612,6 +6715,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Organization updated
     delete:
@@ -6639,6 +6744,8 @@ paths:
             schema:
               $ref: '#/components/schemas/AccountCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Account created
     get:
@@ -6685,6 +6792,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Account updated
     delete:
@@ -6712,6 +6821,8 @@ paths:
             schema:
               $ref: '#/components/schemas/HealthcareServiceCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Healthcare service created
     get:
@@ -6764,6 +6875,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Healthcare service updated
     delete:
@@ -6791,6 +6904,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ServiceRequestCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Service request created
         '422':
@@ -6858,6 +6973,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Service request updated
     delete:
@@ -6885,6 +7002,8 @@ paths:
             schema:
               $ref: '#/components/schemas/LocationCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Location created
         '422':
@@ -6941,6 +7060,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Location updated
     delete:
@@ -6968,6 +7089,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ScheduleCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Schedule created
         '422':
@@ -7029,6 +7152,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Schedule updated
     delete:
@@ -7056,6 +7181,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PersonCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Person created
         '422':
@@ -7115,6 +7242,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Person updated
     delete:
@@ -7142,6 +7271,8 @@ paths:
             schema:
               $ref: '#/components/schemas/FamilyMemberHistoryCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Family member history created
         '422':
@@ -7193,6 +7324,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Family member history updated
     delete:
@@ -7220,6 +7353,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CarePlanCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Care plan created
     get:
@@ -7266,6 +7401,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Care plan updated
     delete:
@@ -7293,6 +7430,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ImmunizationCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Immunization created
     get:
@@ -7337,6 +7476,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Immunization updated
     delete:
@@ -7364,6 +7505,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ClaimCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Claim created
     get:
@@ -7412,6 +7555,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Claim updated
     delete:
@@ -7439,6 +7584,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ClaimResponseCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Claim response created
     get:
@@ -7489,6 +7636,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Claim response updated
     delete:
@@ -7516,6 +7665,8 @@ paths:
             schema:
               $ref: '#/components/schemas/AllergyIntoleranceCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Allergy created
     get:
@@ -7573,6 +7724,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Allergy updated
     delete:
@@ -7600,6 +7753,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CareTeamCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Care team created
     get:
@@ -7642,6 +7797,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Care team updated
     delete:
@@ -7669,6 +7826,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ConditionCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Condition created
     get:
@@ -7726,6 +7885,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Condition updated
     delete:
@@ -7753,6 +7914,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ChargeItemCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Charge item created
     get:
@@ -7803,6 +7966,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Charge item updated
     delete:
@@ -7830,6 +7995,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CoverageCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Coverage created
     get:
@@ -7876,6 +8043,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Coverage updated
     delete:
@@ -7903,6 +8072,8 @@ paths:
             schema:
               $ref: '#/components/schemas/EligibilityRequestCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Eligibility request created
     get:
@@ -7943,6 +8114,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Eligibility request updated
     delete:
@@ -7970,6 +8143,8 @@ paths:
             schema:
               $ref: '#/components/schemas/EligibilityResponseCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Eligibility response created
     get:
@@ -8016,6 +8191,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Eligibility response updated
     delete:
@@ -8043,6 +8220,8 @@ paths:
             schema:
               $ref: '#/components/schemas/EOBCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: EOB created
     get:
@@ -8093,6 +8272,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: EOB updated
     delete:
@@ -8120,6 +8301,8 @@ paths:
             schema:
               $ref: '#/components/schemas/DeviceCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Device created
     get:
@@ -8170,6 +8353,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Device updated
     delete:
@@ -8197,6 +8382,8 @@ paths:
             schema:
               $ref: '#/components/schemas/DeviceRequestCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Device request created
     get:
@@ -8243,6 +8430,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Device request updated
     delete:
@@ -8270,6 +8459,8 @@ paths:
             schema:
               $ref: '#/components/schemas/DeviceUseStatementCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Device use statement created
     get:
@@ -8312,6 +8503,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Device use statement updated
     delete:
@@ -8339,6 +8532,8 @@ paths:
             schema:
               $ref: '#/components/schemas/GoalCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Goal created
     get:
@@ -8388,6 +8583,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Goal updated
     delete:
@@ -8415,6 +8612,8 @@ paths:
             schema:
               $ref: '#/components/schemas/InvoiceCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Invoice created
     get:
@@ -8459,6 +8658,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Invoice updated
     delete:
@@ -8486,6 +8687,8 @@ paths:
             schema:
               $ref: '#/components/schemas/MedicationDispenseCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Medication dispense created
     get:
@@ -8528,6 +8731,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Medication dispense updated
     delete:
@@ -8555,6 +8760,8 @@ paths:
             schema:
               $ref: '#/components/schemas/MedicationKnowledgeCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Medication knowledge entry created
     get:
@@ -8604,6 +8811,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Medication knowledge entry updated
     delete:
@@ -8631,6 +8840,8 @@ paths:
             schema:
               $ref: '#/components/schemas/MedicationStatementCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Medication statement created
     get:
@@ -8677,6 +8888,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Medication statement updated
     delete:
@@ -8704,6 +8917,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PaymentNoticeCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Payment notice created
     get:
@@ -8747,6 +8962,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Payment notice updated
     delete:
@@ -8774,6 +8991,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PaymentReconciliationCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Payment reconciliation created
     get:
@@ -8817,6 +9036,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Payment reconciliation updated
     delete:
@@ -8844,6 +9065,8 @@ paths:
             schema:
               $ref: '#/components/schemas/SpecimenCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Specimen created
     get:
@@ -8888,6 +9111,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Specimen updated
     delete:
@@ -8915,6 +9140,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ImagingStudyCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Imaging study created
     get:
@@ -8959,6 +9186,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Imaging study updated
     delete:
@@ -8986,6 +9215,8 @@ paths:
             schema:
               $ref: '#/components/schemas/EnrollmentRequestCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Enrollment request created
     get:
@@ -9033,6 +9264,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Enrollment request updated
     delete:
@@ -9060,6 +9293,8 @@ paths:
             schema:
               $ref: '#/components/schemas/EnrollmentResponseCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Enrollment response created
     get:
@@ -9102,6 +9337,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Enrollment response updated
     delete:
@@ -9129,6 +9366,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ImmunizationEvaluationCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Immunization evaluation created
     get:
@@ -9177,6 +9416,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Immunization evaluation updated
     delete:
@@ -9204,6 +9445,8 @@ paths:
             schema:
               $ref: '#/components/schemas/MediaCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Media created
     get:
@@ -9254,6 +9497,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Media updated
     delete:
@@ -9281,6 +9526,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ActivityDefinitionCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Activity definition created
     get:
@@ -9338,6 +9585,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Activity definition updated
     delete:
@@ -9365,6 +9614,8 @@ paths:
             schema:
               $ref: '#/components/schemas/NutritionOrderCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Nutrition order created
     get:
@@ -9405,6 +9656,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Nutrition order updated
     delete:
@@ -9432,6 +9685,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PlanDefinitionCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Plan definition created
     get:
@@ -9484,6 +9739,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Plan definition updated
     delete:
@@ -9511,6 +9768,8 @@ paths:
             schema:
               $ref: '#/components/schemas/VisionPrescriptionCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Vision prescription created
     get:
@@ -9556,6 +9815,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Vision prescription updated
     delete:
@@ -9583,6 +9844,8 @@ paths:
             schema:
               $ref: '#/components/schemas/RiskAssessmentCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Risk assessment created
     get:
@@ -9631,6 +9894,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Risk assessment updated
     delete:
@@ -9658,6 +9923,8 @@ paths:
             schema:
               $ref: '#/components/schemas/AuditEventCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Audit event created
     get:
@@ -9723,6 +9990,8 @@ paths:
             schema:
               $ref: '#/components/schemas/MeasureCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Measure created
     get:
@@ -9775,6 +10044,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Measure updated
     delete:
@@ -9802,6 +10073,8 @@ paths:
             schema:
               $ref: '#/components/schemas/MeasureReportCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Measure report created
     get:
@@ -9847,6 +10120,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Measure report updated
     delete:
@@ -9874,6 +10149,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ImmunizationRecommendationCreate'
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Immunization recommendation created
     get:
@@ -9947,6 +10224,8 @@ paths:
                   format: date-time
                   description: Only export resources modified after this date
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '202':
           description: Export job started
           content:
@@ -9984,8 +10263,9 @@ paths:
                 data:
                   type: string
                   description: NDJSON content (one JSON resource per line)
-                  maxLength: 104857600
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '202':
           description: Import job started
 
@@ -10068,6 +10348,8 @@ paths:
             schema:
               type: object
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '201':
           description: Resource created
     patch:
@@ -10098,6 +10380,8 @@ paths:
                     type: string
                   value: {}
       responses:
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '200':
           description: Resource patched
     delete:
