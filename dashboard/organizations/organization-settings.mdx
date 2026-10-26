@@ -1,6 +1,6 @@
 ---
 title: "Organization settings"
-description: "Rename your organization, see its usage, and find the Legal and Danger zone sections."
+description: "Rename your organization, see its usage, accept your legal agreements, and find the Danger zone."
 ---
 
 # Organization settings
@@ -47,11 +47,29 @@ Organization settings control things that apply to your whole organization rathe
 
 ## Usage
 
-This section shows your organization's request usage for the month: how many requests you have made against your plan's allowance, the split between live and test requests, how many keys are active, and charts for the last 24 hours or 7 days. It is the same view you see in the project's [Usage](/dashboard/data/usage) page, summed across the organization.
+This section shows your organization's request usage for the month: your sandbox requests out of 1,000 a month (Enterprise is custom), your live requests (which have no monthly quota), how many keys are active, and charts for the last 24 hours or 7 days. It is the same view you see in the project's [Usage](/dashboard/data/usage) page, summed across the organization.
 
 ## Legal
 
-This section currently reads **Coming soon: accept your BAA, Terms and DPA here.** Nothing can be accepted or signed from it yet. The legal documents themselves are published in the [Legal](/legal/terms) section of this documentation.
+This section holds the agreements between your organization and Bettar Platforms, Inc. for ClinikAPI. It shows one card per document: **Terms of Service**, **Business Associate Agreement (BAA)** and **Data Processing Agreement (DPA)**. Each card shows the version and its effective date, and whether it is **Accepted** (by whom and when) or **Not accepted**. Nothing here blocks your API traffic.
+
+Every member can open this section and read the texts. Only an owner or admin can accept.
+
+<Steps>
+  <Step title="Read the text">
+    Select **Read the full text** on a card. The exact wording of that version opens in a panel. If the text on the page ever fails its check against the published version, the panel shows an error and **Accept** is not offered.
+  </Step>
+  <Step title="Answer the DPA question">
+    On the DPA card, answer **Does GDPR, UK GDPR or the Nigeria NDPA apply to the personal data you send?** with **Yes** or **No**. It is pre-filled from your billing country when we know it, but only you know whose data you send, so check it. The answer is recorded with the acceptance.
+  </Step>
+  <Step title="Accept">
+    Select **Accept**, then confirm that you are authorized to bind your organization. Your name, role, the time, your IP address and the exact text are recorded. The card then reads **Accepted**.
+  </Step>
+</Steps>
+
+The BAA is for the paid plans (Pro, Team and Enterprise). On Free its card says the BAA comes with Pro and Team and links to **Billing**; the Free plan is for test data only. An owner or admin of a paid organization that has not accepted the BAA sees a banner on every page: **Accept the BAA in Settings → Legal before sending real patient data.** The banner is a reminder only; no request is stopped. If your billing country is in the European Economic Area, the United Kingdom or Nigeria, the DPA is listed first.
+
+Owners and admins also see a **History** list of every acceptance: the document and version, who accepted it, when, the plan at the time, and the text's SHA-256 fingerprint. Acceptances are kept permanently and are never edited. The documents themselves are also published in the [Legal](/legal/terms) section of this documentation.
 
 ## Danger zone
 
@@ -75,7 +93,10 @@ The section has two cards:
     The person who created the organization. The owner has every permission, including renaming it. The [Members](/dashboard/organizations/members) page shows each person's role.
   </Accordion>
   <Accordion title="Why can I not accept the BAA or Terms in the dashboard?">
-    The Legal section is a placeholder until acceptance is built. The published documents are in the Legal pages of this site.
+    Only an owner or admin can accept; members can read the texts and see the status. The BAA is also only offered on the Pro, Team and Enterprise plans.
+  </Accordion>
+  <Accordion title="Can I send patient data before accepting the BAA?">
+    No. The Terms require the BAA to be accepted first, and PHI sent before then, or on Free, is your responsibility. The dashboard never blocks your traffic, so the banner is the only reminder.
   </Accordion>
   <Accordion title="Can I delete my organization myself?">
     Not from the dashboard. Deletion is irreversible, so it is done with our team through **Contact support to delete**.

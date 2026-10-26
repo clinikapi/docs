@@ -7,7 +7,7 @@ description: "How many requests you have made this month, how many failed, and h
 
 ## What this is for
 
-Your plan includes a number of API requests each month. **Usage** shows how much of that allowance you have used, whether those requests were live or test, and how requests, errors and speed have looked over the last day or week. Use it to spot a runaway script, plan an upgrade, or just confirm your app is healthy.
+Test keys can make 1,000 sandbox requests each month (Enterprise is custom); live requests have no monthly quota. **Usage** shows how much of the sandbox allowance you have used, how many live requests you have made, and how requests, errors and speed have looked over the last day or week. Use it to spot a runaway script, plan an upgrade, or just confirm your app is healthy.
 
 ## Before you start
 
@@ -22,7 +22,7 @@ Your plan includes a number of API requests each month. **Usage** shows how much
     Choose **Usage** in the sidebar. The page is titled **Usage**: "Requests, errors and latency for this project."
   </Step>
   <Step title="Check the meter">
-    The **Requests this month** card shows a count and your limit, such as "120 / 1,000", a bar, and when it resets: "Resets in N days" (or "Resets tomorrow"). The month resets at midnight UTC on the 1st.
+    The usage card shows **Sandbox requests this month** as a count out of 1,000, such as "120 / 1,000", a bar, and when it resets: "Resets in N days" (or "Resets tomorrow"). On Enterprise there is no cap, so it shows only the count. Below it, **Live requests this month** shows the count with "No monthly quota"; Free has no live line. The month resets at midnight UTC on the 1st.
   </Step>
   <Step title="Check the split">
     **This month by environment** shows **Live requests**, **Test requests**, **Active live keys** and **Active test keys**.
@@ -44,10 +44,10 @@ Your plan includes a number of API requests each month. **Usage** shows how much
 
 <AccordionGroup>
   <Accordion title="What happens when I reach the limit?">
-    Past the limit the API answers with a `429` error (`MONTHLY_QUOTA_EXCEEDED` for the monthly pool). The Errors page explains exactly what happens, including overage on paid plans: see [Errors: rate limits and quotas](/errors#rate-limits).
+    Past 1,000 sandbox requests a month, test keys get a `429` error (`SANDBOX_QUOTA_EXCEEDED`) until the 1st. Live requests have no monthly quota. See [Errors: rate limits and quotas](/errors#rate-limits).
   </Accordion>
   <Accordion title="Why does my Free plan fill up from testing?">
-    On Free, test requests count toward the 1,000 requests a month. On paid plans test requests are free.
+    Test requests count toward the 1,000 sandbox requests a month on Free, Pro and Team. Live requests on a paid plan have no monthly quota.
   </Accordion>
   <Accordion title="Why does Usage here match another project's Usage?">
     Usage is organization-wide, so every project shows the same totals.

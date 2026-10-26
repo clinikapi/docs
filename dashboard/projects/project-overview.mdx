@@ -48,7 +48,7 @@ The page title is **Overview**, with your project name, plan (for example "Free 
 
 **Right column:**
 
-- **Requests this month**, a meter such as "42 / 1,000" (on the Free plan; your own limit is shown) with the line "Resets in N days" (the count resets at the start of each month, UTC). On the Free plan test requests count toward the quota; on a paid plan the meter counts live requests and test requests are free.
+- **Sandbox requests this month**, a meter such as "42 / 1,000" with the line "Resets in N days" (the count resets at the start of each month, UTC). On Enterprise there is no cap, so only the count shows. Below it, **Live requests this month** shows the count with "No monthly quota"; the Free plan has no live line.
 - **Getting started**, "N of 3 done": **Create an API key**, **Make your first request**, **Add a webhook**. Each row links to the page where you do it.
 - **Recent activity.** Keys created or revoked, webhooks added and members who joined. Empty state: "Nothing yet. Keys, webhooks and members you add show up here."
 
@@ -66,7 +66,7 @@ A **deleted** project shows a message instead of Overview, and a **suspended** o
     No. A brand-new project has no records, so listing patients correctly returns nothing. Create one (see the [Data browser](/dashboard/data/data-browser)) and list again.
   </Accordion>
   <Accordion title="What counts toward 'Requests this month'?">
-    On the Free plan, every request made with a test key. On a paid plan, live requests are billable and test requests are free, as the line under the meter shows.
+    **Sandbox requests this month** counts every request made with a test key, out of 1,000 a month (Enterprise has no cap). **Live requests this month** counts requests made with a live key and has no monthly quota.
   </Accordion>
   <Accordion title="Why is the cURL header called x-api-key?">
     That is how the API reads your key. Always send it in an `x-api-key` header. See [Authentication](/authentication).

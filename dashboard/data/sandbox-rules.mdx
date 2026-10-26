@@ -34,12 +34,12 @@ You do not need to do anything to get a sandbox. Every project has one, and any 
 
 | Limit | Value |
 |---|---|
-| Requests per minute | 60 for all test-key traffic of one organization, sub-organizations included. This applies on top of your plan's own rate limit. Beyond it the API answers `429` with "Test keys are limited to 60 requests per minute". |
+| Requests per minute | 60 for all test-key traffic of one organization, sub-organizations included. This applies on top of your plan's own rate limit; it is 60 on every plan. Beyond it the API answers `429` with "Test keys are limited to 60 requests per minute". |
 | Records per bulk import | 1,000 (live keys: 10,000). |
 | Records per type in an export | 1,000. |
 | Export size | A sandbox export must fit in one response; otherwise it is refused as too large. |
 | Bulk operations | 5 per hour. |
-| Monthly sandbox requests | Counted separately from live requests on paid plans. On the Free plan every request counts toward the 1,000 requests a month. See [Errors](/errors#rate-limits). |
+| Monthly sandbox requests | 1,000 per organization on Free, Pro and Team (Enterprise is custom), counted separately from live requests, which have no monthly quota. Beyond it the API answers `429` with code `SANDBOX_QUOTA_EXCEEDED` until the 1st. See [Errors](/errors#rate-limits). |
 
 ## In the dashboard
 

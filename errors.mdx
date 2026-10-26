@@ -165,7 +165,7 @@ window is 60 seconds and rolling — exhaust it and the next minute starts fresh
 
 | Plan | Requests per minute |
 |------|--------------------|
-| Sandbox (free) | 100 |
+| Sandbox (free) | 60 |
 | Starter | 200 |
 | Pro | 1,000 |
 | Team | 5,000 |
@@ -184,9 +184,9 @@ The current state comes back on every response:
 
 <Note>
 The rate limit and the monthly quota are different limits that both return
-`429`. The rate limit is about **speed** (per minute); the quota below is about
+`429`. The rate limit is about **speed** (per minute); the sandbox quota below is about
 **volume** (per month). Check the error `code` to tell them apart:
-`RATE_LIMITED` versus `MONTHLY_QUOTA_EXCEEDED`.
+`RATE_LIMITED` versus `SANDBOX_QUOTA_EXCEEDED`.
 </Note>
 
 The SDK exposes these in `meta`:
@@ -196,72 +196,36 @@ const { data, meta } = await clinik.patients.search();
 console.log(meta.rateLimitRemaining); // 498
 ```
 
-## Monthly Quotas & Overage
+## Monthly Sandbox Quota
 
-Separate from the per-minute rate limit, every organization has **one shared monthly request pool** — all API keys and all sub-organizations draw from the same quota. On paid plans only **live** requests are billable; test traffic is metered but free. On the Sandbox plan every request counts. The pool resets on the 1st of each month (UTC).
+Only **sandbox** (test-key) traffic has a monthly quota. **Live traffic has no monthly quota on any plan** and is never blocked for volume; it is still counted for [Usage](/dashboard/data/usage), and its speed is limited only by the per-minute rate limit above, which scales with compute.
 
-| Plan | Included requests per month | Counts test traffic? |
-|------|----------------------------|---------------------|
-| Sandbox (free) | 1,000 | Yes — every request |
-| Starter | 60,000 | No — live only |
-| Pro | 600,000 | No — live only |
-| Team | 3,000,000 | No — live only |
-| Enterprise | Unlimited | No — live only |
+Every organization has **one shared sandbox pool**: all test keys draw from it. The pool resets on the 1st of each month (UTC).
 
-### The sandbox pool
+| Plan | Sandbox requests per month | Live requests per month |
+|------|----------------------------|-------------------------|
+| Free | 1,000 | Not available |
+| Pro | 1,000 | No quota |
+| Team | 1,000 | No quota |
+| Enterprise | Custom (no cap) | No quota |
 
-Test traffic is free, but not unlimited. Every paid plan gets a **separate
-monthly sandbox allowance equal to its live allowance** — Pro includes 600,000
-live requests *and* 600,000 sandbox requests. They are independent pools:
-spending one never touches the other.
-
-| Plan | Live requests | Sandbox requests |
-|------|--------------|------------------|
-| Sandbox (free) | — | 1,000 (the shared pool above) |
-| Starter | 60,000 | 60,000 |
-| Pro | 600,000 | 600,000 |
-| Team | 3,000,000 | 3,000,000 |
-| Enterprise | Unlimited | Unlimited |
+Test keys are also limited to **60 requests per minute** per organization, on every plan; see [Sandbox rules](/dashboard/data/sandbox-rules).
 
 Sandbox usage comes back on responses to a test key:
 
 | Header | Description |
 |--------|-------------|
-| `X-Sandbox-Limit` | Sandbox requests included per month |
+| `X-Sandbox-Limit` | Sandbox requests included per month (1,000) |
 | `X-Sandbox-Used` | Sandbox requests used this month (org-wide) |
 | `X-Sandbox-Remaining` | Sandbox requests left before the cap |
 
-Exhausting it returns `429` with code `SANDBOX_QUOTA_EXCEEDED`. **Overage
-billing does not extend it** — sandbox traffic is never billed, so there is
-nothing to invoice; the pool simply resets on the 1st. On the Sandbox plan
-there is no separate pool at all, because test requests are already what
-consume the 1,000.
-
-Quota state is returned on every authenticated response:
-
-| Header | Description |
-|--------|-------------|
-| `X-Quota-Limit` | Requests included in your plan per month |
-| `X-Quota-Used` | Billable requests used this month (org-wide) |
-| `X-Quota-Remaining` | Billable requests left before the limit |
-| `X-Quota-Billable` | Whether this request counted against the pool |
-| `X-Quota-Overage` | Requests past the limit this month (only when over) |
-| `X-Quota-Reset` | ISO timestamp when the pool resets |
-
-What happens at the limit depends on your **overage billing** setting (Dashboard → Billing):
-
-- **Overage billing off** (default): requests past the quota are rejected with `429` and code `MONTHLY_QUOTA_EXCEEDED` until the month resets. Your bill never exceeds your plan price.
-- **Overage billing on** (paid plans): traffic keeps flowing and extra requests are added to your next invoice at your plan's overage rate ($0.003/request).
-
-The Sandbox plan always hard-blocks — overage billing is a paid-plan setting, so
-a free organization can never be charged. And because overage is calculated from
-live traffic only, sandbox requests can never appear on an invoice on any plan.
+Once the month's 1,000 sandbox requests are used, the next test request returns `429` with code `SANDBOX_QUOTA_EXCEEDED` until the 1st. Nothing extends it, and sandbox traffic is never billed. Use a live key (Pro and Team) to keep working with real data.
 
 ```json
 {
-  "error": "Quota exceeded",
-  "message": "Monthly request quota reached (600,000 included requests). Enable overage billing or upgrade your plan at https://dashboard.clinikapi.com/billing to keep serving traffic.",
-  "code": "MONTHLY_QUOTA_EXCEEDED"
+  "error": "Sandbox quota exceeded",
+  "message": "Monthly sandbox quota reached (1,000 test requests).",
+  "code": "SANDBOX_QUOTA_EXCEEDED"
 }
 ```
 
