@@ -1,0 +1,99 @@
+---
+title: "Compute and Disk"
+description: "Server sizes, included disk and add-ons for a project, with monthly prices."
+---
+
+# Compute and Disk
+
+## What this is for
+
+On a paid plan your project runs on its own private server. **Compute** is how powerful that server is (its processor and memory); **disk** is how much room it has for records. This page shows the four available sizes, the disk allowance and two optional add-ons, with monthly prices in US dollars, so you can see what a change would cost before you ask for it. The prices match the [pricing page](https://clinikapi.com/pricing).
+
+## Before you start
+
+- Open **Project settings** in the sidebar, then the **Compute and Disk** tab.
+- Anyone can see the options. Only an organization **owner or admin** can pick a size to preview.
+- On the Free plan there is no server to size; the page explains this.
+
+## Preview a size change
+
+<Steps>
+  <Step title="Open the tab">
+    Select **Project settings**, then **Compute and Disk**.
+  </Step>
+  <Step title="Choose a size">
+    Under **Compute size**, select a card. Your current size is marked **Current** and "Included in (plan name)". Cards below your plan's included size are greyed out with "Below the (plan) plan's included size".
+  </Step>
+  <Step title="Read the preview">
+    A panel titled "Change to (size)" shows the monthly price **Now**, **After** and the **Difference**, with a line-by-line breakdown. It adds that the difference is prorated from the day of the change and appears on your next invoice, and that **Your project restarts.**: it is unavailable for about 1 to 2 minutes while the new size comes up.
+  </Step>
+  <Step title="Ask us to make the change">
+    The preview is a price calculator only. To actually change the size, select the link "contact us to change size" in the panel's footer, which opens an email to our team. Select **Close** when you are finished.
+  </Step>
+</Steps>
+
+## The sizes
+
+| Size | CPU and memory | Price per month |
+|---|---|---|
+| **Small** | 0.5 vCPU, 2 GB RAM | $39 |
+| **Medium** | 1 vCPU, 4 GB RAM | $79 |
+| **Large** | 2 vCPU, 8 GB RAM | $159 |
+| **XL** | 4 vCPU, 16 GB RAM | $319 |
+
+## What the page shows on each plan
+
+- **Free:** a **Shared** card: "The Free plan runs on a shared sandbox. Upgrade to Pro for a dedicated server with a size you choose." The four sizes are listed for reference, each saying "Upgrade to Pro for a dedicated server."
+- **Pro:** includes a Small server. A bigger size is charged at the difference in price.
+- **Team:** includes a Medium server **and** its failover standby. Sizes below Medium cannot be selected. Team runs two copies (primary and standby), so a bigger size is charged twice.
+- **Enterprise:** "Your project is sized with your team. Contact us to change its size or disk." with a **Contact us** button.
+
+## Disk
+
+The **Disk** card says "8 GB are included. Extra disk is $0.25 per GB per month." Its bar will show usage once your project has its own server; until then it reads "Disk usage appears here once your project has its own server."
+
+## Add-ons
+
+| Add-on | What it does | Price |
+|---|---|---|
+| **Point-in-time recovery** | Restore your project to a chosen moment, for example just before a mistaken bulk delete. | $50 / month |
+| **Failover standby** | A second copy that takes over automatically if your server fails. Included on Team. On Pro it is priced at your compute size. | Included, or the size price |
+
+## What you'll see
+
+If you are not an owner or admin, the intro reads "Only an organization owner or admin can change the size. You can see the options here." and the size cards are disabled. For owners and admins it reads "Pick a size to see what it would cost."
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="What is compute?">
+    The processing power and memory of the server that runs your project. More compute handles more simultaneous work. Most projects begin on Small.
+  </Accordion>
+  <Accordion title="What is a failover standby?">
+    A second, identical copy of your server kept ready. If the main one fails, the standby takes over so your API keeps working. Each copy costs, which is why Team charges a bigger size twice.
+  </Accordion>
+  <Accordion title="What is point-in-time recovery?">
+    Continuous backups that let you rewind the project to any chosen moment, rather than only to last night's backup.
+  </Accordion>
+  <Accordion title="Why can't I change the size myself?">
+    The preview is a calculator. Resizing itself is done by our team on request. The panel says "Self-service resizing arrives with dedicated projects".
+  </Accordion>
+  <Accordion title="Will my API go down during a resize?">
+    Briefly: about 1 to 2 minutes while the new size comes up.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| Size cards are greyed out | Your role is Member, the size is your current one, or it is below your plan's included size. |
+| **Upgrade to Pro for a dedicated server** | You are on Free. Upgrade to choose a size. |
+| Disk bar is empty | Usage is only measured once your project has its own server. |
+
+## Related
+
+- [Project settings](/dashboard/projects/project-settings)
+- [Projects](/dashboard/projects/projects-home)
+- [Usage](/dashboard/data/usage)
+- [Glossary](/dashboard/glossary)

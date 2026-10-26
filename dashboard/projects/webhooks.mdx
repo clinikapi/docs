@@ -1,0 +1,109 @@
+---
+title: "Webhooks"
+description: "Get a signed message at your own server whenever a record changes: add an endpoint, pick events, keep the signing secret safe."
+---
+
+# Webhooks
+
+## What this is for
+
+Normally your code asks the API for data ("any new patients?"). A **webhook** flips that: you give ClinikAPI a web address on your own server (an **endpoint**), and ClinikAPI sends a small message to it the moment something happens, for example when a patient is created. This saves you from repeatedly polling. Each message is **signed** with a secret that only you and ClinikAPI know, so your server can prove a message really came from us.
+
+This page covers the dashboard screen. For the exact message format, headers and how to check the signature in code, see the [Webhooks guide](/guides/webhooks).
+
+<Note>
+This page is opened from inside a project, but it shows your webhook endpoints for the **whole organization**, not just the project you are in.
+</Note>
+
+## Before you start
+
+- Webhooks are available on the **Pro plan and above**.
+- Only an organization **owner or admin** can add or delete endpoints. Everyone else can see the list.
+- You need a public **https** address that can receive a POST request, for example `https://your-api.com/webhooks/clinik`. It cannot be `localhost`, a private network address or an internal name.
+- Decide which events you want (for example only `patient` events), and whether the endpoint should receive test traffic.
+
+## Add an endpoint
+
+<Steps>
+  <Step title="Open Webhooks">
+    Choose **Webhooks** in the sidebar. The page is titled **Webhooks**: "Get notified at your own endpoints when records change."
+  </Step>
+  <Step title="Start the form">
+    Select **Add webhook** (top right), or **Setup your first endpoint** if the list is empty. A form titled **Add new endpoint** opens.
+  </Step>
+  <Step title="Enter the Endpoint URL">
+    Type the address into **Endpoint URL**. The box shows the example `https://your-api.com/webhooks/clinik`. It must start with `https://` and must not contain a username or password.
+  </Step>
+  <Step title="Choose where events come from (only if you have sub-organizations)">
+    **Deliver events from** defaults to **All traffic (organization + every sub-org)**. Choose **Only sub-org: (name)** to receive only events produced by that sub-organization's keys. Either way, every message carries the originating tenant in `data.tenantId`.
+  </Step>
+  <Step title="Choose the environment">
+    **Environment** can be **Both live and test**, **Live keys only** or **Test keys only**. If your receiver does real work (sending emails, charging people), pin it to **Live keys only** so test traffic can never trigger it. Every message carries `data.environment` so your code can tell them apart.
+  </Step>
+  <Step title="Pick events">
+    Under **Events to subscribe**, tick **All events (wildcard)** to receive everything, or tick individual events. They are grouped by area: Individuals, Entities, Clinical Summary, Diagnostics, Medications, Care Provision, Documents, Scheduling, Workflow, Billing, Claims, Insurance and Quality. Each name such as **Patient** stands for every change to that resource (created, updated, deleted). You must choose at least one.
+  </Step>
+  <Step title="Enable it">
+    Select **Enable endpoint** (it reads **Enabling...** briefly). A panel titled **Endpoint added** shows the **signing secret**, which starts with `whsec_`: "Copy the signing secret now. It is shown only this once." Select **Copy secret**, store it in your server's secret manager, then select **Done**.
+  </Step>
+</Steps>
+
+## Delete an endpoint
+
+Select the bin icon at the right of the endpoint's row (its label is **Delete webhook**). The confirmation says it will stop sending events to that URL and will also permanently delete the endpoint's whole delivery history: every past attempt, response code and payload. Select **Delete webhook** to confirm. A message says **Webhook deleted**.
+
+## What you'll see
+
+- **Each endpoint** is a card showing its URL, an **Active** mark, how many events it covers (for example "3 Events"), and, if pinned to a sub-organization, that sub-organization's name. Beneath it: "The signing secret was shown once when this endpoint was created. To get a new one, delete the endpoint and add it again."
+- **Empty state:** **No webhooks configured**: "Listen to patient births, new encounters, and integration status changes automatically."
+- **Not on Pro:** a box headed **Webhooks are a Pro feature**: "Real-time event deliveries (signed, with retries) are included on the Pro plan and above. Existing endpoints stop receiving deliveries on lower plans." with an **Upgrade to Pro** button. The **Add webhook** button is hidden.
+- **Not an admin:** you see the list but no add or delete controls.
+
+To see whether a delivery succeeded, open the deliveries view in [Logs](/dashboard/data/logs), or watch live in [Realtime](/dashboard/data/realtime).
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="What is a signing secret and why can't I see it again?">
+    It is a password used to stamp each message with a signature. Your server recomputes the signature with the same secret; if it matches, the message is genuine. For safety we show it once. If you lose it, delete the endpoint and add it again to get a new one.
+  </Accordion>
+  <Accordion title="Can I test a webhook on my laptop?">
+    Not directly: the address must be a public https URL, and `localhost` is refused. Use a tunnelling tool that gives your laptop a public https address, and delete that endpoint when you finish.
+  </Accordion>
+  <Accordion title="Why am I receiving test messages on my production receiver?">
+    The endpoint was set to **Both live and test**. Delete it and add it again with **Live keys only**.
+  </Accordion>
+  <Accordion title="What if my server is down?">
+    Deliveries are signed and retried (the plan note says "with retries"). Check the outcome of each attempt in [Logs](/dashboard/data/logs).
+  </Accordion>
+  <Accordion title="Can I edit an endpoint?">
+    Not in the dashboard. To change the URL, events or environment, delete it and add a new one.
+  </Accordion>
+  <Accordion title="Does 'Patient' include creates and deletes?">
+    Yes. Each choice subscribes you to every kind of change for that resource.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| **Could not create webhook**: "Select at least one event." | Tick **All events** or at least one event. |
+| "A webhook URL is required." / "That is not a valid URL." | The address is empty or malformed. Include `https://` and a full host name. |
+| "Webhook URLs must use https://." | Change `http://` to `https://`. |
+| "Webhook URLs must not embed credentials." | Remove `user:password@` from the address. |
+| "(host) is not a routable destination." / "(host) is an internal name, not a routable destination." | The name cannot be reached from the internet. Use a public host name. |
+| "(address) is a loopback / private / link-local address and cannot receive webhooks." | Private network addresses are refused. Use a public one. |
+| "Webhooks are available on the Pro plan and above. Upgrade to enable them." | Upgrade the organization's plan. |
+| "Unknown sub-organization." | The sub-organization you chose is not in this organization. Reload and pick again. |
+| **Could not create the webhook.** | A temporary failure. Retry. |
+| **Could not delete webhook** with "That webhook could not be found, or you do not have access." | It was already deleted, or you are not an owner or admin. |
+| "That organization could not be found, or you do not have access." | Your membership or session changed. Reload and sign in again. |
+
+## Related
+
+- [Webhooks guide](/guides/webhooks) and [Webhooks in practice](/guides/webhooks-in-practice)
+- [Logs](/dashboard/data/logs)
+- [Realtime](/dashboard/data/realtime)
+- [Sub-organizations](/dashboard/organizations/sub-organizations)
+- [Glossary](/dashboard/glossary)

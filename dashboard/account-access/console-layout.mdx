@@ -1,0 +1,103 @@
+---
+title: "The console layout"
+description: "A guided tour of the dashboard: organizations and projects, the sidebar, the top bar, the search menu and the theme."
+---
+
+# The console layout
+
+## What this is for
+
+The dashboard (also called the console) is the website where you manage ClinikAPI. This page is a tour of the parts that appear on every screen, so that when another page says "open **Access**" or "use the project switcher", you know exactly where to click. Nothing here changes your data; it is just about finding your way around.
+
+## Before you start
+
+- You need a ClinikAPI account and to be signed in at [dashboard.clinikapi.com](https://dashboard.clinikapi.com).
+- Everything on this page is available to every role. The only role-dependent item is **New project** in the project switcher, which is shown to organization owners and admins only.
+
+## The two levels: organization and project
+
+Everything in the console lives inside two nested containers:
+
+- An **organization** is your company or team. It owns the members, the billing and the plan.
+- A **project** lives inside an organization. It owns your API keys and the records those keys create. Webhooks, Logs, Realtime and Usage are reached from inside a project, but they cover the whole organization. Most organizations start with one project called **Default project**.
+
+Think of the organization as the building and each project as a room in it. Keys from one room do not open another room.
+
+## Find your way around
+
+<Steps>
+  <Step title="Look at the top bar">
+    The bar across the top shows a breadcrumb trail: your **organization name**, then (when you are inside a project) the **project name**, then the name of the page you are on. The two names are buttons. Select one to open a switcher.
+  </Step>
+  <Step title="Switch organization">
+    Select the organization name. The menu is headed **Organizations** and lists every organization you belong to, each with a small plan badge (for example **Free**). A tick marks the current one. At the bottom are **New organization** and **Organization settings**.
+  </Step>
+  <Step title="Switch project">
+    Select the project name. The menu is headed **Projects** and lists each project with its **ref** (a 20-letter code) under the name. Choosing another project keeps you on the same page, so if you are looking at **Logs** you stay on **Logs** for the new project. At the bottom are **All projects** and, for owners and admins, **New project**.
+  </Step>
+  <Step title="Use the sidebar">
+    The narrow column of icons on the left is the sidebar. Hover over it, or press Tab to move into it, and it expands to show labels. Select **Pin open** to keep it expanded, and **Unpin** to shrink it again. Your choice is remembered in this browser only.
+  </Step>
+  <Step title="Open the search menu">
+    Select **Search…** in the top bar, or press <kbd>⌘K</kbd> on a Mac or <kbd>Ctrl</kbd>+<kbd>K</kbd> on Windows and Linux. Type a few letters and press Enter to jump to a page, project, organization, API key or documentation page.
+  </Step>
+</Steps>
+
+## What you'll see
+
+**Inside a project** the sidebar lists, from top to bottom: **Projects** (back to the list), then **Overview**, **Data browser**, **Exports**, **FHIR server**, **Access**, **Webhooks**, **Realtime**, **Logs**, **Usage**, **API reference** and **Project settings**, then **Organization settings** at the bottom.
+
+**At the organization level** (outside any project) the sidebar shows only **Projects** and **Organization settings**.
+
+**On a phone or small window** the sidebar is hidden. Use the **Open menu** button at the top left, which opens a sheet titled **Menu** with the same links.
+
+**The right side of the top bar** has, from left to right:
+
+- **Search…** (a magnifying-glass icon on narrower screens).
+- A help menu (question-mark icon, hidden on phones) with **Documentation**, **System status** and **Contact support**.
+- A theme button with **Light**, **Dark** and **System**. **System** follows your device's light or dark setting.
+- Your account menu (a circle with your initial). It shows your name and email, then **Security**, **Profile** and **Sign out**.
+
+**The search menu** has a box that says "Search pages, keys, docs…" and groups its results under **Pages**, **Projects**, **Organizations** (only if you belong to more than one), **API keys** and **Documentation**. API keys appear by name and the first few characters only, never the whole key. Choosing one opens the **Access** page of that key's project. If nothing matches, it says **No results.**
+
+**The incident banner.** If there is an active incident or scheduled maintenance, a yellow strip appears at the top of the page with a **Status page** link. The wording is one of "Scheduled maintenance is under way. Some features may be briefly unavailable.", "We are investigating an issue affecting some services." or "Some services are running slower than usual. We are looking into it." When nothing is wrong, there is no banner.
+
+**Where you land.** Opening the dashboard takes you to the project you used last, if you still belong to its organization. Otherwise you land on your first organization's **Projects** page.
+
+**Skip to content.** Keyboard users can press Tab once on any page to reveal a **Skip to content** link that jumps past the navigation.
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="What is the difference between an organization and a project?">
+    The organization is who you are (your team, your billing, your members). A project is one application or environment you are building (its keys and the records they create). You can have several projects in one organization.
+  </Accordion>
+  <Accordion title="What is a project ref?">
+    A short, permanent code of 20 lowercase letters that identifies a project. You see it under the project name in the project switcher and in page addresses. It does not change if you rename the project.
+  </Accordion>
+  <Accordion title="Why is the sidebar missing project pages like Logs?">
+    You are at the organization level. Open a project from **Projects** (or the project switcher) and the project pages appear.
+  </Accordion>
+  <Accordion title="Where did the help menu go on my phone?">
+    The help menu is hidden on narrow screens. Use the search menu's **Documentation** group instead, which has the same links.
+  </Accordion>
+  <Accordion title="Is my pinned sidebar saved to my account?">
+    No. It is remembered in the browser you used, so it will be unpinned on another device or in a private window.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What it means and what to do |
+|---|---|
+| A "not found" page for an organization or project | The address names something you do not belong to, or that does not exist. The console gives the same answer for both on purpose. Use the switchers to pick one of yours. |
+| No **New project** in the project switcher | Only organization owners and admins can create projects. Ask one of them. |
+| **No results.** in search | Nothing matches what you typed. Try fewer letters, or a page name such as "logs". |
+| The yellow incident banner | A real incident or maintenance window is under way. Select **Status page** for details. |
+
+## Related
+
+- [Dashboard overview](/dashboard/overview)
+- [Your first 10 minutes](/dashboard/getting-started)
+- [Projects](/dashboard/projects/projects-home)
+- [Glossary](/dashboard/glossary)

@@ -1,0 +1,80 @@
+---
+title: "API reference (in the dashboard)"
+description: "Copy-ready requests for every resource, using your API address and the start of your key."
+---
+
+# API reference in the dashboard
+
+## What this is for
+
+The dashboard's **API reference** page is a shortcut: pick a kind of record and instantly get a working "list" request and a working "create" request, in cURL (a command you can paste into a terminal) or TypeScript (code for your server). It is the fastest way to see what a call looks like. The complete reference with every field is in the [API Reference](/api-reference/overview) tab of this site.
+
+## Before you start
+
+- Any member can open it.
+- Have a key. The examples show only the first characters of one of your keys, so you will paste your full key in yourself. Create keys on [Access](/dashboard/projects/access-keys).
+
+## Copy a request
+
+<Steps>
+  <Step title="Open the page">
+    Choose **API reference** in the sidebar. The page is titled **API reference**: "Copy-ready requests for every resource, using your API address and the start of your key."
+  </Step>
+  <Step title="Pick a resource">
+    In the list on the left, select a type such as **Patients**. Use **Filter resources** to search.
+  </Step>
+  <Step title="Pick a language">
+    Under "List patients" and "Create a record", choose the **cURL** or **TypeScript** tab.
+  </Step>
+  <Step title="Copy">
+    Select **Copy code**.
+  </Step>
+  <Step title="Add your full key and run it">
+    Replace the shortened key (for example `clk_test_ab12cd…`) with your real key, ideally from an environment variable. For cURL the key goes in the `x-api-key` header. Run it.
+  </Step>
+</Steps>
+
+## What you'll see
+
+- **Base URL and authentication**: the API address (`https://api.clinikapi.com/v1`) with a copy button, and the reminder: send your key in the `x-api-key` header; test keys (`clk_test_`) use the sandbox, live keys (`clk_live_`) use production; never put a key in a browser or app.
+- For the chosen resource, the heading and a line like `GET https://api.clinikapi.com/v1/patients`.
+- **List** and **Create a record** examples. The create example uses a small sample (`firstName: "Jane"`, `lastName: "Doe"`); each resource has different required fields, so check the resource's guide for the real shape.
+- If you have no key yet, the examples show `clk_test_…`.
+
+- A link to the **API documentation** for full details.
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="What is cURL?">
+    A command-line tool for sending web requests. Paste the snippet into a terminal (macOS, Linux, or Windows PowerShell with curl installed) and press Enter.
+  </Accordion>
+  <Accordion title="Why is my key cut off with '…'?">
+    The dashboard never keeps your full key, only the first characters, so it can only show that much. Use the full key you saved when you created it.
+  </Accordion>
+  <Accordion title="Why does the create example fail for other resources?">
+    The sample body is a generic person example. Each resource needs its own fields. Open that resource's guide, for example [Observations](/guides/observations).
+  </Accordion>
+  <Accordion title="What is the TypeScript snippet using?">
+    The ClinikAPI SDK, `@clinikapi/sdk`, on your server, with the key read from an environment variable. See the [quickstart](/quickstart).
+  </Accordion>
+  <Accordion title="Are test and live keys used the same way?">
+    Yes, the only difference is which data they reach.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| The request returns an authentication error | The key is shortened, mistyped, revoked or from another project. Use the full key. |
+| `403` when creating | The key lacks the **Write** scope. Create a key with **Write**. |
+| A validation error when creating | The sample fields do not fit this resource. See its guide. |
+| `429` | You hit the rate limit. Wait a minute. |
+
+## Related
+
+- [Access: API keys](/dashboard/projects/access-keys)
+- [Your first 10 minutes](/dashboard/getting-started)
+- [Authentication](/authentication)
+- [Glossary](/dashboard/glossary)

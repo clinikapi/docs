@@ -1,0 +1,89 @@
+---
+title: "Exports"
+description: "Download your sandbox records as an NDJSON file, one record per line."
+---
+
+# Exports
+
+## What this is for
+
+An **export** copies records out of the sandbox into a file you can keep, search or load into another tool. The file format is **NDJSON** (newline-delimited JSON): a plain text file where each line is one complete record. It is easy to read with a text editor and easy for programs to process line by line. This page is for exporting practice (test) data; live data is exported through the API.
+
+## Before you start
+
+- A **test key** (starts with `clk_test_`) with the **Read** scope. Create one on [Access](/dashboard/projects/access-keys).
+- Any member can export sandbox data.
+- The sandbox must be running; otherwise the page says **Sandbox coming soon**.
+- Remember the limits: 5 exports per hour, up to 1,000 records of each type, and the whole export must fit in one response.
+
+## Run an export
+
+<Steps>
+  <Step title="Open Exports">
+    Choose **Exports** in the sidebar. The page is titled **Exports**: "Export your sandbox records as NDJSON." The card is headed **Start an export**.
+  </Step>
+  <Step title="Choose resource types">
+    Under **Resource types** tick the kinds of record to include, such as Patient, Encounter or Observation. **All** ticks everything and **None** clears the choice. **Patient** is ticked to begin with. You must tick at least one.
+  </Step>
+  <Step title="Limit by date (optional)">
+    **Changed since (optional)** picks a date; only records changed since then are included. Leave it empty to include everything.
+  </Step>
+  <Step title="Paste a test key">
+    Paste the key into **Test key**. Beneath it: "The key is used for this request only and is not stored."
+  </Step>
+  <Step title="Start">
+    Select **Start export** (it reads **Starting…** while it runs). The button is disabled until at least one type is ticked and the key looks like a test key.
+  </Step>
+  <Step title="Download the file">
+    A result box appears: "Export (id): completed" with the number of records, and a **Download NDJSON** button. Select it to save a file named after the export, ending in `.ndjson`.
+  </Step>
+</Steps>
+
+## What you'll see
+
+- If no records matched: **Nothing matched, so there is nothing to download.**
+- Notes from the API are listed under the result. For example, a type that stopped at 1,000 records.
+- The page keeps **no list of past exports**. The result you see belongs to the export you just ran; download it before you leave.
+- If the sandbox is not up: **Sandbox coming soon**: "Exports from the console open together with the sandbox. Until then, exports are available through the API."
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="What do I do with an NDJSON file?">
+    Open it in any text editor to read it. Each line is a complete JSON record, so you can load it line by line in a script, or import it into data tools that support NDJSON.
+  </Accordion>
+  <Accordion title="Why did it stop at 1,000 records of a type?">
+    That is the sandbox limit per type. Narrow the date range and export in slices, or use the API.
+  </Accordion>
+  <Accordion title="Can I export live data here?">
+    No. The console uses test keys only. Use the API for live data; see [Bulk operations](/guides/bulk-operations).
+  </Accordion>
+  <Accordion title="Where did my earlier exports go?">
+    The page does not keep them. An export is returned directly when it finishes, so download it straight away.
+  </Accordion>
+  <Accordion title="Why did I get 'Too many exports this hour'?">
+    You may start 5 exports per hour. Wait for the hour to pass.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| "Choose at least one resource type." | Tick a type. |
+| "Unknown resource type." | Reload the page; only the listed types can be exported. |
+| "Enter the date as YYYY-MM-DD." | Use the date picker or write year-month-day. |
+| "Exports from the console use a test key (it starts with clk_test_)." | You pasted a live key. Use a test key. |
+| "That key was not accepted. Use an active test key with the read scope." | The key is wrong, revoked or lacks **Read**. |
+| "Export too large for the sandbox; narrow the types or date range" | Untick some types or set **Changed since**, then retry. |
+| "The sandbox is taking longer than usual. Narrow the types or the date range and try again." | The request timed out. Try a smaller export. |
+| "Too many exports this hour. The limit is 5 per hour." | Wait, then retry. |
+| "Test keys are limited to 60 requests per minute" | Your organization's test traffic hit the per-minute limit. Wait a minute. |
+| "The request was not accepted." / "Unexpected answer from the API." | Retry; if it persists, contact support from the help menu. |
+
+## Related
+
+- [Data browser](/dashboard/data/data-browser)
+- [Sandbox rules](/dashboard/data/sandbox-rules)
+- [Bulk operations guide](/guides/bulk-operations)
+- [Glossary](/dashboard/glossary)

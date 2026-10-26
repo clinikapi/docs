@@ -1,0 +1,82 @@
+---
+title: "Dashboard overview"
+description: "What the ClinikAPI dashboard is, how it is organized, and where to start."
+---
+
+# Dashboard overview
+
+## What this is for
+
+The [dashboard](https://dashboard.clinikapi.com) is the website where you manage your ClinikAPI account without writing code: create the **API keys** your software uses, watch the requests it makes, set up **webhooks**, look at practice records, and see how much of your plan you have used. These pages describe each screen exactly as it appears, in plain language, for people who have never used it (or a healthcare API) before.
+
+If you are new, start with [Your first 10 minutes](/dashboard/getting-started).
+
+## Before you start
+
+- You need a ClinikAPI account. See [Sign in and sign up](/dashboard/account-access/sign-in-and-sign-up) if you do not have one yet.
+- Some actions depend on your role (owner, admin or member). Each page says who can do what; the table on [Members](/dashboard/organizations/members) summarizes it.
+
+## How it is organized
+
+Everything belongs to an **organization** (your team or company), and an organization holds one or more **projects**. Keys and the records they create belong to a project. Webhooks, Logs, Realtime and Usage are opened from inside a project but show the whole organization's activity, and members and organization settings live at the organization level.
+
+| You want to | Go to |
+|---|---|
+| Take a guided first walk-through | [Your first 10 minutes](/dashboard/getting-started) |
+| Look up an unfamiliar word | [Glossary](/dashboard/glossary) |
+| Find your way around the sidebar, switchers and search | [The console layout](/dashboard/account-access/console-layout) |
+| Create or revoke an API key | [Access: API keys](/dashboard/projects/access-keys) |
+| Send a first request | [Project overview](/dashboard/projects/project-overview) |
+| Look at test records, or add some | [Data browser](/dashboard/data/data-browser) |
+| See what your keys have been doing | [Logs](/dashboard/data/logs) and [Usage](/dashboard/data/usage) |
+| Get notified when records change | [Webhooks](/dashboard/projects/webhooks) |
+| Understand the test environment's limits | [Sandbox rules](/dashboard/data/sandbox-rules) |
+| Protect your sign-in | [Security](/dashboard/account-access/security) |
+| Sign in, sign up or reset a password | [Sign in and sign up](/dashboard/account-access/sign-in-and-sign-up) |
+| Make an organization or a project | [Create an organization](/dashboard/organizations/create-an-organization) and [Create a project](/dashboard/projects/create-a-project) |
+| Change plan, read invoices, update a card | [Billing](/dashboard/organizations/billing) |
+| Add a teammate | [Invitations and roles](/dashboard/organizations/invitations-and-roles) |
+
+## Pages in this section
+
+<CardGroup cols={2}>
+  <Card title="Start here" icon="rocket" href="/dashboard/getting-started">
+    Your first 10 minutes, and a glossary of every term.
+  </Card>
+  <Card title="Account and access" icon="user" href="/dashboard/account-access/console-layout">
+    Signing in, the console layout, your profile, two-factor sign-in and deleting your account.
+  </Card>
+  <Card title="Organizations" icon="building" href="/dashboard/organizations/organization-settings">
+    Creating an organization, billing, settings, members, invitations and sub-organizations.
+  </Card>
+  <Card title="Projects and keys" icon="key" href="/dashboard/projects/projects-home">
+    Creating a project, API keys, webhooks, project settings, and compute and disk.
+  </Card>
+  <Card title="Working with data" icon="database" href="/dashboard/data/data-browser">
+    The data browser, exports, realtime, logs, usage, the API reference and the FHIR server.
+  </Card>
+</CardGroup>
+
+## How each page is written
+
+Every page follows the same pattern: what the screen is for, what you need before you start, numbered steps naming each button exactly as it appears, what you will see (including empty and error states), common questions, and a troubleshooting table of the messages you may meet.
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="Do I need to know FHIR?">
+    No. FHIR is the healthcare data standard behind the API. The dashboard and these pages explain the few terms you need as you meet them.
+  </Accordion>
+  <Accordion title="Is it safe to experiment?">
+    Yes, with a test key. Test keys use a free practice environment (the sandbox) that is separate from real data. See [Sandbox rules](/dashboard/data/sandbox-rules).
+  </Accordion>
+  <Accordion title="Where do I get help?">
+    The help menu in the top bar has **Documentation**, **System status** and **Contact support**.
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+- [Quickstart](/quickstart)
+- [Authentication](/authentication)
+- [API Reference](/api-reference/overview)

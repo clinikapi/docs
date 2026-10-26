@@ -25,6 +25,7 @@
     "url": "https://dashboard.clinikapi.com"
   },
   "tabs": [
+    { "name": "Dashboard", "url": "dashboard" },
     { "name": "API Reference", "url": "api-reference" },
     { "name": "SDK", "url": "sdk" },
     { "name": "Components", "url": "components" }
@@ -841,8 +842,62 @@
       ]
     },
     {
+      "group": "Dashboard",
+      "pages": [
+        "dashboard/overview",
+        "dashboard/getting-started",
+        "dashboard/glossary"
+      ]
+    },
+    {
+      "group": "Account & access",
+      "pages": [
+        "dashboard/account-access/console-layout",
+        "dashboard/account-access/profile",
+        "dashboard/account-access/sign-in-and-sign-up",
+        "dashboard/account-access/security",
+        "dashboard/account-access/delete-account"
+      ]
+    },
+    {
+      "group": "Organizations & billing",
+      "pages": [
+        "dashboard/organizations/create-an-organization",
+        "dashboard/organizations/organization-settings",
+        "dashboard/organizations/billing",
+        "dashboard/organizations/members",
+        "dashboard/organizations/invitations-and-roles",
+        "dashboard/organizations/sub-organizations"
+      ]
+    },
+    {
+      "group": "Projects & keys",
+      "pages": [
+        "dashboard/projects/projects-home",
+        "dashboard/projects/create-a-project",
+        "dashboard/projects/project-overview",
+        "dashboard/projects/access-keys",
+        "dashboard/projects/webhooks",
+        "dashboard/projects/project-settings",
+        "dashboard/projects/compute-and-disk"
+      ]
+    },
+    {
+      "group": "Working with data",
+      "pages": [
+        "dashboard/data/data-browser",
+        "dashboard/data/exports",
+        "dashboard/data/realtime",
+        "dashboard/data/logs",
+        "dashboard/data/usage",
+        "dashboard/data/api-reference",
+        "dashboard/data/fhir-server",
+        "dashboard/data/sandbox-rules"
+      ]
+    },
+    {
       "group": "Legal",
-      "pages": ["legal/baa", "legal/privacy", "legal/terms"]
+      "pages": ["legal/baa", "legal/dpa", "legal/privacy", "legal/terms"]
     }
   ],
   "openapi": "api-reference/openapi.yaml",

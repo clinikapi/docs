@@ -1,0 +1,77 @@
+---
+title: "Usage"
+description: "How many requests you have made this month, how many failed, and how fast they were."
+---
+
+# Usage
+
+## What this is for
+
+Your plan includes a number of API requests each month. **Usage** shows how much of that allowance you have used, whether those requests were live or test, and how requests, errors and speed have looked over the last day or week. Use it to spot a runaway script, plan an upgrade, or just confirm your app is healthy.
+
+## Before you start
+
+- Any member can view Usage.
+- The figures cover your whole **organization**, not a single project. The project Usage page and the **Usage** section of [Organization settings](/dashboard/organizations/organization-settings) show the same numbers.
+- Numbers appear after requests have been made.
+
+## Read your usage
+
+<Steps>
+  <Step title="Open Usage">
+    Choose **Usage** in the sidebar. The page is titled **Usage**: "Requests, errors and latency for this project."
+  </Step>
+  <Step title="Check the meter">
+    The **Requests this month** card shows a count and your limit, such as "120 / 1,000", a bar, and when it resets: "Resets in N days" (or "Resets tomorrow"). The month resets at midnight UTC on the 1st.
+  </Step>
+  <Step title="Check the split">
+    **This month by environment** shows **Live requests**, **Test requests**, **Active live keys** and **Active test keys**.
+  </Step>
+  <Step title="Look at the charts">
+    The **Usage** section has three charts, **Requests**, **Errors** and **Latency**. Switch between **24 hours** and **7 days**.
+  </Step>
+</Steps>
+
+## What you'll see
+
+- **What counts toward the limit.** On a paid plan the meter counts live requests; test requests are free. A line under the bar reads, for example, "Live (billable): 120 · Test (free): 50". On the Free plan every test request counts: "Free plan: test requests count toward the quota (N so far)."
+- **No limit recorded:** the meter shows "/ —" and "No monthly limit is recorded for this organization."
+- **Errors** shows the number of failed requests and the share, such as "12 (2.4%)". It shows **—** when there were no requests.
+- **Latency** shows the average time in milliseconds, such as "140 ms avg", or **—** when there was no traffic. **Latency** simply means how long the API took to answer.
+- A note says compute and storage usage arrive with dedicated projects.
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="What happens when I reach the limit?">
+    Past the limit the API answers with a `429` error (`MONTHLY_QUOTA_EXCEEDED` for the monthly pool). The Errors page explains exactly what happens, including overage on paid plans: see [Errors: rate limits and quotas](/errors#rate-limits).
+  </Accordion>
+  <Accordion title="Why does my Free plan fill up from testing?">
+    On Free, test requests count toward the 1,000 requests a month. On paid plans test requests are free.
+  </Accordion>
+  <Accordion title="Why does Usage here match another project's Usage?">
+    Usage is organization-wide, so every project shows the same totals.
+  </Accordion>
+  <Accordion title="What is an error here?">
+    A request that returned a failure status (4xx or 5xx). A few errors are normal during development.
+  </Accordion>
+  <Accordion title="Why are the charts empty?">
+    No requests in that window. Send one and look again.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| "/ —" with no limit | No monthly limit is recorded for the organization; the count is still accurate. |
+| A sudden spike in requests | Open [Logs](/dashboard/data/logs), filter to the right time range, and look at which key and path account for it. |
+| High error rate | In [Logs](/dashboard/data/logs) filter **Status** to **4xx** or **5xx** to see which requests fail. |
+| Meter near 100% | Reduce unnecessary calls, or upgrade your plan. |
+
+## Related
+
+- [Logs](/dashboard/data/logs)
+- [Errors and rate limits](/errors)
+- [Organization settings](/dashboard/organizations/organization-settings)
+- [Glossary](/dashboard/glossary)

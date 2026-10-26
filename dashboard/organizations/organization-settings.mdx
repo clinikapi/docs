@@ -1,0 +1,105 @@
+---
+title: "Organization settings"
+description: "Rename your organization, see its usage, and find the Legal and Danger zone sections."
+---
+
+# Organization settings
+
+## What this is for
+
+Organization settings control things that apply to your whole organization rather than to one project: its name, its web address inside the dashboard, its overall request usage, and the rare "delete everything" request. If a setting is about one project's keys or data, it lives under that project instead (see [Project settings](/dashboard/projects/project-settings)).
+
+## Before you start
+
+- Every member can open and read these sections.
+- Only the organization **owner** can change the name or URL name.
+- This page covers **General**, **Usage**, **Legal** and **Danger zone**. **Members** and **Sub-organizations** have their own pages ([Members](/dashboard/organizations/members), [Sub-organizations](/dashboard/organizations/sub-organizations)). **Billing** has its own page too: [Billing](/dashboard/organizations/billing).
+
+## Open organization settings
+
+<Steps>
+  <Step title="Open the page">
+    Select **Organization settings** at the bottom of the sidebar, or open the organization switcher (your organization's name in the top bar) and choose **Organization settings**.
+  </Step>
+  <Step title="Pick a section">
+    The page is titled **Organization settings** with your organization's name beneath. A menu on the left (above the content on a phone) lists **General**, **Members**, **Billing**, **Usage**, **Legal**, **Sub-organizations** and **Danger zone**. **Sub-organizations** only appears if your organization still has some; they have been replaced by projects.
+  </Step>
+</Steps>
+
+## General: rename your organization
+
+<Steps>
+  <Step title="Open General">
+    Select **General** in the left menu. The card is headed **General**.
+  </Step>
+  <Step title="Change the name">
+    Edit **Organization name** (up to 80 characters). This is the label shown in the switcher and on pages.
+  </Step>
+  <Step title="Change the URL name (optional)">
+    **URL name** is the short code that appears in the address of every page for this organization, for example `acme-health`. It is 3 to 48 characters; capital letters become lowercase and anything other than letters, numbers and hyphens becomes a hyphen. Changing it changes the web address of every page, so bookmarks to the old one stop working.
+  </Step>
+  <Step title="Save">
+    Select **Save changes** (it reads **Saving…** briefly). A message says **Saved**. If you changed the URL name, the dashboard moves you to the new address automatically.
+  </Step>
+</Steps>
+
+**Organization ID** is read-only. Select the copy button beside it to copy it, for example to quote it to support.
+
+## Usage
+
+This section shows your organization's request usage for the month: how many requests you have made against your plan's allowance, the split between live and test requests, how many keys are active, and charts for the last 24 hours or 7 days. It is the same view you see in the project's [Usage](/dashboard/data/usage) page, summed across the organization.
+
+## Legal
+
+This section currently reads **Coming soon: accept your BAA, Terms and DPA here.** Nothing can be accepted or signed from it yet. The legal documents themselves are published in the [Legal](/legal/terms) section of this documentation.
+
+## Danger zone
+
+The section has two cards:
+
+- **Delete organization.** Deleting removes the organization's keys, webhooks and settings and cannot be undone. The dashboard does not delete it for you. Select **Contact support to delete** to open an email to our team, who do it with you so that nothing is lost by accident.
+- **Sign out.** Select **Sign out of this device** to end your session on the device you are using. Other devices stay signed in.
+
+## What you'll see
+
+- For a non-owner, the **Organization name** and **URL name** boxes are greyed out and a line reads **Only the organization owner can change these settings.** instead of a save button.
+- Unlike the data pages, nothing here needs loading or has an empty state: every organization has a name.
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="What is the URL name for?">
+    It is only the piece of the address that identifies your organization inside the dashboard. It does not affect your API keys or your API requests, so renaming it does not break any integration.
+  </Accordion>
+  <Accordion title="Who is the organization owner?">
+    The person who created the organization. The owner has every permission, including renaming it. The [Members](/dashboard/organizations/members) page shows each person's role.
+  </Accordion>
+  <Accordion title="Why can I not accept the BAA or Terms in the dashboard?">
+    The Legal section is a placeholder until acceptance is built. The published documents are in the Legal pages of this site.
+  </Accordion>
+  <Accordion title="Can I delete my organization myself?">
+    Not from the dashboard. Deletion is irreversible, so it is done with our team through **Contact support to delete**.
+  </Accordion>
+  <Accordion title="Does signing out here sign me out everywhere?">
+    No. **Sign out of this device** only ends the session in this browser.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| **Could not save** with "Enter an organization name (up to 80 characters)." | The name is empty or too long. Shorten it. |
+| **Could not save** with "The URL name must be 3 to 48 characters." | Lengthen or shorten the URL name. |
+| **Could not save** with "Could not save. That URL name may already be taken." | Another organization uses that URL name. Choose another. |
+| **Could not save** with "Only the organization owner can change these settings." | You are not the owner. Ask the owner, or ask them to make the change. |
+| **Could not save** with "Your session has expired. Please sign in again." | Sign in again and retry. |
+| **Could not save** with "Enter the code from your authenticator app to continue. Sign in again to do that." | You turned on two-factor sign-in but this session has not entered a code. Sign out, sign in, and enter the code. |
+| "That organization could not be found, or you do not have access." | You are not a member of that organization (or it does not exist). The dashboard gives one answer for both on purpose. |
+
+## Related
+
+- [Members](/dashboard/organizations/members)
+- [Sub-organizations](/dashboard/organizations/sub-organizations)
+- [Usage](/dashboard/data/usage)
+- [Security](/dashboard/account-access/security)

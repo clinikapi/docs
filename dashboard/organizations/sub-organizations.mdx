@@ -1,0 +1,77 @@
+---
+title: "Sub-organizations"
+description: "Sub-organizations have been replaced by projects. Existing ones keep working until you cancel them."
+---
+
+# Sub-organizations
+
+Sub-organizations have been replaced by projects. Existing sub-organizations keep working until you cancel them. You cannot create a new one; to separate your work, [create a project](/dashboard/projects/create-a-project) instead.
+
+## Before you start
+
+- The **Sub-organizations** section only appears in [Organization settings](/dashboard/organizations/organization-settings) when your organization still has sub-organizations.
+- Only organization **owners and admins** can generate a key for one or cancel it.
+
+## What you'll see
+
+The page is headed **Sub-Organizations** with the line "Sub-organizations have been replaced by projects. Existing sub-organizations keep working until you cancel them."
+
+- **Each row** shows the name, URL name, description, a status pill (**active**, **suspended** and so on), the requests per month (for example "50,000 req/mo"), the date created, and **Billing active** when its subscription is running.
+- **Empty state:** "This organization has no sub-organizations. Use projects to separate your work."
+- Green and red message bars appear at the top after an action, with a small cross to close them.
+
+## Generate another key for an existing one
+
+<Steps>
+  <Step title="Choose the key icon">
+    On the sub-organization's row, select the key icon (its tooltip is **Generate API Key**). The panel is titled **Generate API key**: "A key scoped to this sub-organization."
+  </Step>
+  <Step title="Name it and pick an environment">
+    Type a **Key name** (up to 80 characters, for example `Backend API key`) and choose **Test** or **Live** under **Environment**. A live key needs a paid plan.
+  </Step>
+  <Step title="Generate">
+    Select **Generate key** (**Generating…** while it works). The panel changes to **Key created**: "Copy it now. It is shown only this once." Select **Copy key**, then **Done**.
+  </Step>
+</Steps>
+
+A cancelled or suspended sub-organization cannot have new keys.
+
+## Cancel a sub-organization
+
+Select the bin icon on its row (tooltip **Cancel Sub-Organization**). The confirmation, titled **Cancel sub-organization**, says cancelling revokes all of its API keys, so any integration using them stops working immediately, and cancels its subscription. Choose **Cancel sub-organization** to go ahead or **Keep it** to back out. A green message confirms it.
+
+Cancelling is the only way out: a sub-organization cannot be deleted, and its billing details cannot be edited.
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="Can I still create a sub-organization?">
+    No. Sub-organizations have been replaced by projects. Existing ones keep working until you cancel them.
+  </Accordion>
+  <Accordion title="Is a sub-organization the same as a project?">
+    No. A project groups API keys and the records they create inside your organization. A sub-organization was a separate tenant, billed on its own. Use projects to separate environments and work.
+  </Accordion>
+  <Accordion title="Can I scope a webhook to an existing sub-organization?">
+    Yes. See [Webhooks](/dashboard/projects/webhooks).
+  </Accordion>
+  <Accordion title="What happens to its data if I cancel?">
+    Its keys are revoked at once and the subscription is cancelled. Anything using those keys stops working immediately, so move integrations first.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| "Give the key a name (up to 80 characters)." | The key name is empty or too long. |
+| "Live keys need a paid plan. Upgrade in Billing, or create a test key." | You chose **Live** on a free plan. Choose **Test**. |
+| "That sub-organization could not be found, or it is not active." | It was cancelled or is not yours. Refresh the page. |
+| "Could not revoke the sub-organization's keys. Nothing was cancelled; please try again." | Retry; nothing changed. |
+| "The sub-organization is cancelled and its keys are revoked, but its subscription could not be stopped. Contact support@clinikapi.com…" | Email support so they stop the billing; you need do nothing else. |
+
+## Related
+
+- [Organization settings](/dashboard/organizations/organization-settings)
+- [Webhooks](/dashboard/projects/webhooks)
+- [Access: API keys](/dashboard/projects/access-keys)
+- [Glossary](/dashboard/glossary)

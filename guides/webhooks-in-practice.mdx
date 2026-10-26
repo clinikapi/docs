@@ -164,8 +164,9 @@ if (event === 'lab.created') {
 
 ### One platform, many clinics
 
-If you resell to multiple practices, give each one a **sub-organization**. You
-then have two options, and the right one depends on your architecture:
+If you resell to multiple practices that already have a **sub-organization**
+(sub-organizations have been replaced by projects, and no new ones can be
+created), you have two options, and the right one depends on your architecture:
 
 - **One endpoint, route on `data.tenantId`.** It carries the sub-org id, not
   your parent organization id, so it is a clean routing key.

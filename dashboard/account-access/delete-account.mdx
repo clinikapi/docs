@@ -1,0 +1,84 @@
+---
+title: "Delete your account"
+description: "Ask for your ClinikAPI account to be deleted: what blocks the request, what you type, what happens next, and how to cancel."
+---
+
+# Delete your account
+
+## What this is for
+
+If you no longer want a ClinikAPI account, you can ask us to delete it. The **Delete account** page is where you make that request. It is a **request**, not an instant button: your team here completes it, and writes to you by email when it is done. Because the account is shared, this is **the same account you use for ClinikEHR**, and a request covers the whole account, not just the developer dashboard.
+
+## Before you start
+
+- **Leave every organization first.** The request stays blocked while you still belong to any organization, whether you own it or are a member. See "If it is blocked" below.
+- Be signed in with the account you want to delete. You will type its email address to confirm.
+- Anything you want to keep, such as exports or records, should be saved before you ask. Deleting is permanent.
+
+## Step by step
+
+<Steps>
+  <Step title="Open Delete account">
+    Open your account menu (the circle with your initial) and choose **Delete account**. You can also reach it from the small menu along the top of the **Profile** and **Security** pages. The page is headed **Delete account**: "Permanently delete your ClinikAPI account and data."
+  </Step>
+  <Step title="Read the warning">
+    The card says "Deleting your account is permanent and cannot be undone. Your data will be deleted within 30 days, though some metadata and logs may be kept longer where the law requires or permits." and "This is the same account you use for ClinikEHR. A request covers the whole account, not just the developer console."
+  </Step>
+  <Step title="Select Request to delete account">
+    This red button appears only when you no longer belong to any organization. A panel opens: **Are you sure you want to delete your account?** "This is a request. Our team completes it within 30 days and writes to you by email."
+  </Step>
+  <Step title="Type your email">
+    The label reads "Type" followed by your email address, then "to confirm". Type it exactly. The red **Submit request for account deletion** button stays disabled until it matches. Select **Cancel** to back out.
+  </Step>
+  <Step title="Submit">
+    Select **Submit request for account deletion**. The button reads **Submitting…**, then a message says "Request submitted. We will reach out by email." The page now shows that the request is recorded.
+  </Step>
+</Steps>
+
+## What you'll see
+
+- **After you submit.** A box reads **Deletion requested on** followed by the date: "We will reach out by email when it is complete. You can still sign in until then." It has a **Cancel the request** button.
+- **To cancel.** Select **Cancel the request**. A message says **Deletion request cancelled**, and the page goes back to the normal state.
+- **If it is blocked.** A box reads **Leave all organizations before requesting account deletion**.
+  - Organizations you **own** are listed with a link to each organization's **Danger zone**: "You own these. Ask us to transfer or delete them first (deleting removes their keys, webhooks and projects):". Select **Contact support** to write to us about it.
+  - Organizations you only belong to are listed under "You are a member of these. Ask an owner to remove you:".
+  - There is no **Request to delete account** button until the list is empty.
+- If you have left every organization, your account pages still work. They simply appear without the usual sidebar.
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="Is my account deleted immediately?">
+    No. The request is recorded and our team completes it, within 30 days according to the page. Until then you can still sign in.
+  </Accordion>
+  <Accordion title="Will this delete my ClinikEHR account too?">
+    Yes. It is one account across both products, and the page says the request covers the whole account.
+  </Accordion>
+  <Accordion title="Can I change my mind?">
+    Yes, until it is completed: select **Cancel the request** on the same page.
+  </Accordion>
+  <Accordion title="What about the organizations I own?">
+    Deleting an organization removes its keys, webhooks and projects, and the dashboard does not do it for you. Contact support from the blocked box and we will transfer or delete it with you. See [Organization settings](/dashboard/organizations/organization-settings).
+  </Accordion>
+  <Accordion title="Why are some things kept longer?">
+    The page says "some metadata and logs may be kept longer where the law requires or permits".
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| "Leave or delete every organization before requesting account deletion." | Leave or hand over each organization, then try again. |
+| "Type your email address exactly to confirm." | Retype the address shown in the panel. |
+| "You already asked" followed by a number of days: "days ago. We will be in touch by email." | A request is already recorded. Wait for our email, or cancel it. |
+| "Could not record the request. Please try again." | Try again in a moment. |
+| "Could not cancel the request. Please try again." | Try again in a moment. |
+| "Your session has expired. Please sign in again." | Sign in and repeat. |
+
+## Related
+
+- [Profile](/dashboard/account-access/profile)
+- [Security](/dashboard/account-access/security)
+- [Organization settings](/dashboard/organizations/organization-settings)
+- [Invitations and roles](/dashboard/organizations/invitations-and-roles)

@@ -1,0 +1,105 @@
+---
+title: "Project settings"
+description: "Rename a project, find its reference and details, and delete or restore it."
+---
+
+# Project settings
+
+## What this is for
+
+**Project settings** is where you manage the project itself rather than the data inside it: change its name, copy its permanent reference, see its plan, size, region and status at a glance, and (for owners) delete it. A second tab, [Compute and Disk](/dashboard/projects/compute-and-disk), covers server size.
+
+## Before you start
+
+- Any member can look at the details.
+- Only an **owner or admin** can rename a project.
+- Only the organization **owner** can delete one.
+
+## Rename a project
+
+<Steps>
+  <Step title="Open Project settings">
+    Choose **Project settings** in the sidebar. The page is titled **Project settings** with two tabs: **General** and **Compute and Disk**. You start on **General**.
+  </Step>
+  <Step title="Edit the name">
+    In **Project name**, type the new name. It must be 3 to 60 characters. Extra spaces are tidied.
+  </Step>
+  <Step title="Save">
+    Select **Save** (it reads **Saving…** briefly). The **Save** button stays disabled until you change something. A message says **Project renamed**.
+  </Step>
+</Steps>
+
+Renaming changes only the label. The project's reference, keys and data are untouched.
+
+## Delete a project
+
+<Steps>
+  <Step title="Find the Danger zone">
+    On **General**, scroll to the red **Danger zone** card. It explains that deleting revokes all of the project's API keys at once and that its sandbox data is kept for 7 days.
+  </Step>
+  <Step title="Start the deletion">
+    Select **Delete project**. A panel titled "Delete (project name)" opens: "This revokes every key of the project now. You can restore the project for 7 days."
+  </Step>
+  <Step title="Type the name to confirm">
+    Type the project's exact name in the box labelled "Type (name) to confirm". Capital letters and spacing must match. The red **Delete project** button stays disabled until it matches.
+  </Step>
+  <Step title="Delete">
+    Select **Delete project** (**Deleting…** briefly). A message says **Project deleted. You can restore it for 7 days.** and you return to the project list.
+  </Step>
+</Steps>
+
+To bring it back, see "Deleted projects" in [Projects](/dashboard/projects/projects-home).
+
+## What you'll see
+
+Under the name box is a table of facts:
+
+| Row | Meaning |
+|---|---|
+| **Reference** | The permanent 20-letter code, with a copy button (**Copy project reference**). Quote it when you contact support. |
+| **Organization** | The organization it belongs to. |
+| **Plan** | The organization's plan. |
+| **Compute** | **Small**, **Medium**, **Large** or **XL**. |
+| **Data** | **Sandbox (test keys)** or **Dedicated**. |
+| **Region** | **United States (us-east-1)**. |
+| **Created** | The date it was created. |
+| **Status** | The same coloured status as on [Projects](/dashboard/projects/projects-home). |
+
+If you cannot rename, the box is disabled and a line reads **Only an owner or admin can rename the project.** If you cannot delete, the Danger zone reads **Only an owner of the organization can delete a project.**
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="Will renaming break my integration?">
+    No. Your code uses API keys, which do not depend on the project name.
+  </Accordion>
+  <Accordion title="What is the reference for?">
+    It is the project's permanent identifier, the same in addresses and in the project switcher. It never changes.
+  </Accordion>
+  <Accordion title="What exactly is deleted?">
+    All keys are revoked immediately. The sandbox data is kept for 7 days in case you restore, then permanently removed.
+  </Accordion>
+  <Accordion title="Why must I type the name to delete?">
+    It is a safety check so that a stray click cannot delete a project.
+  </Accordion>
+  <Accordion title="Can I change the region?">
+    Not from this page. The region is shown for information.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| "Give the project a name." / "The name must be at least 3 characters." / "The name must be 60 characters or fewer." | Adjust the length. |
+| "The name cannot contain control characters." | Remove invisible characters, for example from a paste. |
+| "That project could not be found, or you do not have access." | It was deleted or belongs elsewhere. Reload. |
+| "Type the project name exactly to delete it." | The confirmation text does not match. Copy the name exactly. |
+| "Something went wrong. Please try again." | A temporary failure. Retry. |
+| "That organization could not be found, or you do not have access." | You lack the owner/admin role for this act. Ask an owner. |
+
+## Related
+
+- [Projects](/dashboard/projects/projects-home)
+- [Compute and Disk](/dashboard/projects/compute-and-disk)
+- [Access: API keys](/dashboard/projects/access-keys)

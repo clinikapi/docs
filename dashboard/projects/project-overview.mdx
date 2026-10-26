@@ -1,0 +1,96 @@
+---
+title: "Project overview"
+description: "Your project's home screen: connect to the API, send a first request, and watch usage."
+---
+
+# Project overview
+
+## What this is for
+
+**Overview** is the first page you see when you open a project. It answers three beginner questions at once: "What address and key do I use?", "How do I send my first request?" and "Is anything happening yet?" It gives you a copy-ready snippet, a monthly usage meter, a short checklist and a feed of recent changes.
+
+## Before you start
+
+- You need a project (every organization starts with one, called **Default project**).
+- Any member can view this page. To create a key you need to be an owner or admin; see [Access: API keys](/dashboard/projects/access-keys).
+
+## Send your first request
+
+<Steps>
+  <Step title="Open the project">
+    Choose **Projects** in the sidebar and select your project's card, or pick it from the project switcher in the top bar. You land on **Overview**.
+  </Step>
+  <Step title="Create a test key if you have none">
+    Look at the **API key** box in the **Connect** card. If it says **No key yet. Create one on the API keys page.**, go to **Access** in the sidebar (that is the "API keys page") and select **Create test key**. See [Access: API keys](/dashboard/projects/access-keys).
+  </Step>
+  <Step title="Copy the API URL">
+    In the **Connect** card, select the copy button beside **API URL**. It is `https://api.clinikapi.com/v1`.
+  </Step>
+  <Step title="Copy a snippet">
+    Choose the **cURL** or **TypeScript** tab and select **Copy code**. The key shown in the snippet is only the first few characters followed by an ellipsis, for example `clk_test_ab12cd…`. Replace it with your full secret key (the one you copied when you created it), ideally from an environment variable.
+  </Step>
+  <Step title="Run it">
+    Paste the cURL command into a terminal, or run the TypeScript on your server. A successful call returns a list of patients (empty at first, which is normal).
+  </Step>
+  <Step title="Watch it appear">
+    Open **Logs** in the sidebar. Your request shows up within moments. The **Getting started** checklist on Overview ticks **Make your first request** once any request has been recorded.
+  </Step>
+</Steps>
+
+## What you'll see
+
+The page title is **Overview**, with your project name, plan (for example "Free plan") and a status dot beneath it.
+
+**Left column:**
+
+- **Connect.** "Send your first request. Keep keys on your server, never in a browser or app." It shows the **API URL**, the **API key** prefix, and tabs with a cURL command and a TypeScript example.
+- **Usage.** Three small charts, **Requests**, **Errors** and **Latency**, with a **24 hours** / **7 days** switch. Latency is shown as milliseconds on average; **—** means there was no traffic to average.
+
+**Right column:**
+
+- **Requests this month**, a meter such as "42 / 1,000" (on the Free plan; your own limit is shown) with the line "Resets in N days" (the count resets at the start of each month, UTC). On the Free plan test requests count toward the quota; on a paid plan the meter counts live requests and test requests are free.
+- **Getting started**, "N of 3 done": **Create an API key**, **Make your first request**, **Add a webhook**. Each row links to the page where you do it.
+- **Recent activity.** Keys created or revoked, webhooks added and members who joined. Empty state: "Nothing yet. Keys, webhooks and members you add show up here."
+
+**Status dot** values are explained in [Projects](/dashboard/projects/projects-home). **Healthy** means the project is active and the API is answering.
+
+A **deleted** project shows a message instead of Overview, and a **suspended** one shows a red banner above it; see [Projects](/dashboard/projects/projects-home).
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="Why does the snippet show only part of my key?">
+    The dashboard never keeps your full key, only its first characters, so it cannot print it. The full key was shown once when you created it. If you lost it, revoke that key and create a new one.
+  </Accordion>
+  <Accordion title="The first request returned an empty list. Did it fail?">
+    No. A brand-new project has no records, so listing patients correctly returns nothing. Create one (see the [Data browser](/dashboard/data/data-browser)) and list again.
+  </Accordion>
+  <Accordion title="What counts toward 'Requests this month'?">
+    On the Free plan, every request made with a test key. On a paid plan, live requests are billable and test requests are free, as the line under the meter shows.
+  </Accordion>
+  <Accordion title="Why is the cURL header called x-api-key?">
+    That is how the API reads your key. Always send it in an `x-api-key` header. See [Authentication](/authentication).
+  </Accordion>
+  <Accordion title="Can I put the key in my website's JavaScript?">
+    No. Anyone could read it there. Keep keys on your own server.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| **No key yet. Create one on the API keys page.** | You have no active key in this project. Open **Access** and create a test key. |
+| A request returns an authentication error | The key is mistyped, revoked, or belongs to another project. Create a new key and check the `x-api-key` header. |
+| Usage charts are flat at 0 | No requests yet, or they are older than the chart window. Send one and check **Logs**. |
+| **Sandbox unavailable** next to the project name | The test environment did not answer a health check just now. Try again shortly; the **System status** link in the help menu shows incidents. |
+| **Billing for this project has stopped.** | The organization's billing is overdue. See [Projects](/dashboard/projects/projects-home). |
+| **Resets in N days** looks wrong | The quota resets at midnight UTC on the 1st, not in your local time zone. |
+
+## Related
+
+- [Your first 10 minutes](/dashboard/getting-started)
+- [Access: API keys](/dashboard/projects/access-keys)
+- [Logs](/dashboard/data/logs)
+- [Usage](/dashboard/data/usage)
+- [Quickstart](/quickstart)

@@ -1,0 +1,126 @@
+---
+title: "Access: API keys"
+description: "Create test and live API keys, choose what they may do, copy them safely, and revoke them."
+---
+
+# Access: API keys
+
+## What this is for
+
+An **API key** is a long secret password that your software sends with every request so the API knows who is calling. The **Access** page is where you create keys, see which ones exist and how much each is used, and revoke any that leak or are no longer needed. Every key belongs to one project.
+
+There are two kinds, and the difference matters:
+
+- A **test key** (`clk_test_…`) works against the **sandbox**, a safe practice environment. Use it while you build. It is free on every plan.
+- A **live key** (`clk_live_…`) works against real production data and is only available on paid plans. Use it only from your own deployed backend.
+
+## Before you start
+
+- Only an organization **owner or admin** can create or revoke keys. Everyone else can see the list.
+- Decide where the key will live. It should go into your server's secret manager or an environment variable, never into a web page, mobile app or code repository.
+- A suspended project refuses new keys until its open invoice is paid.
+
+## Create a key
+
+<Steps>
+  <Step title="Open Access">
+    Choose **Access** in the sidebar. The page is titled **Access**: "API keys: create and manage the secrets your servers use to call the API. Every key has a Test or Live environment and fixed scopes."
+  </Step>
+  <Step title="Start a new key">
+    In the **Test keys** card select **Create test key**. (The **Create live key** button in the **Live keys** card only appears on a paid plan.) A panel titled **Create test key** opens.
+  </Step>
+  <Step title="Name it">
+    Type a **Name** (up to 80 characters), such as `Backend service`. The name is only for you, so you can tell keys apart later.
+  </Step>
+  <Step title="Choose scopes">
+    Under **Scopes** tick what the key may do. **Read** ("Fetch and search records (GET requests).") and **Write** ("Create, update and delete records (POST, PUT, PATCH, DELETE). Does not allow reading them back.") are both ticked by default. A key that must create a record and then fetch it needs both. Scopes are fixed once the key exists; to change them, create a new key.
+  </Step>
+  <Step title="Create">
+    Select **Create key** (it reads **Creating…** briefly).
+  </Step>
+  <Step title="Copy it now">
+    The panel changes to **Key created**: "Copy it now. For your security it is shown only this once." Select **Copy key** and paste it into your secret manager. Then select **Done**.
+  </Step>
+</Steps>
+
+## Revoke a key
+
+<Steps>
+  <Step title="Find the key">
+    In its table, find the row. Use the **View** link first if you want to see what the key has been doing in [Logs](/dashboard/data/logs).
+  </Step>
+  <Step title="Revoke">
+    Select the bin icon on the row (screen readers call it **Revoke key** plus the key's name). A confirmation titled **Revoke API key** asks: "Revoke “name”? Anything using it stops working immediately. This cannot be undone."
+  </Step>
+  <Step title="Confirm">
+    Select **Revoke key**. A message says Key “name” revoked, and the row disappears.
+  </Step>
+</Steps>
+
+## What you'll see
+
+At the top, a grey note: **Keep keys on your server.** It repeats that keys are shown in full once.
+
+Two cards, **Test keys** ("Work against the sandbox. Free to use on every plan.") and **Live keys** ("Work against production data. Available on paid plans."). Each lists keys in a table:
+
+| Column | Meaning |
+|---|---|
+| **Name** | The name you gave it. |
+| **Key** | The first 16 characters, then dots. The rest is never shown. |
+| **Scopes** | **Read and write**, **Read only** or **Write only**. |
+| **Created** | The date it was made. |
+| **Last used** | How long ago it last worked, such as **Just now**, **5 min ago**, **2 d ago**, or **Never**. |
+| **Requests (30 d)** | Requests in the last 30 days. A busy key shows a number followed by **+** because the count is capped. |
+| **Log** | **View** opens Logs filtered to this key. |
+
+**Empty states:** **No test keys yet** ("Create a test key to make your first request."), **No live keys yet** ("Create a live key when you are ready for production."), and on the Free plan **Live keys need a paid plan** with a **See plans** button.
+
+If a Free-plan project still has live keys from before, they stay listed with the note "These live keys no longer work on the Free plan. You can revoke them here…".
+
+If you are not an owner or admin: **Only an organization owner or admin can create or revoke keys.**
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="What's the difference between a test key and a live key?">
+    A test key talks to a sandbox full of practice (fictional) data and is free. A live key talks to real production data and needs a paid plan. They look alike but start with different words: `clk_test_` and `clk_live_`. Build and test with test keys; switch to a live key only when your code is ready for real patients.
+  </Accordion>
+  <Accordion title="Why can't I see the secret again?">
+    For safety, the dashboard stores only a fingerprint of the key, not the key. Nobody, including us, can show it again. If you lose it, revoke it and make a new one.
+  </Accordion>
+  <Accordion title="Which scopes should I choose?">
+    Most apps need both **Read** and **Write**. Choose **Read** only for a reporting tool that must never change data. Remember **Write** alone cannot read records back.
+  </Accordion>
+  <Accordion title="How do I use a key?">
+    Send it in an `x-api-key` header on every request. See [Authentication](/authentication) and the snippet on [Overview](/dashboard/projects/project-overview).
+  </Accordion>
+  <Accordion title="Does revoking a key delete my data?">
+    No. It only stops that key from working. Records are untouched.
+  </Accordion>
+  <Accordion title="How many keys can I have?">
+    Create one per service so that you can revoke one without breaking the others.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| **Give the key a name.** | The name box is empty. Type a name. |
+| **Choose at least one scope.** | Tick **Read**, **Write** or both. |
+| **Choose at least one scope: read or write.** | The same problem, reported by the server. Tick a scope. |
+| **Live keys need a paid plan. Upgrade in Billing, or create a test key.** | You are on the Free plan. Create a test key or upgrade. |
+| **Billing for this project has stopped. Pay the open invoice to create keys.** | The project is suspended. An owner or admin must settle billing. |
+| **That project could not be found.** | The project was deleted. Choose another. |
+| **Could not create the key. You may not have permission for this organization.** | You are not an owner or admin, or your session lapsed. |
+| **Could not revoke the key** with "That key could not be found, or only an organization owner or admin can revoke it." | The key is already gone or you lack the role. Refresh and ask an admin. |
+| "Enter the code from your authenticator app to continue. Sign in again to do that." | You use two-factor sign-in but this session has no code yet. Sign in again. |
+| Your app gets an authentication error | The key was revoked, copied with extra spaces, or is from another project. Create a fresh key. |
+
+## Related
+
+- [Authentication](/authentication)
+- [Project overview](/dashboard/projects/project-overview)
+- [Logs](/dashboard/data/logs)
+- [Sandbox rules](/dashboard/data/sandbox-rules)
+- [Glossary](/dashboard/glossary)

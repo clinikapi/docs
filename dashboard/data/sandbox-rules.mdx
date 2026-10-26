@@ -1,0 +1,83 @@
+---
+title: "Sandbox rules"
+description: "What the practice environment is, what you may put in it, and its limits and clean-up."
+---
+
+# Sandbox rules
+
+## What this is for
+
+The **sandbox** is the practice environment that your test keys talk to. It behaves like the real API but is completely separate from production, free to use and safe to break. This page lists the rules of that environment: what data is allowed, who can see it, when it is deleted and how much you can do per minute or per hour, so nothing surprises you while you build.
+
+## Before you start
+
+You do not need to do anything to get a sandbox. Every project has one, and any key that starts with `clk_test_` uses it. If you have no key yet, see [Access: API keys](/dashboard/projects/access-keys).
+
+## The rules
+
+<Steps>
+  <Step title="Use synthetic data only">
+    Put only invented data in the sandbox: made-up names, dates and values. **Do not** enter real patient information and do not copy production records into it. Every response to a test key carries the header `X-Sandbox-Notice: synthetic-data-only` as a reminder. *Synthetic data* simply means data that looks real but describes no real person.
+  </Step>
+  <Step title="Know who can see your data">
+    A test key reads and writes only its own project's sandbox data. Other organizations' and other projects' sandbox data cannot be reached with it. Data created with test keys is never visible to live keys, and the reverse.
+  </Step>
+  <Step title="Expect the 90-day clean-up">
+    Sandbox records that have not been updated for 90 days are deleted automatically by a nightly job. Update a record, or create it again, if you need it to last. Production data is not affected.
+  </Step>
+  <Step title="Stay inside the limits">
+    See the table below.
+  </Step>
+</Steps>
+
+## Limits
+
+| Limit | Value |
+|---|---|
+| Requests per minute | 60 for all test-key traffic of one organization, sub-organizations included. This applies on top of your plan's own rate limit. Beyond it the API answers `429` with "Test keys are limited to 60 requests per minute". |
+| Records per bulk import | 1,000 (live keys: 10,000). |
+| Records per type in an export | 1,000. |
+| Export size | A sandbox export must fit in one response; otherwise it is refused as too large. |
+| Bulk operations | 5 per hour. |
+| Monthly sandbox requests | Counted separately from live requests on paid plans. On the Free plan every request counts toward the 1,000 requests a month. See [Errors](/errors#rate-limits). |
+
+## In the dashboard
+
+The [Data browser](/dashboard/data/data-browser) and [Exports](/dashboard/data/exports) work only with test keys, and live data is never written from the console. When the sandbox cannot be reached, those pages say **Sandbox coming soon** and the project's status shows **Sandbox unavailable**.
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="What is the difference between the sandbox and production?">
+    The sandbox holds practice data for building and testing; production holds your real data and needs a paid plan and live keys. They are separate: data created with a test key is never visible to a live key.
+  </Accordion>
+  <Accordion title="Why did my test records disappear?">
+    They were not updated for 90 days and the nightly clean-up removed them. Keep important sample data in a script you can run again.
+  </Accordion>
+  <Accordion title="Is the sandbox HIPAA-covered?">
+    No. It is for synthetic data only, which is exactly why real patient information must stay out. The Free plan is test-only and carries no BAA.
+  </Accordion>
+  <Accordion title="Why am I getting 429 errors in testing?">
+    All test-key traffic of the whole organization shares 60 requests a minute. Slow down loops, or run test suites in smaller batches.
+  </Accordion>
+  <Accordion title="Why is the sandbox 'coming soon' or 'unavailable' in the dashboard?">
+    The dashboard checks the sandbox before it shows data. When it does not answer, pages say so honestly instead of showing an empty table.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| `429` "Test keys are limited to 60 requests per minute" | Wait a minute and slow your requests. |
+| "Too many exports this hour. The limit is 5 per hour." | Wait for the hour to pass. |
+| "Export too large for the sandbox; narrow the types or date range" | Export fewer types or a shorter date range. |
+| **Sandbox coming soon** / **Sandbox unavailable** | The practice environment is not answering. Retry shortly and check **System status**. |
+| Records you created last quarter are gone | The 90-day clean-up removed them. |
+
+## Related
+
+- [Data browser](/dashboard/data/data-browser)
+- [Exports](/dashboard/data/exports)
+- [Errors and rate limits](/errors)
+- [Glossary](/dashboard/glossary)

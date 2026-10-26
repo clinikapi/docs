@@ -9,7 +9,7 @@ ClinikAPI uses API key authentication via the `x-api-key` header. Every request 
 
 ## API Keys
 
-Keys are created in the [Developer Dashboard](https://dashboard.clinikapi.com) and follow this format:
+Keys are created in the [Developer Dashboard](https://dashboard.clinikapi.com) (see [Access: API keys](/dashboard/projects/access-keys) for the screen) and follow this format:
 
 | Format | Environment | Use Case |
 |--------|-------------|----------|
@@ -82,6 +82,10 @@ For minimal latency, API keys are validated against a co-located PostgreSQL data
 
 Keys are cached for 60 seconds to minimize database lookups.
 
+## Keys and Projects
+
+A key belongs to one project. The project is the data boundary: a test key reads and writes only its own project's sandbox data. If the project's billing has stopped the key is refused with `402 PAYMENT_REQUIRED`; if it is paused, `503 PROJECT_PAUSED`; while it is being set up or resized, `503 PROJECT_NOT_READY`. Refused requests are not counted against your quota or rate limit. See [Errors](/errors#project-status).
+
 ## Key Scopes
 
 Every API key carries scopes, and the API checks them on each request:
@@ -93,7 +97,7 @@ Keys created in the Dashboard carry both `read` and `write`. A request outside a
 `403` and the error code `INSUFFICIENT_SCOPE`. A key with no scopes at all is refused.
 
 Live keys (`clk_live_`) can be created only by an organization owner or admin, and only on a paid plan. Test keys
-(`clk_test_`) are available on every plan.
+(`clk_test_`) are available on every plan. A key's secret is shown once, when you create it; see [Access: API keys](/dashboard/projects/access-keys).
 
 ## Security Best Practices
 

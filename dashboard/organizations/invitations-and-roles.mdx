@@ -1,0 +1,108 @@
+---
+title: "Invitations and roles"
+description: "Invite a teammate with a link, accept an invitation you received, and understand what owners, admins and members can do."
+---
+
+# Invitations and roles
+
+## What this is for
+
+To work on a project together you add teammates to your **organization**. You do that by **inviting** them: you enter their email address and a role, the dashboard makes a link, and you send that link to them. When they open it, sign in with that address and select **Accept invite**, they join. A **role** decides what a person is allowed to do once they are in. This page covers both sides: sending an invitation, and what your teammate sees when they open one.
+
+## Before you start
+
+- To invite someone you must be an **owner or admin** of the organization.
+- You need the email address your teammate will sign in with. The invitation only works for that exact address.
+- Your plan may limit how many members you can have. The **Members** page shows the count, for example "3 of 5 members". See [Billing](/dashboard/organizations/billing) to change plan.
+- Your teammate needs a ClinikAPI account, or can make one from the link. See [Sign in and sign up](/dashboard/account-access/sign-in-and-sign-up).
+
+## Roles
+
+| Role | In short | Can do |
+|---|---|---|
+| **Owner** | Created the organization and is responsible for it. | Everything, including deleting projects, changing **General** settings and downgrading or cancelling the plan. |
+| **Admin** | Runs the day-to-day setup. | Creates and revokes API keys, adds and deletes webhooks, creates and renames projects, changes the plan upwards and manages cards and billing details. |
+| **Member** | Works with the data. | Browses test data, runs sandbox exports, watches Realtime and reads the billing page. Cannot change how things are set up. |
+
+The invite panel describes the two roles you can give as **Member (view only)** and **Admin (keys, projects, billing)**. Owners are not created by invitation. The full table of who can do what is on [Members](/dashboard/organizations/members).
+
+## Invite someone
+
+<Steps>
+  <Step title="Open Members">
+    Select **Organization settings** at the bottom of the sidebar, then **Members**.
+  </Step>
+  <Step title="Select Invite member">
+    The button sits at the top right of the **Members** card. If you do not see it, you are not an owner or admin, or invitations are not switched on for your account yet. In that case ask support from the help menu.
+  </Step>
+  <Step title="Fill in the panel">
+    A panel titled **Invite a member** opens: "They get a link to join this organization with the role you choose." Type their **Email**, and choose a **Role**: **Member (view only)** or **Admin (keys, projects, billing)**.
+  </Step>
+  <Step title="Select Create invitation">
+    The button reads **Creating…** and a message says **Invitation created**. The panel changes to **Invitation created**: "Send this link to the person you invited. It only works for the email address you entered."
+  </Step>
+  <Step title="Copy the link and send it">
+    Select **Copy link** and send it to your teammate yourself, in a chat or an email of your own. Then select **Done**. Closing the panel clears the link, so copy it before you close it. If you lose it, create a new invitation.
+  </Step>
+</Steps>
+
+## Accept an invitation
+
+Your teammate opens the link. What they see depends on the situation. The page is a small card with the ClinikAPI logo.
+
+| Situation | Heading and text | Button |
+|---|---|---|
+| Not signed in | **View invitation**: "Sign in or create an account to view this invitation." | **Sign in**, **Sign up** (after which they come back to the invitation) |
+| Signed in with the invited address | **Join** followed by the organization's name: "You have been invited to join this ClinikAPI organization." It shows "Signed in as" and their email. | **Accept invite**, **Decline** |
+| Signed in with a different address | **Wrong account**: "You are signed in as" their address, then "Sign in with the email address that received this invite." | **Sign out** (signs out this browser and returns to sign-in, then back to the invitation) |
+| The organization requires two-factor | **Set up two-factor for your account**: "Two-factor authentication needs to be on for your account to join this organization." | **Go to account settings** (see [Security](/dashboard/account-access/security)) |
+| The invitation ran out | **Invite expired**: "Ask the organization owner to send you a new invite." | **Back to dashboard** |
+| Already used or withdrawn | **Invite no longer available**: "This invite has already been accepted, declined or withdrawn." | **Back to dashboard** |
+| The link is incomplete or unknown | **Invalid invitation**: "Open the full invite link again, or ask the organization owner for a new invite." | **Back to dashboard** |
+| Invitations are not switched on | **Invitations are not available yet**: "Accepting an invitation from this page is being switched on. Ask the person who invited you to add you from the organization's Members page, or try again later." | **Back to dashboard** |
+| Something went wrong loading it | **Unable to load invitation**: "We could not load this invitation. Please try again." | **Back to dashboard** |
+
+When the right person selects **Accept invite**, the button reads **Joining…**, a message says **You joined the organization**, and they land on the organization's projects. **Decline** records the decline and shows **You declined this invitation**; they are not added, and the invitation cannot be used again. Opening the same link later shows **Invite no longer available**.
+
+## What you'll see
+
+On the **Members** page the new person appears in the table once they have joined, with their email, their **Role** badge and the **Joined** date. The list is for reading: it does not have buttons to change a role or remove someone. To change one of those, contact support from the help menu.
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="Does ClinikAPI email the invitation for me?">
+    The panel gives you the link to send yourself. Copy it and send it to your teammate.
+  </Accordion>
+  <Accordion title="My teammate says 'Wrong account'.">
+    They are signed in with a different email than the one you typed. Either they sign out and sign in with the invited address, or you create a new invitation for the address they are using.
+  </Accordion>
+  <Accordion title="Can I invite someone as an owner?">
+    No. The panel offers only **Member** and **Admin**.
+  </Accordion>
+  <Accordion title="Why does my teammate need two-factor?">
+    Some organizations require it for everyone who joins. They turn it on in [Security](/dashboard/account-access/security) and then open the link again.
+  </Accordion>
+  <Accordion title="Is the link a secret?">
+    Treat it like one. It only works for the invited email address, but send it only to that person.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| "Enter a valid email address." | Fix the **Email** in the invite panel. |
+| "Invitations are not available yet." | The invitation system is not switched on for this environment. Contact support. |
+| "Could not create the invitation. Please try again." | Try again; contact support if it keeps failing. |
+| "Could not accept the invitation. Please try again." | Reload the link and select **Accept invite** again. |
+| "This invitation is not valid." | Open the full link again, or ask for a new invitation. |
+| "Sign in to accept this invitation." | Sign in with the invited address, then reopen the link. |
+
+## Related
+
+- [Members](/dashboard/organizations/members)
+- [Security](/dashboard/account-access/security)
+- [Billing](/dashboard/organizations/billing)
+- [Sign in and sign up](/dashboard/account-access/sign-in-and-sign-up)
+- [Glossary](/dashboard/glossary)

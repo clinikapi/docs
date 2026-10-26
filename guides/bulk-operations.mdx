@@ -56,6 +56,25 @@ curl https://api.clinikapi.com/v1/bulk/jobs/job_abc123 \
 
 The `downloadUrl` is a pre-signed URL valid for 1 hour.
 
+### Exports with a test key (sandbox)
+
+With a `clk_test_` key the export runs inside the request. There is no job to poll: the response is `200` with `status` `completed` and the records in `ndjson`, one per line.
+
+```json
+{
+  "data": {
+    "jobId": "job_abc123",
+    "status": "completed",
+    "totalRecords": 3,
+    "processedRecords": 3,
+    "format": "application/x-ndjson",
+    "ndjson": "{\"resourceType\":\"Patient\",...}\n{...}\n{...}"
+  }
+}
+```
+
+The response is the only copy: the export is not stored and `GET /v1/bulk/jobs/:jobId` will not find it. If the records do not fit in one response (about 4 MB of NDJSON), the API answers `422` with code `EXPORT_TOO_LARGE`: narrow the `resourceTypes` or the `since` date and try again. A resource type with more than 1,000 records stops at 1,000 and says so in `warnings`.
+
 ## Bulk Import
 
 Import NDJSON data — one JSON resource per line, max 10,000 records per batch:
@@ -72,7 +91,7 @@ curl -X POST https://api.clinikapi.com/v1/bulk/import \
 
 ### Import Rules
 
-- Max **10,000 records** per batch
+- Max **10,000 records** per batch (**1,000** with a `clk_test_` key)
 - Tenant tags are automatically injected — you cannot override them
 - Invalid records are skipped and reported in the job's `errors` array
 - Rate limited to **5 bulk operations per hour** per tenant

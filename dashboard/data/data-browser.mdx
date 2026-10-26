@@ -1,0 +1,119 @@
+---
+title: "Data browser"
+description: "Look at the records your test keys created, add practice records, edit them and delete them. Live data is read-only."
+---
+
+# Data browser
+
+## What this is for
+
+When you send data to ClinikAPI (a patient, an appointment, a lab result) it is stored as a **record**, and each kind of record is called a **resource type**. This is a standard healthcare term from a format called FHIR: a Patient is one resource type, an Observation (such as a blood-pressure reading) is another. The **Data browser** lets you see those records in a table without writing any code, and, using a test key, add, change or delete practice records so you can see how the API behaves.
+
+<Warning>
+The sandbox is for **synthetic data only**: invented people and values. Never enter real patient information. See [Sandbox rules](/dashboard/data/sandbox-rules).
+</Warning>
+
+## Before you start
+
+- You need a **test key** (it starts with `clk_test_`). Create one on [Access](/dashboard/projects/access-keys). To browse you need the **Read** scope; to add, edit or delete you need **Write** as well.
+- Any member of the organization can use this page. Only test keys are accepted: live data cannot be changed from the dashboard.
+- The practice environment (the sandbox) must be up. If it is not, the page says **Sandbox coming soon** (see below).
+- Have your full test key to hand. The dashboard cannot fill it in for you, because it never stores your secret.
+
+## Look at records
+
+<Steps>
+  <Step title="Open the Data browser">
+    Choose **Data browser** in the sidebar. The page is titled **Data browser**: "Browse the records your test keys create, by resource type. Test data can be added, changed and deleted; live data is read-only."
+  </Step>
+  <Step title="Pick a resource type">
+    A list of resource types (Patients, Encounters, Observations, Appointments and many more) sits on the left. Type in **Filter resource types** to narrow it; it says **No match.** if nothing fits. Select one, for example **Patients**.
+  </Step>
+  <Step title="Paste your test key">
+    In **Test key**, paste your `clk_test_…` key. The box hides what you type. The **Load records** button stays disabled until the text looks like a test key. Beneath it: "The key is used for this request only and is not stored."
+  </Step>
+  <Step title="Load the records">
+    Select **Load records** (it reads **Loading…** briefly). After you have entered a valid key once, picking a different resource type loads it straight away.
+  </Step>
+</Steps>
+
+## Open one record
+
+Select a row, or the first value in it (usually the `id`). A panel titled "(type) record" opens showing the record's simple fields as a list, followed by the full **JSON** (the raw form of the record). If you have entered a test key it also offers **Edit** and **Delete**.
+
+## Add a record
+
+<Steps>
+  <Step title="Load the type first">
+    Pick the resource type and load it with your test key as above. The **New record** button appears once a valid key is entered.
+  </Step>
+  <Step title="Start a new record">
+    Select **New record**. A panel titled "New (type)" opens with a box labelled **Record (JSON)**, starting from an empty `{ }`.
+  </Step>
+  <Step title="Write the record">
+    Type the record as a JSON object using the same field names the API accepts. For a patient, for example: `{ "firstName": "Jane", "lastName": "Doe" }` (fictional!). The [guide for each resource](/guides/patients) lists its fields.
+  </Step>
+  <Step title="Validate and save">
+    Select **Validate and save** (**Saving…** briefly). The API checks the record before anything is stored. On success a message says **Record created** and the list refreshes.
+  </Step>
+</Steps>
+
+## Edit or delete a record
+
+Open the record and select **Edit**. The editor starts from the record's own fields without its ID and timestamps, which the system manages. **Validate and save** confirms with **Record updated**.
+
+**Delete** asks you to confirm in a box titled "Delete (type)/(id)": "This test record is removed from the sandbox and cannot be restored." Select **Delete record**. A message confirms it.
+
+## What you'll see
+
+- **Table.** Up to six columns, `id` first, 25 records at a time. Beneath it: "Showing 25 of 140 records (first page)." Nested values are not shown in cells; open the record to see everything.
+- **No records yet.** "Records created with your test keys appear here." This is normal on a new project.
+- **Sandbox coming soon.** "The sandbox data browser is not available yet. Your test keys already work with the API; this view will list the records they create as soon as the sandbox opens." The page shows this whenever the practice environment does not answer a health check, or answers with a server error. It does not mean your account lacks access; your test keys still work for API calls whenever the sandbox is running.
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="What is a resource type?">
+    A kind of healthcare record. FHIR, the standard ClinikAPI is built on, defines types such as Patient, Encounter (a visit), Observation (a measurement) and Medication. Each has its own set of fields.
+  </Accordion>
+  <Accordion title="Why does the Data browser say the sandbox is coming soon?">
+    The page first checks that the practice environment is answering. If it is not (or has not opened yet for your project), it shows this message instead of an empty or broken table. Nothing is wrong with your keys. Try again later and check **System status** in the help menu.
+  </Accordion>
+  <Accordion title="Why do I have to paste my key every time?">
+    Your key is a secret and the dashboard never stores it, only a fingerprint. So it cannot reuse it for you. The key is sent for that one request and then forgotten.
+  </Accordion>
+  <Accordion title="Why can't I see my live data?">
+    Live keys are not accepted here. The browser is limited to the sandbox so that real patient records can never be changed by accident from this screen.
+  </Accordion>
+  <Accordion title="Why are my records gone after a while?">
+    Sandbox records not updated for 90 days are cleaned up automatically. See [Sandbox rules](/dashboard/data/sandbox-rules).
+  </Accordion>
+  <Accordion title="Can I import many records at once?">
+    Not in the Data browser. Use the API's bulk operations; see [Bulk operations](/guides/bulk-operations).
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| "The Data browser works with test keys only (they start with clk_test_)." | You pasted a live key or something else. Use a test key from **Access**. |
+| "That key was not accepted. It must be an active test key with the read scope." | The key is wrong, revoked, or lacks **Read**. Create a new test key with **Read**. |
+| "That key was not accepted. It needs to be an active test key with the write scope." | Saving or deleting needs **Write**. Create a key with both scopes. |
+| "Changes can only be made with a test key (it starts with clk_test_). Live data is read-only here." | Use a test key. |
+| "This is not valid JSON. Check for a missing comma, quote or bracket." | Fix the JSON syntax. Double quotes only. |
+| "The record must be a JSON object." | Start with `{` and end with `}`. |
+| "The record was not saved. Fix the items below and try again." | The API refused the record. The list underneath names each field and what is wrong. |
+| "This record is referenced by other records; delete those first" | Something points at this record (for example an appointment for a patient). Delete the dependent records first. |
+| "The sandbox is taking longer than usual; check the record before retrying." | The save timed out and may still have worked. Reload the list before retrying to avoid a duplicate. |
+| "The sandbox is not reachable right now. Try again shortly." | The API did not answer. Retry in a minute. |
+| "The request was not accepted." | Unexpected refusal. Check the key, then retry. |
+| "Unknown resource type." / "Invalid record id." | Reload the page and pick the type again. |
+
+## Related
+
+- [Your first 10 minutes](/dashboard/getting-started)
+- [Sandbox rules](/dashboard/data/sandbox-rules)
+- [Exports](/dashboard/data/exports)
+- [API guides](/guides/patients)
+- [Glossary](/dashboard/glossary)

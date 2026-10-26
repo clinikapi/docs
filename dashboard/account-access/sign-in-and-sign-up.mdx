@@ -1,0 +1,152 @@
+---
+title: "Sign in and sign up"
+description: "Create your ClinikAPI account, sign in with a password or an emailed code, reset a forgotten password, and finish the two-factor step."
+---
+
+# Sign in and sign up
+
+## What this is for
+
+Everything in the dashboard sits behind your account. This page walks through the screens that get you in: **Sign up** (make an account), **Sign in** (come back), **Forgot your password?** (get back in when you cannot remember it) and **Two-factor authentication** (the extra code some accounts ask for). Each screen is short, but a few of them behave in ways that are worth knowing before you hit them, such as the bot check and the emailed codes.
+
+## Before you start
+
+- An email address you can open right now. Several steps send you a message.
+- A modern browser with JavaScript on. The bot check needs it.
+- If your account has two-factor sign-in turned on: your phone with the authenticator app. See [Security](/dashboard/account-access/security) for how that is set up.
+- Your ClinikAPI account is the **same account you use for ClinikEHR**. If you already have one there, sign in with it instead of signing up again.
+
+## Create an account
+
+<Steps>
+  <Step title="Open the sign-up page">
+    Go to [dashboard.clinikapi.com](https://dashboard.clinikapi.com) and, on the sign-in screen, select **Sign up** under the form ("Don't have an account?"). The page is headed **Get started** with the line "Create a new account".
+  </Step>
+  <Step title="Fill in your details">
+    Type your **Email**, then choose a **Password**. As soon as you click into the password box a checklist appears and ticks off each rule as you meet it: **Uppercase letter**, **Lowercase letter**, **Number**, **Special character (e.g. !?<>@#$%)** and **8 characters or more**. A password can be up to 72 characters long. The eye button inside the box shows or hides what you typed.
+  </Step>
+  <Step title="Tick the terms box">
+    Tick **I agree to the Terms of Service and Privacy Policy.** Both are links that open in a new tab, so you can read them first. You cannot create an account without the tick: the form says "Agree to the Terms of Service and Privacy Policy to create an account."
+  </Step>
+  <Step title="Pass the bot check">
+    A small box under the form checks that you are a person and normally finishes by itself within moments. The **Sign up** button stays greyed out until it is done. See "The bot check" below.
+  </Step>
+  <Step title="Select Sign up">
+    Select **Sign up**. The button reads **Creating account…** while it works. Then the page changes to **Check your email**: "We sent you a link to finish signing up. It expires in 10 minutes. Open it on this device." Open the email and select the link **on the same device and browser** you started in. It signs you in and takes you on to [create your first organization](/dashboard/organizations/create-an-organization).
+  </Step>
+</Steps>
+
+You can also select **Continue with Google** instead of filling in the form. On the sign-up page that button is greyed out until the terms box is ticked, with the note "Agree to the Terms and Privacy Policy to continue with a provider." Google sign-in does not ask you for a password.
+
+## Sign in
+
+<Steps>
+  <Step title="Open the sign-in page">
+    The page is headed **Welcome back** with the line "Sign in to your account". The old `/login` address still works: it simply sends you here (or to the two-factor screen when that is the step you were on).
+  </Step>
+  <Step title="Choose how to sign in">
+    Pick one of three ways:
+
+    - **Continue with Google.**
+    - **Email and password.** Type your **Email** and **Password**, wait for the bot check, then select **Sign in**. A short message says **Signing in…** and then **Signed in successfully**.
+    - **A code by email.** Select **Email me a sign-in code instead**, type your **Email**, and select **Send sign-in code**. Then type the **Code** from the email and select **Sign in**. This is handy if you have forgotten your password. Select **Use a password instead** to go back, or **Use a different email** to start the code step again.
+  </Step>
+  <Step title="Finish the two-factor step, if asked">
+    If your account has an authenticator app set up, you land on the **Two-factor authentication** screen next. See "The two-factor step" below.
+  </Step>
+</Steps>
+
+The method you used last time gets a small **Last used** tag, so you can find it quickly next time.
+
+If you were sent to sign in from somewhere else (an invitation link, for example), you are taken back there once you are in.
+
+## Forgot your password
+
+<Steps>
+  <Step title="Start from the sign-in page">
+    Select **Forgot password?** next to the password box. The page is headed **Forgot your password?** with the line "Enter your email and we'll send you a code to reset the password". A line near the top, **Step 1 of 3**, tells you where you are.
+  </Step>
+  <Step title="Ask for a code">
+    Type your **Email**, wait for the bot check, and select **Send reset code**.
+  </Step>
+  <Step title="Enter the code from the email">
+    You move to **Step 2 of 3** with the heading **Check your email for a reset code**. Open the email, copy **the code in the email we sent you**, and paste it into **Code**. Select **Confirm reset code**. The code expires in 10 minutes. The number of digits is set by the service and can differ, so do not worry if yours is longer or shorter than you expect: type exactly what the email shows. (The box accepts 6 to 10 digits.)
+  </Step>
+  <Step title="Answer the two-factor step, if your account has one">
+    If you use an authenticator app, an extra screen asks for the **Authentication code** from it. It submits by itself as soon as you type the sixth digit.
+  </Step>
+  <Step title="Choose a new password">
+    **Step 3 of 3** says "Welcome back! Choose a new strong password and save it to continue." Type it in **New password** (the same checklist as on sign-up appears) and select **Save new password**.
+  </Step>
+  <Step title="Continue">
+    The page confirms: "Your password is saved and your other sessions were signed out." Every other browser or device that was signed in is signed out as a safety measure. Select **Continue**.
+  </Step>
+</Steps>
+
+## The bot check
+
+Sign-up, sign-in with a password or code, and the forgot-password page each show a small bot check under the fields. It starts on its own when the page opens. Until it finishes the main button (**Sign in**, **Sign up**, **Send sign-in code** or **Send reset code**) is greyed out. Each check can be used once, so after every attempt, successful or not, a fresh one runs. If you press the button before it is ready, the page says "Could not complete the security check. Please try again."
+
+If the check never finishes, turn off any extension that blocks scripts or trackers for this site, reload the page, and try again.
+
+## The two-factor step
+
+If you added an authenticator app to your account, signing in is a two-step affair. After your password (or code, or Google), the screen **Two-factor authentication** opens with the line "Enter the authentication code from your two-factor authentication app".
+
+<Steps>
+  <Step title="Open your authenticator app">
+    The screen reminds you which one: "From the authenticator app registered as" followed by its name.
+  </Step>
+  <Step title="Type the 6-digit code">
+    Type it into **Authentication code**. The page submits by itself at the sixth digit; you can also select **Verify**. A wrong code clears the box and says "That code is not right. Check your authenticator app and try again."
+  </Step>
+</Steps>
+
+Select **Cancel** to sign out of this browser and go back to the sign-in page. Under **Unable to sign in?** you will find **Sign out and start again** and **Email support to regain access**.
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="I never got the email. What now?">
+    Check your spam folder and wait a minute or two. For sign-up, the link lasts 10 minutes and must be opened on the same device. If it has expired, simply sign up again with the same details to get a fresh one. For codes, go back a step (**Use a different email**) and ask again.
+  </Accordion>
+  <Accordion title="Why does it say 'If an account exists for that email address'?">
+    On purpose. The sign-in code and password-reset screens say "If an account exists for that email address, we've sent a code to it." whether or not the address has an account. That way nobody can use the page to find out who has an account. If no email arrives, the address probably is not registered, so try another one or sign up.
+  </Accordion>
+  <Accordion title="Is my ClinikEHR login the same?">
+    Yes. It is one account across both. A password change or an authenticator you add here also applies there.
+  </Accordion>
+  <Accordion title="What makes a good password?">
+    Follow the live checklist: at least 8 characters, with an uppercase letter, a lowercase letter, a number and a special character. A long phrase you do not use anywhere else is better than a short clever one. A password manager makes this easy.
+  </Accordion>
+  <Accordion title="I lost my phone and cannot give the two-factor code.">
+    Select **Email support to regain access** on the two-factor screen to write to support.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| "Incorrect email or password." | Check both for typos, or use **Email me a sign-in code instead**, or reset the password. |
+| "Your account has not been verified. Check the verification link sent to your email. If you have not received it or it has expired, sign up again to get a new one." | Open the link in the sign-up email, or sign up again with the same email to receive a new one. |
+| "Could not complete the security check. Please try again." | Wait for the bot check to finish, then try again. Disable script blockers for the site if it never finishes. |
+| "Too many attempts. Please wait a minute and try again." | Wait a minute before the next try. |
+| "We could not sign you in. Please try again." | Reload and try once more. If it keeps happening, contact support. |
+| "That code is not right, or it has expired. Check it or request a new one." | Re-copy the code from the newest email, or ask for a new one. |
+| "Must be a valid email." / "Email is required." | Fix the **Email** box. |
+| "Password is required." | Type your password. |
+| "Choose a password you have not used before." | On the new-password step, pick a password that is different from your old one. |
+| "We could not save the password. Request a new code and try again." | Go back with **Use a different email** and ask for a fresh code. |
+| "That sign-in link did not work. It may have expired, or it was opened in a different browser. Please sign in again." | Open the link in the browser you started in, or just sign in again. |
+| "Could not complete sign-in with that provider. Please try again." | Try **Continue with Google** again, or use your email instead. |
+| "We could not find your authenticator. Sign in with your password instead." | On the reset page, cancel and sign in with your password; then check [Security](/dashboard/account-access/security). |
+| "Could not check the code. Please try again." (two-factor screen) | Try again in a moment. |
+
+## Related
+
+- [Security](/dashboard/account-access/security): add or remove an authenticator app
+- [Create an organization](/dashboard/organizations/create-an-organization)
+- [Invitations and roles](/dashboard/organizations/invitations-and-roles)
+- [Delete your account](/dashboard/account-access/delete-account)
+- [Glossary](/dashboard/glossary)

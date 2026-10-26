@@ -1,0 +1,134 @@
+---
+title: "Your first 10 minutes"
+description: "A beginner walk-through: find your project, create a test key, send your first request, see it in Logs and Realtime, and try the Data browser."
+---
+
+# Your first 10 minutes
+
+## What this is for
+
+This is the shortest path from "I have never opened the dashboard" to "I sent a real request to the API and watched it arrive". You do not need to know anything about FHIR (the healthcare data standard ClinikAPI is built on). By the end you will have a **test key**, a successful request, and a practice record you created yourself, all using invented data.
+
+## Before you start
+
+- A ClinikAPI account that you can sign in with, and access to [dashboard.clinikapi.com](https://dashboard.clinikapi.com).
+- You must be an organization **owner or admin** to create a key. If you are a member, ask an owner to create one for you.
+- A terminal for the cURL example (macOS Terminal, Linux, or Windows PowerShell), or a Node.js project for the TypeScript example. You only need one of them.
+- About 10 minutes. Everything here uses the free practice environment (the **sandbox**), so you cannot break anything and nothing is billed.
+
+## Step by step
+
+<Steps>
+  <Step title="Open the dashboard and find your project">
+    Sign in and open the dashboard. It takes you to the project you used last, or to your organization's **Projects** page. An **organization** is your team or company; a **project** lives inside it and holds your API keys and the records they create. A new organization starts with one project called **Default project**. If you land on **Projects**, select its card. You arrive on **Overview**.
+
+    Look at the top bar: it shows your organization name, then the project name, so you always know where you are. See [The console layout](/dashboard/account-access/console-layout) if you want a tour.
+  </Step>
+  <Step title="Create a test key">
+    Choose **Access** in the sidebar, then select **Create test key**. In the panel that opens, type a **Name** such as `My first key`, leave both **Read** and **Write** ticked, and select **Create key**.
+
+    The panel changes to **Key created**. Select **Copy key** and paste it somewhere safe, such as a password manager. **This is the only time you will ever see it**: "For your security it is shown only this once." If you lose it, you revoke it and make another. Then select **Done**.
+
+    Your key begins with `clk_test_`. A **test key** works only against the sandbox. A **live key** (`clk_live_`) touches real data and needs a paid plan. See [Access: API keys](/dashboard/projects/access-keys).
+  </Step>
+  <Step title="Send your first request">
+    Go back to **Overview**. In the **Connect** card choose the **cURL** or **TypeScript** tab and select **Copy code**. The key in the snippet is shortened (for example `clk_test_AbCd123…`), so replace it with the full key you just copied.
+
+    **cURL** (paste into a terminal; replace the key):
+
+    ```bash
+    curl -X GET https://api.clinikapi.com/v1/patients \
+      -H "x-api-key: clk_test_AbCd123…"
+    ```
+
+    **TypeScript** (run on a server, never in a browser; `npm install @clinikapi/sdk` first):
+
+    ```ts
+    import { Clinik } from '@clinikapi/sdk';
+
+    // Server-side only. Keep the key in an environment variable.
+    const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!);
+
+    const result = await clinik.patients.search();
+    ```
+
+    Set `CLINIKAPI_SECRET_KEY` to your full test key before you run it. The request asks the API for a list of patients. A new project has none, so an empty list is the correct answer. That means it worked.
+  </Step>
+  <Step title="See your request in Logs">
+    Choose **Logs** in the sidebar. Your request appears in the **API requests** tab with the method (GET), the path (`/v1/patients`), the status (`200`, in green) and how long it took. Select the path to see the details, including a **Request ID** you can quote to support. The log never stores what you sent or received.
+  </Step>
+  <Step title="Create a practice record and watch it in Realtime">
+    Open **Data browser**, select **Patients**, paste your test key into **Test key**, and select **Load records**. You will see **No records yet**. Select **New record**, and in **Record (JSON)** enter invented details:
+
+    ```json
+    { "firstName": "Jane", "lastName": "Doe" }
+    ```
+
+    Select **Validate and save**. **Record created** appears and the new patient is in the table. Now open **Realtime**: within about 15 seconds you will see a `patient.created` event for it. If the API had refused your record, a list under the box would have named the field to fix. Read more in [Data browser](/dashboard/data/data-browser) and [Realtime](/dashboard/data/realtime).
+
+    Use only made-up data here. The sandbox is not for real patient information, and records not touched for 90 days are cleaned up. See [Sandbox rules](/dashboard/data/sandbox-rules).
+  </Step>
+  <Step title="Check your usage">
+    Open **Usage**. The **Requests this month** meter has moved: on the Free plan, test requests count toward your 1,000 requests a month. Try the **24 hours** chart to see your requests plotted.
+  </Step>
+  <Step title="Pick your next step">
+    You have a key, a working request and a record. The cards below take you further.
+  </Step>
+</Steps>
+
+## What you'll see
+
+If the sandbox is not answering when you try step 5, the Data browser shows **Sandbox coming soon** instead of an empty table, and the project's status reads **Sandbox unavailable**. Your key and the API are fine; try again in a few minutes. If your first request returns an authentication error, the key was copied with the shortened `…` or an extra space; paste the full key from when you created it.
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="Do I need to understand FHIR first?">
+    No. You can create and read records with plain JSON. FHIR simply gives each kind of record (a patient, a visit, a measurement) a standard shape, which the guides explain one at a time.
+  </Accordion>
+  <Accordion title="Can I lose my key?">
+    You cannot recover it, but you can replace it: revoke it on **Access** and create a new one. Nothing else is lost.
+  </Accordion>
+  <Accordion title="Is this costing me anything?">
+    No. Test keys are free. On the Free plan you get 1,000 requests a month; the **Usage** page shows how many you have used.
+  </Accordion>
+  <Accordion title="When do I switch to a live key?">
+    When your code works against the sandbox and you are ready for real patients. Live keys need a paid plan and should live only on your own server. Until then keep everything on test keys.
+  </Accordion>
+  <Accordion title="Where do I get help?">
+    The help menu (question-mark icon) has **Documentation**, **System status** and **Contact support**.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| Authentication error on the first request | Check the `x-api-key` header holds your full, unshortened key, with no spaces. |
+| You cannot find **Create test key** | Only owners and admins see it. Ask one, or check you are on **Access** in the right project. |
+| **That key was not accepted** in the Data browser | Use an active test key with **Read** (and **Write** to save records). |
+| **Sandbox coming soon** | The practice environment is not answering right now. Retry later. |
+| "Test keys are limited to 60 requests per minute" | Your organization's test traffic is too fast. Wait a minute. |
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Add a webhook" icon="bell" href="/dashboard/projects/webhooks">
+    Get a signed message at your server whenever a record changes.
+  </Card>
+  <Card title="Understand your keys" icon="key" href="/dashboard/projects/access-keys">
+    Scopes, revoking, and test versus live.
+  </Card>
+  <Card title="Explore the API" icon="book" href="/dashboard/data/api-reference">
+    Copy-ready requests for every resource.
+  </Card>
+  <Card title="Learn the words" icon="book-open" href="/dashboard/glossary">
+    A plain-language glossary of dashboard terms.
+  </Card>
+</CardGroup>
+
+## Related
+
+- [Dashboard overview](/dashboard/overview)
+- [Quickstart](/quickstart)
+- [Authentication](/authentication)

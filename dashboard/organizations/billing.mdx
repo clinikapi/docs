@@ -1,0 +1,147 @@
+---
+title: "Billing"
+description: "See your plan, change it, read your invoices, and manage cards, billing address, tax IDs and the billing email."
+---
+
+# Billing
+
+## What this is for
+
+The **Billing** page is where an organization's money lives. It shows which plan you are on and when it renews, lets you move to a bigger or smaller plan, lists your invoices (each with a PDF), and holds the card and the details printed on your invoices. It is the page to open when you want to upgrade, when a payment has failed, or when your finance team asks for an invoice with a tax number on it.
+
+Billing belongs to the **organization**, not to a single project: the plan covers every project inside it.
+
+## Before you start
+
+- Open **Organization settings** at the bottom of the sidebar and choose **Billing**.
+- What you can do depends on your role:
+
+| | Member | Admin | Owner |
+|---|---|---|---|
+| Read the plan, invoices, cards and details | Yes | Yes | Yes |
+| Ask for an upgrade (**Request upgrade**) | Yes | Not needed | Not needed |
+| Upgrade the plan, change billing period | No | Yes | Yes |
+| Downgrade or cancel (at the end of the period), or undo that | No | No | Yes |
+| Add, remove or change cards, address, tax IDs, billing email | No | Yes | Yes |
+
+Members see the same page without the buttons. Where a control is missing the page says who can use it, for example "Only an owner or admin can change payment methods."
+
+## Your plan
+
+<Steps>
+  <Step title="Read the Subscription plan card">
+    It shows a badge with your plan (**Free**, **Pro**, **Team** or **Enterprise**), the **Plan** line (with "billed monthly" or "billed yearly" on a paid plan) and, on a paid plan, **Renews on** a date. If the plan is set to end, it says **Ends on** instead.
+  </Step>
+  <Step title="Select Change plan">
+    A panel titled **Change plan** opens: "The plan applies to the whole organization and every project in it." Choose **Monthly** or **Yearly (Save 20%)** under **Billing period**, then pick a plan card: **Free**, **Pro**, **Team** or **Enterprise**. Your current one is tagged **Current plan**. A card that cannot be bought right now says "Not available to buy right now."
+  </Step>
+  <Step title="Read what will happen">
+    A section below the cards spells out the result before you confirm it, so you are never surprised. It includes the timing, the amount charged today (if any), and a **What stops** list when you move down.
+  </Step>
+  <Step title="Confirm">
+    The main button names the change: **Upgrade to** a plan, **Downgrade to** a plan **at period end**, **Switch at renewal**, or **Cancel at period end**. Select **Close** to leave without changing anything.
+  </Step>
+</Steps>
+
+### How each change works
+
+| Change | When it happens | What you pay |
+|---|---|---|
+| **Upgrade** (for example Free to Pro, or Pro to Team) | Now. "Takes effect now. You are charged the prorated difference today." | The panel shows "You'll be charged" an amount "today, plus tax where it applies", and which card it goes on. |
+| **Downgrade** (Team to Pro) | At the end of the current period. "Until then you keep everything in your current plan." | Nothing now. Owners only. |
+| **Cancel** (to Free) | At the end of the current period. "Until then you keep everything in your current plan, and nothing is refunded." | Nothing now. Owners only. |
+| **Switch the billing period** (monthly to yearly or back) | At your next renewal: "Switches at your next renewal on" the date. | Nothing now. |
+| **Enterprise** | Set up with our team: choose it and select **Contact sales**. | By agreement. |
+
+If you move to your **first paid plan** from Free, the panel also asks for a card, billing address and optional tax ID, then charges it (a bank check may pop up). When it works the page says "Payment received. Your plan is being activated." and, for a moment, a notice reads "Payment received. Your Pro plan is being activated. This page checks every few seconds." The **Change plan** button is disabled while that happens.
+
+**Scheduled changes.** After a downgrade or cancel is booked, the card shows a notice: "Moving to Pro (monthly) on" the date, or "Your plan ends on" the date, adding "Until then everything keeps working. Live keys are revoked and the organization moves to Free after that; nothing is deleted." The owner sees a **Keep my current plan** button to undo it (a message confirms "Your plan will continue").
+
+**If you are a member.** The card shows **Request upgrade** instead. Select it and the button turns into **Request recorded**, with the note "Only an owner or admin can change the plan. You can ask once a day; the request is recorded for them." (An owner or admin who tries it is told "You can change the plan yourself.")
+
+## The rest of the page
+
+From top to bottom:
+
+- **Requests this month**: how many requests you have used out of your plan's allowance, a bar, and "Resets in" a number of days. A line underneath splits requests into live and test.
+- **Compute & add-ons**: a table of your projects with each one's size and what it costs per month. A first project is shown as **Included**. A link, **Compute and Disk**, takes you to [Compute and disk](/dashboard/projects/compute-and-disk). On Free it explains that Free projects use a shared sandbox. "Dedicated projects are rolling out; until a project moves to its own server nothing is billed for its compute."
+- **Upcoming invoice**: appears when there is one coming. It shows the estimated date, each line and a **Total**.
+- **Invoices**: a table with **Date**, **Number**, **Amount**, **Status** (**Paid**, **Unpaid**, **Void**, **Uncollectible** or **Draft**) and a **PDF** link that opens the invoice in a new tab. Before your first payment it shows **No invoices yet**: "Invoices appear here after your first payment, with a PDF for each."
+- **Payment methods**: your cards. See below.
+- **Billing address & tax ID**: see below.
+- **Billing email**: where invoices and payment notices are sent.
+
+If the payment provider cannot be reached, a notice appears at the top: "Billing details are temporarily unavailable. Your plan and your projects are not affected. Please try again in a moment."
+
+## Cards, address, tax IDs and email
+
+<Steps>
+  <Step title="Add a card">
+    In **Payment methods** select **Add card**. A panel titled **Add a card** says "Card details go straight to our payment provider. We never see them." Fill it in and select **Add card**. The message **Card added** confirms it.
+  </Step>
+  <Step title="Make a card the default or remove it">
+    Beside a card (shown as, for example, "Visa ending 4242", with the **Default** or **Expired** tag and "Expires 04/27") select **Make default** or **Remove**. Removing opens **Remove card**: "You can add it again later. If it pays for your plan, add another card first." You cannot remove the card that pays for your plan or the default card; the page tells you what to do first.
+  </Step>
+  <Step title="Set the billing address">
+    In **Billing address & tax ID** select **Add address** (or **Edit address**), complete the address in the panel **Billing address** ("Used for tax and shown on your invoices.") and select **Save address**. Tax is worked out from this address.
+  </Step>
+  <Step title="Add a tax ID">
+    Under **Tax IDs** select **Add tax ID**. In the panel **Add a tax ID** ("It appears on invoices from now on.") choose the **Type** (**US EIN**, **EU VAT**, **UK VAT**, **Canada BN**, **Australia ABN** or **India GST**), type the **Tax ID** and select **Add tax ID**. Tax IDs are shown masked, with only the last four characters. **Remove** opens **Remove tax ID**: "Remove this tax ID from your invoices going forward? Invoices already issued are not changed."
+  </Step>
+  <Step title="Set the billing email">
+    In **Billing email** select **Add email** (or **Change email**), type the **Email** and select **Save email**. Invoices and payment notices go there.
+  </Step>
+</Steps>
+
+## If an invoice is overdue
+
+When a payment fails and an invoice stays unpaid, a red banner appears at the top of every page in the organization: "Your last payment didn't go through." It adds "Pay now to keep your projects running. New projects can't be created until it's paid." Nothing else changes: everything that exists keeps working and nothing is deleted.
+
+- Owners and admins see a **Pay now** link in the banner. It opens **Billing** at **Payment methods**, where a red box says "You have an unpaid invoice. Pay it with your default card, or add a new card first." Select **Pay now** there; **Payment received. Thank you.** confirms it.
+- Members see "Ask an owner or admin to pay it."
+- While an invoice is overdue you cannot create a project: "Your organization has an unpaid invoice. Pay it in Billing to create new projects."
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="Will I be charged straight away when I upgrade?">
+    Yes, for the difference. Upgrades apply immediately and you pay the prorated amount for the rest of the current period. The panel shows the exact figure before you confirm.
+  </Accordion>
+  <Accordion title="Can I change my mind about a downgrade or cancellation?">
+    Yes, until it takes effect. An owner selects **Keep my current plan** on the plan card.
+  </Accordion>
+  <Accordion title="What happens to my data if I cancel?">
+    The panel tells you exactly what stops under **What stops**: for example live keys are revoked and projects beyond the first are paused. The page states that nothing is deleted.
+  </Accordion>
+  <Accordion title="Where do I get a receipt for my accountant?">
+    In **Invoices**, select **PDF** on the row. Add your company's tax ID and billing address first so they appear on future invoices; issued invoices are not changed.
+  </Accordion>
+  <Accordion title="I am a member and need a higher plan.">
+    Select **Request upgrade**. The page records your request and shows **Request recorded**. You can ask once a day. It is also worth telling an owner or admin directly.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| "Your plan is paid by this card. Add another card before removing it." | Add a second card first, make it the default, then remove the old one. |
+| "This is the default card. Make another card the default first." | Choose **Make default** on a different card. |
+| "The payment was not accepted. Update your card and try again." | Add a new card or fix the current one, then select **Pay now** again. |
+| "Could not confirm payment. Please try again or use a different card." | Try another card, or complete your bank's check. |
+| "Enter a valid email address." | Fix the **Email** box. |
+| "Enter a tax ID of the chosen type." / "That tax ID was not accepted. Check the type and the number." | Check the **Type** and the number format. |
+| "Only an owner of the organization can make this change." (in the panel) | Ask an owner to downgrade or cancel. |
+| "This organization already has a subscription. Change its plan instead." | Reload the page and use **Change plan**. |
+| "There is no plan change to undo." | The change has already happened or was undone. Reload. |
+| "That change is not available here." | Pick another plan, or contact sales for Enterprise. |
+| "You can change the plan yourself." | You are an owner or admin: use **Change plan**. |
+
+## Related
+
+- [Create an organization](/dashboard/organizations/create-an-organization)
+- [Create a project](/dashboard/projects/create-a-project)
+- [Compute and disk](/dashboard/projects/compute-and-disk)
+- [Members](/dashboard/organizations/members)
+- [Usage](/dashboard/data/usage)
+- [Glossary](/dashboard/glossary)

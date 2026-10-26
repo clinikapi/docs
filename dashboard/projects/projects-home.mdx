@@ -1,0 +1,106 @@
+---
+title: "Projects"
+description: "The list of projects in your organization, what each status means, and how deleted or suspended projects behave."
+---
+
+# Projects
+
+## What this is for
+
+A **project** is a self-contained workspace for one application or environment. Its API keys, and the practice records those keys create, belong to that project and are invisible to your other projects. (Webhooks, Logs, Realtime and Usage are opened from inside a project, but they show activity for the whole organization; each of those pages says so.) The **Projects** page is the home of an organization: one card for each project, so you can find the right one quickly and see at a glance whether it is healthy.
+
+A good rule of thumb: make one project per application you are building, or one for development and one for production, so a leaked development key can never touch production.
+
+## Before you start
+
+- Any member can see the list.
+- Only organization **owners and admins** see **New project**. See [Create a project](/dashboard/projects/create-a-project).
+- Only an **owner** can delete or restore a project.
+
+## Find and open a project
+
+<Steps>
+  <Step title="Open the list">
+    Select **Projects** at the top of the sidebar, or choose **All projects** from the project switcher in the top bar. The page is titled **Projects**, followed by "Projects in (your organization)."
+  </Step>
+  <Step title="Search if you have many">
+    Type in **Search for a project**. It matches part of the name or the project reference.
+  </Step>
+  <Step title="Open it">
+    Select a card. You land on the project's [Overview](/dashboard/projects/project-overview).
+  </Step>
+</Steps>
+
+## What you'll see
+
+Each card shows:
+
+| Item | Meaning |
+|---|---|
+| Name and reference | The project name and its 20-letter **ref**, a permanent code that never changes even if you rename it. |
+| Plan badge | Your organization's plan, for example **Free**. |
+| **Compute** | **Small**, **Medium**, **Large** or **XL**: the size of server behind the project. See [Compute and Disk](/dashboard/projects/compute-and-disk). |
+| **Region** | Where the project's data lives. Shown as **United States (us-east-1)**. |
+| **Data** | **Sandbox (test keys)** for the shared practice environment, or **Dedicated** for a project with its own private store. |
+| Status | A coloured dot and label, listed below. |
+
+**Empty states:** with no projects the page reads **No projects yet**: "Every key, webhook and record belongs to a project." (with a **Create a project** button for owners and admins). If your search matches nothing: **No projects match your search**: "Try a different name or reference."
+
+### Status labels
+
+| Status | Meaning |
+|---|---|
+| **Healthy** | The project is active and the API is answering. |
+| **Sandbox unavailable** | The project is active, but the practice environment did not answer a health check just now. Usually brief; see **System status** in the help menu. |
+| **Provisioning** | The project is still being set up. |
+| **Resizing** | Its server size is being changed. |
+| **Paused** | The project is paused. |
+| **Suspended (billing stopped)** | Billing for the organization stopped. Every key answers with a payment-required error until the open invoice is paid. Nothing is deleted. |
+| **Deleted (restorable)** | The project was deleted and can still be restored. |
+
+## Deleted projects
+
+Only an owner can delete a project (from [Project settings](/dashboard/projects/project-settings)). Deleting revokes all of its keys at once. Its sandbox data is kept for **7 days**. Deleted projects no longer appear in the list or the switcher.
+
+If someone opens a deleted project's address, instead of the page they see "(name) was deleted". It explains that the keys were revoked, that the data is kept for 7 days, and how many days are left. Owners get a **Restore project** button (it reads **Restoring…** briefly, then **Project restored**). Restoring does **not** bring the revoked keys back; create new ones on [Access](/dashboard/projects/access-keys). Other roles see **Only an owner of the organization can restore it.** After 7 days the page says "The 7-day restore window has closed, so this project cannot be restored." An **All projects** button leads back to the list.
+
+## Suspended projects
+
+A suspended project shows a red banner across the top: **Billing for this project has stopped.** "Every key answers with a payment-required error until the open invoice is paid. Nothing is deleted." Owners and admins get an **Open billing** link; other members are told to ask an owner or admin to open billing. Creating new keys is refused while suspended.
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="What is the Default project?">
+    Each organization starts with one project, named **Default project**. You can use it as it is, or rename it in [Project settings](/dashboard/projects/project-settings).
+  </Accordion>
+  <Accordion title="Should I create one project or several?">
+    Several is safer: for example `my-app-dev` and `my-app-prod`. Keys never cross between projects, so a mistake in development cannot reach production.
+  </Accordion>
+  <Accordion title="Why does my project say Sandbox unavailable?">
+    The status does not come from your own settings. The dashboard checks that the practice environment is answering right now and says so honestly when it is not. Wait a minute and refresh.
+  </Accordion>
+  <Accordion title="Can I move a key to another project?">
+    No. Keys belong to the project they were created in. Create a new key in the other project.
+  </Accordion>
+  <Accordion title="I deleted a project by accident. Can I get it back?">
+    Within 7 days, yes, if you are an owner. See "Deleted projects" above. The revoked keys stay revoked.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| A "not found" page for a project address | The project does not exist, was permanently removed, or belongs to another organization. Use **Projects** to find yours. |
+| **Sandbox unavailable** | Retry shortly. If it persists, check **System status** from the help menu. |
+| **Billing for this project has stopped.** | Ask an owner or admin to open billing and settle the invoice. |
+| **Only an owner of the organization can restore it.** | Ask an owner to restore the project within 7 days. |
+| "The 7-day restore window has closed…" | The project can no longer be restored. Create a new one. |
+
+## Related
+
+- [Project overview](/dashboard/projects/project-overview)
+- [Project settings](/dashboard/projects/project-settings)
+- [Members](/dashboard/organizations/members)
+- [Glossary](/dashboard/glossary)

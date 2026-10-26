@@ -1,0 +1,78 @@
+---
+title: "FHIR server"
+description: "See which resource types, operations and search parameters your project's API supports."
+---
+
+# FHIR server
+
+## What this is for
+
+ClinikAPI stores healthcare records in a standard format called **FHIR** (pronounced "fire"). In FHIR, every kind of record is a **resource**: a Patient, an Appointment, a Medication and so on. The **FHIR server** page is a read-only menu of everything your project's API can handle: each resource, the actions it supports (read, create, search...) and the search filters you can use. It changes nothing; it just answers "can I do this with the API?"
+
+## Before you start
+
+- Any member can open it. No key is needed to view it.
+- You do not need to know FHIR to use ClinikAPI, but this page is easier if you know two words: a **resource** is a type of record, and a **search parameter** is a field you can filter by (such as a patient's birth date).
+
+## Read the page
+
+<Steps>
+  <Step title="Open the page">
+    Choose **FHIR server** in the sidebar. The page is titled **FHIR server**: "What your project’s FHIR API supports."
+  </Step>
+  <Step title="Find a resource">
+    The card **Resource types and search parameters** lists one row per resource. Scan the **Resource** column, for example Patient.
+  </Step>
+  <Step title="Read its operations">
+    The **Operations** column shows badges for what you can do, such as read, create, update, delete and search.
+  </Step>
+  <Step title="Read its search parameters">
+    **Search parameters** lists the fields you can filter by. A dash means none are offered.
+  </Step>
+  <Step title="Go deeper">
+    Select **Read the docs** to open the API reference for details.
+  </Step>
+</Steps>
+
+## What you'll see
+
+- The card says "Read from the live capability statement (FHIR (version))." A **capability statement** is the API's own published list of what it supports, so this page always reflects reality.
+- If it cannot be loaded: **Not reachable right now**: "The capability list could not be loaded. Try again shortly."
+- Two cards, **Backups and point-in-time recovery** ("Restore your project to a chosen moment.") and **Failover standby** ("A standby copy that takes over if your server fails."). They describe features rather than controls. On the Free plan each says "Upgrade to Pro for a dedicated server." with a **See plans** link. On paid plans each says "Arrives with dedicated projects." For their prices see [Compute and Disk](/dashboard/projects/compute-and-disk).
+
+Your code can read the same list at `GET /v1/metadata`, which needs no key.
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="What is FHIR?">
+    A widely used international standard for exchanging health records. It means your data has a predictable shape that other health systems understand.
+  </Accordion>
+  <Accordion title="What is the difference between this page and the API reference page?">
+    This page lists *what the API supports*. The [API reference](/dashboard/data/api-reference) page gives *copy-ready requests* for each resource.
+  </Accordion>
+  <Accordion title="What is a standby, and what is point-in-time recovery?">
+    A standby is a second copy of your server that takes over if the first fails. Point-in-time recovery lets you restore the project to a chosen moment. Both are described in [Compute and Disk](/dashboard/projects/compute-and-disk). Here they are information, not buttons.
+  </Accordion>
+  <Accordion title="Why does it say 'Arrives with dedicated projects'?">
+    These features belong to projects that have their own private server. The page tells you honestly that they are not switched on from this screen yet.
+  </Accordion>
+  <Accordion title="Can I add support for a resource that is missing?">
+    Not from here. The page only reports what the API supports. Contact support from the help menu to ask.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| **Not reachable right now** | Reload in a minute. If it persists, check **System status** in the help menu. |
+| A resource you expect is missing | It is not supported yet. See the [API Reference](/api-reference/overview) for the supported list. |
+| **Upgrade to Pro for a dedicated server** | You are on Free. See plans to upgrade. |
+
+## Related
+
+- [API reference (in the dashboard)](/dashboard/data/api-reference)
+- [Compute and Disk](/dashboard/projects/compute-and-disk)
+- [API Reference](/api-reference/overview)
+- [Glossary](/dashboard/glossary)

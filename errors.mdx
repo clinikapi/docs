@@ -33,10 +33,12 @@ ClinikAPI uses standard HTTP status codes and returns structured error responses
 | `403` | Forbidden — key doesn't have required scope |
 | `404` | Not Found — resource doesn't exist or belongs to another tenant |
 | `409` | Conflict — resource version conflict |
+| `402` | Payment Required — billing for the project this key belongs to has stopped |
 | `413` | Payload Too Large — request body is larger than 5 MB |
 | `422` | Validation Error — request body failed validation |
 | `429` | Rate Limited — too many requests for your plan |
 | `500` | Internal Error — something went wrong on our end |
+| `503` | Service Unavailable — the project is paused or not ready yet, or the store is temporarily unavailable |
 
 ## Error Codes
 
@@ -54,9 +56,29 @@ ClinikAPI uses standard HTTP status codes and returns structured error responses
 | `METHOD_OVERRIDE_REJECTED` | Request carried an HTTP method-override header |
 | `SANDBOX_QUOTA_EXCEEDED` | Monthly sandbox (test-key) allowance used up |
 | `RATE_LIMITED` | Plan request limit exceeded |
+| `PAYMENT_REQUIRED` | Billing for this project has stopped (`402`). Settle billing in the dashboard; retrying does not help |
+| `PROJECT_PAUSED` | This project is paused (`503`). Resume it in the dashboard; retrying does not help |
+| `PROJECT_NOT_READY` | This project is not ready yet (`503`), for example while it is being set up or resized. Retry shortly |
 | `NOT_FOUND` | Resource not found |
 | `TENANT_TAG_INTEGRITY` | A FHIR PATCH could not be applied safely (`409`); resend it without touching `meta` |
 | `INTERNAL_ERROR` | Unexpected server error |
+
+## Project Status
+
+Every key belongs to a project. A project that cannot serve requests refuses its keys before anything is counted: the request does not use any of your quota or rate limit. The answer is an OperationOutcome with a `code` and a `requestId`:
+
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [{ "severity": "error", "code": "forbidden", "diagnostics": "Billing for this project has stopped" }],
+  "error": "Payment Required",
+  "message": "Billing for this project has stopped",
+  "code": "PAYMENT_REQUIRED",
+  "requestId": "req_..."
+}
+```
+
+A project that is being deleted answers like an unknown key (`401 INVALID_KEY`).
 
 ## Request Size Limit
 
@@ -133,6 +155,10 @@ const clinik = new Clinik(process.env.CLINIKAPI_SECRET_KEY!, {
 ```
 
 ## Rate Limits
+
+You can see your request counts, errors and latency in the dashboard under [Usage](/dashboard/data/usage), and individual requests, with their request IDs, under [Logs](/dashboard/data/logs).
+
+Test keys have an extra limit of 60 requests per minute per organization; see [Sandbox rules](/dashboard/data/sandbox-rules).
 
 The rate limit is a **per-minute** ceiling on how fast you can call the API. The
 window is 60 seconds and rolling — exhaust it and the next minute starts fresh.

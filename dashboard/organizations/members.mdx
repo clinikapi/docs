@@ -1,0 +1,89 @@
+---
+title: "Members"
+description: "See who belongs to your organization, what role each person holds, and what each role can do."
+---
+
+# Members
+
+## What this is for
+
+An organization is usually used by more than one person: a developer, a manager, maybe a contractor. The **Members** list shows everyone who belongs to yours and the **role** each person holds. A role decides what that person is allowed to do: for example, only owners and admins can create API keys. This page also explains each role in plain words so you know what to expect.
+
+## Before you start
+
+- Every member can open the list.
+- To add someone, see [Invitations and roles](/dashboard/organizations/invitations-and-roles). This page covers reading the list and understanding roles.
+
+## See your members
+
+<Steps>
+  <Step title="Open Organization settings">
+    Select **Organization settings** at the bottom of the sidebar.
+  </Step>
+  <Step title="Select Members">
+    Choose **Members** in the left menu.
+  </Step>
+  <Step title="Read the table">
+    The card is headed **Members** and a line below counts them, for example "3 of 5 members on the Free plan". The "of 5" part appears only when your plan has a member limit.
+  </Step>
+</Steps>
+
+## What you'll see
+
+A table named **Members** with three columns:
+
+| Column | What it shows |
+|---|---|
+| **Member** | The person's email address, or **You** on your own row. A dash means no email is on record for that row. |
+| **Role** | A small badge: for example Owner, Admin or Member. |
+| **Joined** | The date the person accepted, or was added. |
+
+If nobody has joined yet, the card shows **No members** with the line "Members appear here once they join."
+
+## What each role can do
+
+| What | Member | Admin | Owner |
+|---|---|---|---|
+| Browse test data, run sandbox exports, watch Realtime | Yes | Yes | Yes |
+| Create and revoke API keys | No | Yes | Yes |
+| Add and delete webhooks | No | Yes | Yes |
+| Rename a project | No | Yes | Yes |
+| Create a project | No | Yes | Yes |
+| Delete or restore a project | No | No | Yes |
+| Change **General** organization settings | No | No | Yes |
+
+Controls you are not allowed to use are hidden or disabled, and the page tells you who can. For example you may see **Only an organization owner or admin can create or revoke keys.**
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="What is the difference between owner, admin and member?">
+    The **owner** created the organization and can do everything, including deleting projects and renaming the organization. An **admin** manages day-to-day setup: keys, webhooks and projects. A **member** can look at data and watch activity but cannot change how things are set up.
+  </Accordion>
+  <Accordion title="Why do I see another person's email but not their name?">
+    The list shows the email each person signed up or was invited with. Names from the [Profile](/dashboard/account-access/profile) page are not shown in this table.
+  </Accordion>
+  <Accordion title="How do I add a teammate?">
+    Owners and admins use **Invite member** on this page to create a link and send it to the person. The steps are in [Invitations and roles](/dashboard/organizations/invitations-and-roles).
+  </Accordion>
+  <Accordion title="What does 'of 5 members' mean?">
+    Your plan allows up to that many members. If there is no "of" number, your plan does not set a limit.
+  </Accordion>
+  <Accordion title="Why can I not do something a teammate can?">
+    Roles are checked every time, not just by hiding buttons. Ask an owner or admin to do it, or to change your role.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| **No members** | Nobody has joined yet; the list fills in as people do. |
+| "Only an organization owner or admin can create or revoke keys." (on Access) | Your role is Member. Ask an admin or owner. |
+| "That organization could not be found, or you do not have access." | You are not a member of this organization. Switch to one of yours. |
+
+## Related
+
+- [Organization settings](/dashboard/organizations/organization-settings)
+- [Access: API keys](/dashboard/projects/access-keys)
+- [Profile](/dashboard/account-access/profile)

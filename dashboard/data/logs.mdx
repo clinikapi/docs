@@ -1,0 +1,91 @@
+---
+title: "Logs"
+description: "Every request made with your keys: method, path, status and timing, plus webhook deliveries and bulk jobs. Bodies are never logged."
+---
+
+# Logs
+
+## What this is for
+
+When something does not work, the first question is "did the request reach the API, and what did it answer?" **Logs** is the record of every request made with your keys, so you can answer that without guessing. Each entry says when the request happened, what it asked for, what status came back and how long it took. It never stores the content you sent or received, so there is no patient information in the log.
+
+<Note>
+This page is opened from inside a project, but it shows requests made with every key for the **whole organization**, not just the project you are in.
+</Note>
+
+## Before you start
+
+- Any member can read logs.
+- Make at least one request first (see [Your first 10 minutes](/dashboard/getting-started)); logs start empty.
+- Handy to know: a **status code** is the three-digit answer from the API. **2xx** means success, **4xx** means the request was wrong (for example a bad key or a missing field), **5xx** means the API had a problem.
+
+## Find a request
+
+<Steps>
+  <Step title="Open Logs">
+    Choose **Logs** in the sidebar. The page is titled **Logs**: "Every request made with your keys: method, path, status and timing. Bodies are never logged."
+  </Step>
+  <Step title="Choose a tab">
+    The tabs are **API requests** (the default), **Webhook deliveries** and **Bulk jobs**.
+  </Step>
+  <Step title="Narrow the list">
+    Use the filters above the table: **Time range** (**Last hour**, **Last 24 hours**, **Last 7 days**, **Last 30 days**), **Status** (**All**, **2xx**, **4xx**, **5xx**), **Method** (**All**, GET, POST, PUT, PATCH, DELETE) and **Search path** (for example `/v1/patients`, then **Search**). The time range and status filters do not apply to Bulk jobs; method and path search apply to API requests only.
+  </Step>
+  <Step title="Open an entry">
+    Select a path (or event name) to open a panel with the details. Select **Previous** or **Next** at the bottom to move between pages of 25.
+  </Step>
+</Steps>
+
+## What you'll see
+
+| Tab | Columns |
+|---|---|
+| **API requests** | **Time (UTC)**, **Method**, **Path**, **Status**, **Latency**, **Key** |
+| **Webhook deliveries** | **Time (UTC)**, **Event**, **Destination**, **Status**, **Attempt**, **Latency** |
+| **Bulk jobs** | **Started (UTC)**, **Type**, **Resources**, **Status**, **Records**, **Errors** |
+
+Status codes are coloured: green for 2xx, amber for 4xx, red for 5xx. **Key** shows the key's name, **Revoked key** if it has since been revoked, or a dash if the request used none. A footer reads "(n) entries · page 1 of 3".
+
+**Entry details.** The panel says "Metadata only. Request and response bodies are never stored in the log." For an API request it lists the time, path, status, latency, key, environment, resource type, action, error code and **Request ID**. Quote the Request ID when you contact support.
+
+**Filtered to one key.** On [Access](/dashboard/projects/access-keys), the **View** link beside a key opens Logs for that key only. A line reads "Showing requests made with (key name)" with a **Clear** link.
+
+**Empty state:** **No entries**: "Nothing matches these filters. Widen the time range or clear a filter."
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="Can I see what I sent in the request?">
+    No. Bodies are never stored. This keeps patient information out of the log. Use the **Request ID** and the error code to explain what happened.
+  </Accordion>
+  <Accordion title="What does a 401 or 403 mean?">
+    The key was missing, wrong, revoked, or did not have the needed scope (for example a read-only key trying to create a record). Check the key on [Access](/dashboard/projects/access-keys).
+  </Accordion>
+  <Accordion title="What does a 429 mean?">
+    You hit a rate limit. Test keys share 60 requests per minute across the organization. See [Sandbox rules](/dashboard/data/sandbox-rules).
+  </Accordion>
+  <Accordion title="What is a Bulk job?">
+    A request to import or export many records at once. Its tab shows how many records were processed and how many had errors.
+  </Accordion>
+  <Accordion title="Why is the time not in my time zone?">
+    All times are in UTC (shown as UTC in the column heading) so that everyone on a team sees the same thing.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| **No entries** | Widen **Time range**, set **Status** and **Method** to **All**, and check for a key filter ("Showing requests made with …": select **Clear**). |
+| A request you just made is missing | Refresh the page and check the filters. Make sure you used a key from this project. |
+| Many 401 entries | A key is wrong or revoked. Create a fresh one. |
+| Many 5xx entries | The API had a problem. Check **System status** in the help menu. |
+| A webhook delivery with a 4xx/5xx status | Your server rejected it. Fix the endpoint; the delivery is retried. |
+
+## Related
+
+- [Errors](/errors)
+- [Access: API keys](/dashboard/projects/access-keys)
+- [Webhooks](/dashboard/projects/webhooks)
+- [Realtime](/dashboard/data/realtime)
+- [Glossary](/dashboard/glossary)

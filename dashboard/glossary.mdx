@@ -1,0 +1,63 @@
+---
+title: "Glossary"
+description: "Plain-language definitions of the words you meet in the dashboard."
+---
+
+# Glossary
+
+## What this is for
+
+The dashboard uses a handful of terms that are obvious to experienced developers and puzzling to everyone else. Each is explained once here, in everyday language, with a link to the page where you use it. Entries are in alphabetical order.
+
+## How to use this page
+
+Press <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘F</kbd> on a Mac) and type the word you do not understand.
+
+## Terms
+
+**Compute size.** How powerful your project's server is: **Small**, **Medium**, **Large** or **XL**. A bigger size can do more at once and costs more. Free projects share a sandbox and have no size to choose. See [Compute and Disk](/dashboard/projects/compute-and-disk).
+
+**Live key.** An API key starting with `clk_live_` that works against real production data. It needs a paid plan and should live only on your own server. Compare *test key*. See [Access: API keys](/dashboard/projects/access-keys).
+
+**Organization.** Your company or team inside ClinikAPI. It owns the members, the plan and the billing, and it holds one or more projects. See [The console layout](/dashboard/account-access/console-layout).
+
+**Point-in-time recovery.** An optional add-on that keeps continuous backups so you can restore a project to any chosen moment, instead of only to the last nightly backup. See [Compute and Disk](/dashboard/projects/compute-and-disk).
+
+**Project.** A workspace inside an organization for one application or environment. Its API keys and the practice records they create are separate from your other projects. Webhooks, Logs, Realtime and Usage are opened from a project but show the whole organization. See [Projects](/dashboard/projects/projects-home).
+
+**Ref (project reference).** A permanent 20-letter code that identifies a project, shown under its name in the project switcher and in Project settings. It never changes when you rename the project. See [Project settings](/dashboard/projects/project-settings).
+
+**Resource.** FHIR's word for one kind of record, such as a Patient, an Appointment or an Observation (a measurement). Each resource type has its own fields. See [Data browser](/dashboard/data/data-browser) and [FHIR server](/dashboard/data/fhir-server).
+
+**Sandbox.** The free practice environment that test keys talk to. It behaves like the real API but is separate from production, meant for invented data only, and cleaned up after 90 days without updates. See [Sandbox rules](/dashboard/data/sandbox-rules).
+
+**Scope.** What a key is allowed to do. **Read** lets it fetch and search records; **Write** lets it create, update and delete them (but not read them back). Scopes are fixed when the key is created. See [Access: API keys](/dashboard/projects/access-keys).
+
+**Signing secret.** A password, starting with `whsec_`, used to stamp each webhook message so your server can prove it really came from ClinikAPI. It is shown once when you add the webhook. See [Webhooks](/dashboard/projects/webhooks).
+
+**Standby (failover standby).** A second copy of your project's server kept ready; if the main one fails, the standby takes over. Included on Team, optional on Pro. See [Compute and Disk](/dashboard/projects/compute-and-disk).
+
+**Synthetic data.** Invented data that looks real but describes no real person. It is the only kind allowed in the sandbox. See [Sandbox rules](/dashboard/data/sandbox-rules).
+
+**Test key.** An API key starting with `clk_test_` that works only against the sandbox. It is free on every plan. Compare *live key*. See [Access: API keys](/dashboard/projects/access-keys).
+
+**Two-factor sign-in.** A second step after your password: a 6-digit code from an authenticator app on your phone. Even if someone learns your password they cannot sign in without your phone. See [Security](/dashboard/account-access/security).
+
+**Webhook.** A message that ClinikAPI sends to a web address on your server when something happens, such as a patient being created, so you do not have to keep asking. See [Webhooks](/dashboard/projects/webhooks).
+
+## Other words you may meet
+
+**Endpoint.** The web address on your server that receives webhook messages.
+
+**FHIR.** The international standard for exchanging health records that ClinikAPI uses. It gives every kind of record a predictable shape.
+
+**NDJSON.** A text file where each line is one complete record. This is what [Exports](/dashboard/data/exports) produce.
+
+**Request ID.** A unique code on every API call. Quote it to support, and find it in [Logs](/dashboard/data/logs).
+
+**Status code.** The three-digit answer to a request: 2xx success, 4xx a problem with the request, 5xx a problem on our side.
+
+## Related
+
+- [Your first 10 minutes](/dashboard/getting-started)
+- [Dashboard overview](/dashboard/overview)

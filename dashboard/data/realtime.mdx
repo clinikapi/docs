@@ -1,0 +1,97 @@
+---
+title: "Realtime"
+description: "A live feed of changes made through your keys, and what your webhooks did about each one."
+---
+
+# Realtime
+
+## What this is for
+
+When your app creates, updates or deletes a record, you often want to confirm it really happened, and that your webhook was told. **Realtime** is a live feed of exactly that: each successful change made through your keys in the last hour, with the webhook deliveries that followed. It is the quickest way to check that your integration and your webhook endpoint are working, without digging through logs.
+
+<Note>
+This page is opened from inside a project, but it shows changes made through every key for the **whole organization**, not just the project you are in.
+</Note>
+
+## Before you start
+
+- Any member can open Realtime.
+- You need some activity: make a write request (create, update or delete) with any of your keys. Reads do not appear here.
+- To see webhook results you need a webhook; see [Webhooks](/dashboard/projects/webhooks) (Pro plan and above).
+
+## Watch changes arrive
+
+<Steps>
+  <Step title="Open Realtime">
+    Choose **Realtime** in the sidebar. The page is titled **Realtime**: "A live view of changes made through your keys and what your webhooks did about them."
+  </Step>
+  <Step title="Make a change">
+    In another window, create a record with the API (for example a patient with a test key). See [Your first 10 minutes](/dashboard/getting-started).
+  </Step>
+  <Step title="Wait for the refresh">
+    The page checks for new events every 15 seconds. The status line reads **Live: refreshing every 15 seconds**, followed by when it was last updated.
+  </Step>
+  <Step title="Open an event">
+    Select the event name in the **Event** column (for example `patient.created`). A panel shows the details and any webhook deliveries.
+  </Step>
+</Steps>
+
+## Controls
+
+- **Event type** filters the list: **All events** or one kind such as `patient.created`.
+- **Pause** stops the refreshing so the list holds still while you read it; the button then reads **Resume**. The status line says **Paused**.
+- The feed also pauses on its own when the browser tab is hidden: **Paused while this tab is hidden**. It resumes when you return.
+
+## What you'll see
+
+A table, newest first, with these columns:
+
+| Column | Meaning |
+|---|---|
+| **Time (UTC)** | When it happened, in UTC. |
+| **Event** | The kind of change, named like `patient.created`, `patient.updated`, `patient.deleted`. |
+| **Resource** | The record type and its ID, for example `Patient/abc123`. |
+| **Mode** | A badge: **live** or **test**, depending on the key used. |
+| **Webhooks** | **No delivery**, or a count and the result code of the latest delivery, such as `1 · 200`. A red code or **refused** means your server did not accept it. |
+
+Selecting an event opens a panel with **Time**, **Resource type**, **Resource ID**, **Mode** and **Key** (the name of the key used). If the record type has a list in the Data browser, an **Open in Data browser** button appears. The **Webhook deliveries** section lists each delivery's destination, result code and attempt number, or "None. No webhook is subscribed, or none was due."
+
+The panel says "The record itself is never part of this stream", so no patient content is shown here.
+
+**Loading and empty states:** **Loading events…** at first. With nothing recent: **No events in the last hour**: "Create, update or delete a record through the API and it appears here within seconds."
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="Why is my request not here?">
+    Only successful writes (create, update, delete) appear, only from the last hour, and the page refreshes every 15 seconds. A read (GET) or a failed request will not show; look in [Logs](/dashboard/data/logs) for those.
+  </Accordion>
+  <Accordion title="How do you know which delivery belongs to which event?">
+    The system does not link them by ID. Deliveries are matched by event name and by time, within two minutes after the event. The panel says "matched by name and time". If two similar events happen close together, the match is approximate.
+  </Accordion>
+  <Accordion title="What does 'No delivery' mean?">
+    No webhook was due for it, or no delivery has been recorded yet. Check your webhook's events and environment in [Webhooks](/dashboard/projects/webhooks).
+  </Accordion>
+  <Accordion title="Is this real time, to the second?">
+    It is near real time: the page asks for updates every 15 seconds.
+  </Accordion>
+  <Accordion title="What does 'refused' mean in the Webhooks column?">
+    The delivery was not accepted by your destination at all (no normal response code came back). Check that your endpoint is reachable.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| **No events in the last hour** | Do a create, update or delete through the API and wait up to 15 seconds. |
+| A red message above the table | The refresh failed, for example "Your session has expired. Please sign in again." Sign in again. The last good list stays on screen. |
+| **Paused while this tab is hidden** | Switch back to this tab. |
+| Webhook column shows a code like 500 or 404 | Your server returned that error. Check your endpoint, then look at the delivery in [Logs](/dashboard/data/logs). |
+
+## Related
+
+- [Webhooks](/dashboard/projects/webhooks)
+- [Logs](/dashboard/data/logs)
+- [Data browser](/dashboard/data/data-browser)
+- [Glossary](/dashboard/glossary)
