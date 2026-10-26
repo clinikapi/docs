@@ -33,7 +33,7 @@ Press <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘F</kbd> on a Mac) and type the word 
 
 **Scope.** What a key is allowed to do. **Read** lets it fetch and search records; **Write** lets it create, update and delete them (but not read them back). Scopes are fixed when the key is created. See [Access: API keys](/dashboard/projects/access-keys).
 
-**Signing secret.** A password, starting with `whsec_`, used to stamp each webhook message so your server can prove it really came from ClinikAPI. It is shown once when you add the webhook. See [Webhooks](/dashboard/projects/webhooks).
+**Signing secret.** A password, starting with `whsec_`, used to stamp each webhook message so your server can prove it really came from ClinikAPI. It is shown once when you add the webhook, stored encrypted, and replaced by selecting **Rotate secret**. See [Webhooks](/dashboard/projects/webhooks).
 
 **Standby (failover standby).** A second copy of your project's server kept ready; if the main one fails, the standby takes over. Included on Team, optional on Pro. See [Compute and Disk](/dashboard/projects/compute-and-disk).
 

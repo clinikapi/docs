@@ -1,13 +1,13 @@
 ---
 title: "Logs"
-description: "Every request made with your keys: method, path, status and timing, plus webhook deliveries and bulk jobs. Bodies are never logged."
+description: "Every request made with your keys or through the dashboard: method, path, status and timing, plus webhook deliveries and bulk jobs. Bodies are never logged."
 ---
 
 # Logs
 
 ## What this is for
 
-When something does not work, the first question is "did the request reach the API, and what did it answer?" **Logs** is the record of every request made with your keys, so you can answer that without guessing. Each entry says when the request happened, what it asked for, what status came back and how long it took. It never stores the content you sent or received, so there is no patient information in the log.
+When something does not work, the first question is "did the request reach the API, and what did it answer?" **Logs** is the record of every request made with your keys, and of the changes you and your team make in the dashboard (the **Data browser** and **Exports**), so you can answer that without guessing. Each entry says when the request happened, what it asked for, what status came back and how long it took. It never stores the content you sent or received, so there is no patient information in the log.
 
 <Note>
 This page is opened from inside a project, but it shows requests made with every key for the **whole organization**, not just the project you are in.
@@ -29,7 +29,7 @@ This page is opened from inside a project, but it shows requests made with every
     The tabs are **API requests** (the default), **Webhook deliveries** and **Bulk jobs**.
   </Step>
   <Step title="Narrow the list">
-    Use the filters above the table: **Time range** (**Last hour**, **Last 24 hours**, **Last 7 days**, **Last 30 days**), **Status** (**All**, **2xx**, **4xx**, **5xx**), **Method** (**All**, GET, POST, PUT, PATCH, DELETE) and **Search path** (for example `/v1/patients`, then **Search**). The time range and status filters do not apply to Bulk jobs; method and path search apply to API requests only.
+    Use the filters above the table: **Time range** (**Last hour**, **Last 24 hours**, **Last 7 days**, **Last 30 days**), **Status** (**All**, **2xx**, **4xx**, **5xx**), **Method** (**All**, GET, POST, PUT, PATCH, DELETE), **Source** (**All**, **API keys**, **Dashboard**) and **Search path** (for example `/v1/patients`, then **Search**). The time range and status filters do not apply to Bulk jobs; method, source and path search apply to API requests only.
   </Step>
   <Step title="Open an entry">
     Select a path (or event name) to open a panel with the details. Select **Previous** or **Next** at the bottom to move between pages of 25.
@@ -40,13 +40,13 @@ This page is opened from inside a project, but it shows requests made with every
 
 | Tab | Columns |
 |---|---|
-| **API requests** | **Time (UTC)**, **Method**, **Path**, **Status**, **Latency**, **Key** |
+| **API requests** | **Time (UTC)**, **Method**, **Path**, **Status**, **Latency**, **Key or source** |
 | **Webhook deliveries** | **Time (UTC)**, **Event**, **Destination**, **Status**, **Attempt**, **Latency** |
 | **Bulk jobs** | **Started (UTC)**, **Type**, **Resources**, **Status**, **Records**, **Errors** |
 
-Status codes are coloured: green for 2xx, amber for 4xx, red for 5xx. **Key** shows the key's name, **Revoked key** if it has since been revoked, or a dash if the request used none. A footer reads "(n) entries · page 1 of 3".
+Status codes are coloured: green for 2xx, amber for 4xx, red for 5xx. **Key or source** shows the key's name, **Revoked key** if it has since been revoked, or a dash if the request used none. A request made in the dashboard shows **Dashboard · (member name)**, so you can tell who created, edited or deleted a record. Choose **Dashboard** under **Source** to see only those. A footer reads "(n) entries · page 1 of 3".
 
-**Entry details.** The panel says "Metadata only. Request and response bodies are never stored in the log." For an API request it lists the time, path, status, latency, key, environment, resource type, action, error code and **Request ID**. Quote the Request ID when you contact support.
+**Entry details.** The panel says "Metadata only. Request and response bodies are never stored in the log." For an API request it lists the time, path, status, latency, key (or **Source** for a dashboard request), environment, resource type, action, error code and **Request ID**. Quote the Request ID when you contact support.
 
 **Filtered to one key.** On [Access](/dashboard/projects/access-keys), the **View** link beside a key opens Logs for that key only. A line reads "Showing requests made with (key name)" with a **Clear** link.
 
@@ -57,6 +57,9 @@ Status codes are coloured: green for 2xx, amber for 4xx, red for 5xx. **Key** sh
 <AccordionGroup>
   <Accordion title="Can I see what I sent in the request?">
     No. Bodies are never stored. This keeps patient information out of the log. Use the **Request ID** and the error code to explain what happened.
+  </Accordion>
+  <Accordion title="Do changes I make in the Data browser appear here?">
+    Yes. Records you create, edit or delete in the **Data browser**, and your **Exports**, are logged with the source **Dashboard · (your name)**. They do not count toward the 1,000 sandbox requests a month. See [Sandbox rules](/dashboard/data/sandbox-rules). New entries can take a few seconds to appear; refresh the page.
   </Accordion>
   <Accordion title="What does a 401 or 403 mean?">
     The key was missing, wrong, revoked, or did not have the needed scope (for example a read-only key trying to create a record). Check the key on [Access](/dashboard/projects/access-keys).

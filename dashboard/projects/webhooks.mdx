@@ -26,13 +26,13 @@ This page is opened from inside a project, but it shows your webhook endpoints f
 
 <Steps>
   <Step title="Open Webhooks">
-    Choose **Webhooks** in the sidebar. The page is titled **Webhooks**: "Get notified at your own endpoints when records change."
+    Choose **Webhooks** in the sidebar. The page is titled **Webhooks**: "Get notified at your own endpoints when records change." The list sits in a card titled **Endpoints**.
   </Step>
-  <Step title="Start the form">
-    Select **Add webhook** (top right), or **Setup your first endpoint** if the list is empty. A form titled **Add new endpoint** opens.
+  <Step title="Open the form">
+    Select **Add endpoint** in the **Endpoints** card (or in the empty state if the list is empty). A panel titled **Add endpoint** opens; on a phone it slides up from the bottom.
   </Step>
   <Step title="Enter the Endpoint URL">
-    Type the address into **Endpoint URL**. The box shows the example `https://your-api.com/webhooks/clinik`. It must start with `https://` and must not contain a username or password.
+    Type the address into **Endpoint URL**. The box shows the example `https://your-api.com/webhooks/clinik`. It must start with `https://`; the panel shows a message under the box if it does not.
   </Step>
   <Step title="Choose where events come from (only if you have sub-organizations)">
     **Deliver events from** defaults to **All traffic (organization + every sub-org)**. Choose **Only sub-org: (name)** to receive only events produced by that sub-organization's keys. Either way, every message carries the originating tenant in `data.tenantId`.
@@ -41,22 +41,40 @@ This page is opened from inside a project, but it shows your webhook endpoints f
     **Environment** can be **Both live and test**, **Live keys only** or **Test keys only**. If your receiver does real work (sending emails, charging people), pin it to **Live keys only** so test traffic can never trigger it. Every message carries `data.environment` so your code can tell them apart.
   </Step>
   <Step title="Pick events">
-    Under **Events to subscribe**, tick **All events (wildcard)** to receive everything, or tick individual events. They are grouped by area: Individuals, Entities, Clinical Summary, Diagnostics, Medications, Care Provision, Documents, Scheduling, Workflow, Billing, Claims, Insurance and Quality. Each name such as **Patient** stands for every change to that resource (created, updated, deleted). You must choose at least one.
+    Under **Events to subscribe**, **All events** is on by default. Turn it off to tick individual events; the panel shows how many are selected. They are grouped by area: Individuals, Entities, Clinical Summary, Diagnostics, Medications, Care Provision, Documents, Scheduling, Workflow, Billing, Claims, Insurance and Quality. Each name such as **Patient** stands for every change to that resource (created, updated, deleted). You must choose at least one.
   </Step>
   <Step title="Enable it">
-    Select **Enable endpoint** (it reads **Enabling...** briefly). A panel titled **Endpoint added** shows the **signing secret**, which starts with `whsec_`: "Copy the signing secret now. It is shown only this once." Select **Copy secret**, store it in your server's secret manager, then select **Done**.
+    Select **Add endpoint** at the bottom of the panel (it reads **Adding…** briefly). If something is wrong, the reason appears in the panel and nothing is created. A panel titled **Endpoint added** shows the **signing secret**, which starts with `whsec_`: "Copy the signing secret now. It is shown only this once." Select **Copy secret**, store it in your server's secret manager, then select **Done**.
   </Step>
 </Steps>
 
+## Rotate the signing secret
+
+Rotate when a secret may have been seen by someone it should not have been, or when you lost it.
+
+<Steps>
+  <Step title="Open the endpoint">
+    On the **Webhooks** page, find the endpoint. Its row reads **Signing secret: set**.
+  </Step>
+  <Step title="Select Rotate secret">
+    Select **Rotate secret**. A confirmation titled **Rotate signing secret** warns that the old secret stops working immediately: deliveries signed with it will no longer verify on your server.
+  </Step>
+  <Step title="Confirm and copy the new secret">
+    Select **Rotate secret** to confirm. A panel titled **New signing secret** shows the new `whsec_` value once. Select **Copy secret**, put it in your server's secret manager straight away, then select **Done**.
+  </Step>
+</Steps>
+
+Only an organization **owner or admin** can rotate. Messages already sent keep the signature they were sent with, so any message your server receives after you rotate but before you update it will fail the signature check.
+
 ## Delete an endpoint
 
-Select the bin icon at the right of the endpoint's row (its label is **Delete webhook**). The confirmation says it will stop sending events to that URL and will also permanently delete the endpoint's whole delivery history: every past attempt, response code and payload. Select **Delete webhook** to confirm. A message says **Webhook deleted**.
+Select the bin button at the right of the endpoint's row (its label is **Delete webhook**). The confirmation says it will stop sending events to that URL and will also permanently delete the endpoint's whole delivery history: every past attempt, response code and payload. Select **Delete webhook** to confirm. A message says **Webhook deleted**.
 
 ## What you'll see
 
-- **Each endpoint** is a card showing its URL, an **Active** mark, how many events it covers (for example "3 Events"), and, if pinned to a sub-organization, that sub-organization's name. Beneath it: "The signing secret was shown once when this endpoint was created. To get a new one, delete the endpoint and add it again."
+- **Each endpoint** is a row in the **Endpoints** card showing its URL and badges: **Active**, how many events it covers (for example "3 events"), **Live keys only** or **Test keys only** if pinned, and a sub-organization's name if pinned to one. Beneath it: "Signing secret: set. It was shown once and cannot be shown again. To get a new one, rotate it." with a **Rotate secret** button (owners and admins only).
 - **Empty state:** **No webhooks configured**: "Listen to patient births, new encounters, and integration status changes automatically."
-- **Not on Pro:** a box headed **Webhooks are a Pro feature**: "Real-time event deliveries (signed, with retries) are included on the Pro plan and above. Existing endpoints stop receiving deliveries on lower plans." with an **Upgrade to Pro** button. The **Add webhook** button is hidden.
+- **Not on Pro:** a box headed **Webhooks are a Pro feature**: "Real-time event deliveries (signed, with retries) are included on the Pro plan and above. Existing endpoints stop receiving deliveries on lower plans." with an **Upgrade to Pro** button. The **Add endpoint** button is hidden.
 - **Not an admin:** you see the list but no add or delete controls.
 
 To see whether a delivery succeeded, open the deliveries view in [Logs](/dashboard/data/logs), or watch live in [Realtime](/dashboard/data/realtime).
@@ -65,7 +83,7 @@ To see whether a delivery succeeded, open the deliveries view in [Logs](/dashboa
 
 <AccordionGroup>
   <Accordion title="What is a signing secret and why can't I see it again?">
-    It is a password used to stamp each message with a signature. Your server recomputes the signature with the same secret; if it matches, the message is genuine. For safety we show it once. If you lose it, delete the endpoint and add it again to get a new one.
+    It is a password used to stamp each message with a signature. Your server recomputes the signature with the same secret; if it matches, the message is genuine. For safety we show it once and store it only in encrypted form, so nobody, including you and us, can read it back. If you lose it, select **Rotate secret** to get a new one.
   </Accordion>
   <Accordion title="Can I test a webhook on my laptop?">
     Not directly: the address must be a public https URL, and `localhost` is refused. Use a tunnelling tool that gives your laptop a public https address, and delete that endpoint when you finish.
@@ -88,7 +106,7 @@ To see whether a delivery succeeded, open the deliveries view in [Logs](/dashboa
 
 | What you see | What to do |
 |---|---|
-| **Could not create webhook**: "Select at least one event." | Tick **All events** or at least one event. |
+| "Choose at least one event, or turn on All events." | Turn on **All events** or tick at least one event. |
 | "A webhook URL is required." / "That is not a valid URL." | The address is empty or malformed. Include `https://` and a full host name. |
 | "Webhook URLs must use https://." | Change `http://` to `https://`. |
 | "Webhook URLs must not embed credentials." | Remove `user:password@` from the address. |
@@ -97,6 +115,7 @@ To see whether a delivery succeeded, open the deliveries view in [Logs](/dashboa
 | "Webhooks are available on the Pro plan and above. Upgrade to enable them." | Upgrade the organization's plan. |
 | "Unknown sub-organization." | The sub-organization you chose is not in this organization. Reload and pick again. |
 | **Could not create the webhook.** | A temporary failure. Retry. |
+| **Could not rotate the signing secret** | The secret was not changed and the old one still works. Retry; if it persists, check you are an owner or admin. |
 | **Could not delete webhook** with "That webhook could not be found, or you do not have access." | It was already deleted, or you are not an owner or admin. |
 | "That organization could not be found, or you do not have access." | Your membership or session changed. Reload and sign in again. |
 

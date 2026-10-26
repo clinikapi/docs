@@ -39,7 +39,7 @@ You do not need to do anything to get a sandbox. Every project has one, and any 
 | Records per type in an export | 1,000. |
 | Export size | A sandbox export must fit in one response; otherwise it is refused as too large. |
 | Bulk operations | 5 per hour. |
-| Monthly sandbox requests | 1,000 per organization on Free, Pro and Team (Enterprise is custom), counted separately from live requests, which have no monthly quota. Beyond it the API answers `429` with code `SANDBOX_QUOTA_EXCEEDED` until the 1st. See [Errors](/errors#rate-limits). |
+| Monthly sandbox requests | 1,000 per organization on Free, Pro and Team (Enterprise is custom), counted separately from live requests, which have no monthly quota. Beyond it the API answers `429` with code `SANDBOX_QUOTA_EXCEEDED` until the 1st. Requests the dashboard makes for you ([Data browser](/dashboard/data/data-browser), [Exports](/dashboard/data/exports)) appear in [Logs](/dashboard/data/logs) as **Dashboard · (your name)** but do not count toward the 1,000 sandbox requests a month. See [Errors](/errors#rate-limits). |
 
 ## In the dashboard
 
