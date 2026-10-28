@@ -38,7 +38,7 @@ ClinikAPI stores healthcare records in a standard format called **FHIR** (pronou
 
 - The card says "Read from the live capability statement (FHIR (version))." A **capability statement** is the API's own published list of what it supports, so this page always reflects reality.
 - If it cannot be loaded: **Not reachable right now**: "The capability list could not be loaded. Try again shortly."
-- Two cards, **Backups and point-in-time recovery** ("Restore your project to a chosen moment.") and **Failover standby** ("A standby copy that takes over if your server fails."). They describe features rather than controls. On the Free plan each says "Upgrade to Pro for a dedicated server." with a **See plans** link. On paid plans each says "Arrives with dedicated projects." For their prices see [Compute and Disk](/dashboard/projects/compute-and-disk).
+- Two cards, **Backups and point-in-time recovery** ("Restore your project to a chosen moment.") and **Failover standby** ("A standby copy that takes over if your server fails."). They describe features rather than controls. On the Free plan each says "Upgrade to Pro for a production data store." with a **See plans** link. On paid plans each says "Arrives with production projects." For their prices see [Compute and Disk](/dashboard/projects/compute-and-disk).
 
 Your code can read the same list at `GET /v1/metadata`, which needs no key.
 
@@ -54,8 +54,8 @@ Your code can read the same list at `GET /v1/metadata`, which needs no key.
   <Accordion title="What is a standby, and what is point-in-time recovery?">
     A standby is a second copy of your server that takes over if the first fails. Point-in-time recovery lets you restore the project to a chosen moment. Both are described in [Compute and Disk](/dashboard/projects/compute-and-disk). Here they are information, not buttons.
   </Accordion>
-  <Accordion title="Why does it say 'Arrives with dedicated projects'?">
-    These features belong to projects that have their own private server. The page tells you honestly that they are not switched on from this screen yet.
+  <Accordion title="Why does it say 'Arrives with production projects'?">
+    These features belong to projects that have their production store. The page tells you honestly that they are not switched on from this screen yet.
   </Accordion>
   <Accordion title="Can I add support for a resource that is missing?">
     Not from here. The page only reports what the API supports. Contact support from the help menu to ask.
@@ -68,7 +68,7 @@ Your code can read the same list at `GET /v1/metadata`, which needs no key.
 |---|---|
 | **Not reachable right now** | Reload in a minute. If it persists, check **System status** in the help menu. |
 | A resource you expect is missing | It is not supported yet. See the [API Reference](/api-reference/overview) for the supported list. |
-| **Upgrade to Pro for a dedicated server** | You are on Free. See plans to upgrade. |
+| **Upgrade to Pro for a production data store** | You are on Free. See plans to upgrade. |
 
 ## Related
 

@@ -7,13 +7,13 @@ description: "Server sizes, included disk and add-ons for a project, with monthl
 
 ## What this is for
 
-On a paid plan your project runs on its own private server. **Compute** is how powerful that server is (its processor and memory); **disk** is how much room it has for records. This page shows the four available sizes, the disk allowance and two optional add-ons, with monthly prices in US dollars, so you can see what a change would cost before you ask for it. The prices match the [pricing page](https://clinikapi.com/pricing).
+On a paid plan your project has its own production data store. **Compute** is how powerful it is (its processor and memory). **Small** is an isolated store on our shared production infrastructure; **Medium** and larger are a dedicated server. **Disk** is how much room it has for records. This page shows the four available sizes, the disk allowance and two optional add-ons, with monthly prices in US dollars, so you can see what a change would cost before you ask for it. The prices match the [pricing page](https://clinikapi.com/pricing).
 
 ## Before you start
 
 - Open **Project settings** in the sidebar, then the **Compute and Disk** tab.
 - Anyone can see the options. Only an organization **owner or admin** can pick a size to preview.
-- On the Free plan there is no server to size; the page explains this.
+- On the Free plan there is no production store to size; the page explains this.
 
 ## Preview a size change
 
@@ -41,16 +41,18 @@ On a paid plan your project runs on its own private server. **Compute** is how p
 | **Large** | 2 vCPU, 8 GB RAM | $159 |
 | **XL** | 4 vCPU, 16 GB RAM | $319 |
 
+Each card says what it runs on: **Small** is "Shared production, isolated store", and **Medium** and up are a "Dedicated server". Moving between a shared production store and a dedicated server keeps every record and id, but earlier version history stays with the old copy; the preview panel says so.
+
 ## What the page shows on each plan
 
-- **Free:** a **Shared** card: "The Free plan runs on a shared sandbox. Upgrade to Pro for a dedicated server with a size you choose." The four sizes are listed for reference, each saying "Upgrade to Pro for a dedicated server."
-- **Pro:** includes a Small server. A bigger size is charged at the difference in price.
-- **Team:** includes a Medium server **and** its failover standby. Sizes below Medium cannot be selected. Team runs two copies (primary and standby), so a bigger size is charged twice.
+- **Free:** a **Shared** card: "The Free plan runs on a shared sandbox. Upgrade to Pro for a production data store, with a size you choose." The four sizes are listed for reference, each saying "Upgrade to Pro for a production data store."
+- **Pro:** includes a Small store (shared production, isolated store). A bigger size is charged at the difference in price.
+- **Team:** includes a dedicated Medium server **and** its failover standby. Sizes below Medium cannot be selected. Team runs two copies (primary and standby), so a bigger size is charged twice.
 - **Enterprise:** "Your project is sized with your team. Contact us to change its size or disk." with a **Contact us** button.
 
 ## Disk
 
-The **Disk** card says "8 GB are included. Extra disk is $0.25 per GB per month." Its bar will show usage once your project has its own server; until then it reads "Disk usage appears here once your project has its own server."
+The **Disk** card says "8 GB are included. Extra disk is $0.25 per GB per month." Its bar will show usage once your project has its production store; until then it reads "Disk usage appears here once your project has its production store."
 
 ## Add-ons
 
@@ -67,7 +69,7 @@ If you are not an owner or admin, the intro reads "Only an organization owner or
 
 <AccordionGroup>
   <Accordion title="What is compute?">
-    The processing power and memory of the server that runs your project. More compute handles more simultaneous work. Most projects begin on Small.
+    The processing power and memory that run your project. More compute handles more simultaneous work. Most projects begin on Small.
   </Accordion>
   <Accordion title="What is a failover standby?">
     A second, identical copy of your server kept ready. If the main one fails, the standby takes over so your API keeps working. Each copy costs, which is why Team charges a bigger size twice.
@@ -76,7 +78,7 @@ If you are not an owner or admin, the intro reads "Only an organization owner or
     Continuous backups that let you rewind the project to any chosen moment, rather than only to last night's backup.
   </Accordion>
   <Accordion title="Why can't I change the size myself?">
-    The preview is a calculator. Resizing itself is done by our team on request. The panel says "Self-service resizing arrives with dedicated projects".
+    The preview is a calculator. Resizing itself is done by our team on request. The panel says "Self-service resizing arrives with production projects".
   </Accordion>
   <Accordion title="Will my API go down during a resize?">
     Briefly: about 1 to 2 minutes while the new size comes up.
@@ -88,8 +90,8 @@ If you are not an owner or admin, the intro reads "Only an organization owner or
 | What you see | What to do |
 |---|---|
 | Size cards are greyed out | Your role is Member, the size is your current one, or it is below your plan's included size. |
-| **Upgrade to Pro for a dedicated server** | You are on Free. Upgrade to choose a size. |
-| Disk bar is empty | Usage is only measured once your project has its own server. |
+| **Upgrade to Pro for a production data store** | You are on Free. Upgrade to choose a size. |
+| Disk bar is empty | Usage is only measured once your project has its production store. |
 
 ## Related
 

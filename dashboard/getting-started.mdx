@@ -29,10 +29,10 @@ This is the shortest path from "I have never opened the dashboard" to "I sent a 
 
     The panel changes to **Key created**. Select **Copy key** and paste it somewhere safe, such as a password manager. **This is the only time you will ever see it**: "For your security it is shown only this once." If you lose it, you revoke it and make another. Then select **Done**.
 
-    Your key begins with `clk_test_`. A **test key** works only against the sandbox. A **live key** (`clk_live_`) touches real data and needs a paid plan. See [Access: API keys](/dashboard/projects/access-keys).
+    Your key begins with `clk_test_`. A **test key** works only against the sandbox. A **live key** (`clk_live_`) is for real data and needs a paid plan; live data isn't available yet, so requests with a live key return `503` for now. See [Access: API keys](/dashboard/projects/access-keys).
   </Step>
   <Step title="Send your first request">
-    Go back to **Overview**. In the **Connect** card choose the **cURL** or **TypeScript** tab and select **Copy code**. The key in the snippet is shortened (for example `clk_test_AbCd123…`), so replace it with the full key you just copied.
+    Go back to **Overview**. In the **Connect** card (it opens on the **Test** tab) choose the **cURL** or **TypeScript** tab and select **Copy code**. The key in the snippet is shortened (for example `clk_test_AbCd123…`), so replace it with the full key you just copied.
 
     **cURL** (paste into a terminal; replace the key):
 

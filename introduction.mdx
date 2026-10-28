@@ -189,7 +189,7 @@ Your App → Your Backend → ClinikAPI SDK → ClinikAPI REST API → FHIR R4 D
 
 - The SDK runs **server-side only** with a secret API key
 - React widgets use a **proxy pattern** — they talk to your backend, not directly to ClinikAPI
-- Test keys route to a shared test datastore; live keys route to production
+- Test keys route to a shared test datastore; live keys are for production on paid plans, but live data isn't available yet (requests with a live key return `503` until live storage is switched on)
 
 ## Next Steps
 

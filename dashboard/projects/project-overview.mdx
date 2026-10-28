@@ -21,13 +21,13 @@ description: "Your project's home screen: connect to the API, send a first reque
     Choose **Projects** in the sidebar and select your project's card, or pick it from the project switcher in the top bar. You land on **Overview**.
   </Step>
   <Step title="Create a test key if you have none">
-    Look at the **API key** box in the **Connect** card. If it says **No key yet. Create one on the API keys page.**, go to **Access** in the sidebar (that is the "API keys page") and select **Create test key**. See [Access: API keys](/dashboard/projects/access-keys).
+    The **Connect** card has a **Test** tab and a **Live** tab, and opens on **Test**. Look at the **API key** box on the **Test** tab. If it says **No key yet. Create one on the Access page.**, go to **Access** in the sidebar (that is the "API keys page") and select **Create test key**. See [Access: API keys](/dashboard/projects/access-keys).
   </Step>
   <Step title="Copy the API URL">
-    In the **Connect** card, select the copy button beside **API URL**. It is `https://api.clinikapi.com/v1`.
+    In the **Connect** card, select the copy button beside **API URL**. It is `https://api.clinikapi.com/v1` on both tabs: one address serves test and live, and the key decides which you reach.
   </Step>
   <Step title="Copy a snippet">
-    Choose the **cURL** or **TypeScript** tab and select **Copy code**. The key shown in the snippet is only the first few characters followed by an ellipsis, for example `clk_test_ab12cd…`. Replace it with your full secret key (the one you copied when you created it), ideally from an environment variable.
+    Choose the **cURL** or **TypeScript** tab and select **Copy code**. Each of the **Test** and **Live** tabs has its own snippets. The key shown in the snippet is only the first few characters followed by an ellipsis, for example `clk_test_ab12cd…`. Replace it with your full secret key (the one you copied when you created it), ideally from an environment variable.
   </Step>
   <Step title="Run it">
     Paste the cURL command into a terminal, or run the TypeScript on your server. A successful call returns a list of patients (empty at first, which is normal).
@@ -80,7 +80,10 @@ A **deleted** project shows a message instead of Overview, and a **suspended** o
 
 | What you see | What to do |
 |---|---|
-| **No key yet. Create one on the API keys page.** | You have no active key in this project. Open **Access** and create a test key. |
+| **No key yet. Create one on the Access page.** | You have no active key of that environment in this project. Open **Access** and create one. |
+| **Live** tab: "Live keys come with Pro and Team" | Your organization is on the Free plan, which is test-only. See plans on **Billing**. |
+| **Live** tab: "No live key yet. Create one on the Access page" | You are on a paid plan but this project has no active live key. Open **Access** to create one. |
+| **Live** tab: "Live data isn't available yet" | Your project has a live key, but live storage is not switched on, so requests with it return `503` for now. Use your test key meanwhile. |
 | A request returns an authentication error | The key is mistyped, revoked, or belongs to another project. Create a new key and check the `x-api-key` header. |
 | Usage charts are flat at 0 | No requests yet, or they are older than the chart window. Send one and check **Logs**. |
 | **Sandbox unavailable** next to the project name | The test environment did not answer a health check just now. Try again shortly; the **System status** link in the help menu shows incidents. |

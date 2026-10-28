@@ -12,7 +12,7 @@ Get up and running with ClinikAPI in three steps. The API lives at `https://api.
 Sign up at [dashboard.clinikapi.com](https://dashboard.clinikapi.com) and create an organization. Then create keys on the project's **Access** page ([how](/dashboard/projects/access-keys)). There are two kinds:
 
 - `clk_test_*` — routes to the shared test datastore (safe to experiment with)
-- `clk_live_*` — routes to production (available on paid plans)
+- `clk_live_*` — for production (paid plans only). Live data isn't available yet. Requests with a live key return `503` (`LIVE_STORE_UNAVAILABLE`) until live storage is switched on for your project. Use a test key meanwhile.
 
 ## 2. Install the SDK
 
@@ -104,7 +104,7 @@ interface ApiResponse<T> {
 | Key Prefix | Environment | Datastore |
 |------------|-------------|-----------|
 | `clk_test_*` | Sandbox | Shared test datastore |
-| `clk_live_*` | Production | Shared prod (Free/Pro) or dedicated (Enterprise) |
+| `clk_live_*` | Production (paid plans) | Not available yet: requests return `503` until live storage is switched on for your project |
 
 Test keys are available on all plans including Sandbox. Use them for development and testing — data is isolated from production.
 

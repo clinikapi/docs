@@ -12,7 +12,7 @@ An **API key** is a long secret password that your software sends with every req
 There are two kinds, and the difference matters:
 
 - A **test key** (`clk_test_…`) works against the **sandbox**, a safe practice environment. Use it while you build. It is free on every plan.
-- A **live key** (`clk_live_…`) works against real production data and is only available on paid plans. Use it only from your own deployed backend.
+- A **live key** (`clk_live_…`) is for real production data and is only available on paid plans. Use it only from your own deployed backend. Live data isn't available yet: requests with a live key return a `503` error until live storage is switched on for your project, so use your test key meanwhile.
 
 ## Before you start
 
@@ -61,7 +61,7 @@ There are two kinds, and the difference matters:
 
 At the top, a grey note: **Keep keys on your server.** It repeats that keys are shown in full once.
 
-Two cards, **Test keys** ("Work against the sandbox. Free to use on every plan.") and **Live keys** ("Work against production data. Available on paid plans."). Each lists keys in a table:
+Two cards, **Test keys** ("Work against the sandbox. Free to use on every plan.") and **Live keys** ("For production use on a paid plan. Live data is not available yet: requests with a live key return 503 until live storage is switched on for your project."). Each lists keys in a table:
 
 | Column | Meaning |
 |---|---|
@@ -83,7 +83,7 @@ If you are not an owner or admin: **Only an organization owner or admin can crea
 
 <AccordionGroup>
   <Accordion title="What's the difference between a test key and a live key?">
-    A test key talks to a sandbox full of practice (fictional) data and is free. A live key talks to real production data and needs a paid plan. They look alike but start with different words: `clk_test_` and `clk_live_`. Build and test with test keys; switch to a live key only when your code is ready for real patients.
+    A test key talks to a sandbox full of practice (fictional) data and is free. A live key is for real production data and needs a paid plan, but live data isn't available yet, so requests with it return a `503` error for now. They look alike but start with different words: `clk_test_` and `clk_live_`. Build and test with test keys; switch to a live key only when your code is ready for real patients.
   </Accordion>
   <Accordion title="Why can't I see the secret again?">
     For safety, the dashboard stores only a fingerprint of the key, not the key. Nobody, including us, can show it again. If you lose it, revoke it and make a new one.

@@ -14,7 +14,7 @@ Keys are created in the [Developer Dashboard](https://dashboard.clinikapi.com) (
 | Format | Environment | Use Case |
 |--------|-------------|----------|
 | `clk_test_*` | Test | Development, staging, CI/CD |
-| `clk_live_*` | Production | Live patient data |
+| `clk_live_*` | Production | Live patient data (paid plans; not available yet, see below) |
 
 ```bash
 curl -X GET https://api.clinikapi.com/v1/patients \
@@ -67,10 +67,15 @@ Requests are routed to different datastores based on your key and plan:
 | Key Type | Plan | Datastore |
 |----------|------|-----------|
 | `clk_test_*` | Any | Shared test datastore |
-| `clk_live_*` | Sandbox / Starter / Pro / Team | Shared production datastore |
-| `clk_live_*` | Enterprise | Dedicated datastore |
+| `clk_live_*` | Pro | Isolated data store on our shared production infrastructure (Small) |
+| `clk_live_*` | Team | Dedicated server (Medium), with a failover standby |
+| `clk_live_*` | Enterprise | Private architecture: a private network or your own cloud account |
 
-Enterprise customers get a fully isolated datastore provisioned in their preferred region.
+Dedicated servers start at the Medium size. A Pro project can upgrade to Medium or larger, and moving keeps every record and id, while earlier version history stays with the old copy. Free and Pro data is stored in the United States. Team and Enterprise can choose another region; regions open on request. Enterprise customers get a fully isolated datastore provisioned in their chosen region. Live data is not available yet.
+
+<Note>
+Live data isn't available yet. Requests with a live key return `503` (`LIVE_STORE_UNAVAILABLE`) until live storage is switched on for your project. Use a test key meanwhile. The same API address, `https://api.clinikapi.com/v1`, serves both; the key decides which environment a request reaches.
+</Note>
 
 ## Key Validation Flow
 

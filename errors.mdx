@@ -59,6 +59,7 @@ ClinikAPI uses standard HTTP status codes and returns structured error responses
 | `PAYMENT_REQUIRED` | Billing for this project has stopped (`402`). Settle billing in the dashboard; retrying does not help |
 | `PROJECT_PAUSED` | This project is paused (`503`). Resume it in the dashboard; retrying does not help |
 | `PROJECT_NOT_READY` | This project is not ready yet (`503`), for example while it is being set up or resized. Retry shortly |
+| `LIVE_STORE_UNAVAILABLE` | Live data is not available yet (`503`). Every request with a live key returns this until live storage is switched on for your project; use a test key meanwhile. Retrying does not help |
 | `NOT_FOUND` | Resource not found |
 | `TENANT_TAG_INTEGRITY` | A FHIR PATCH could not be applied safely (`409`); resend it without touching `meta` |
 | `INTERNAL_ERROR` | Unexpected server error |

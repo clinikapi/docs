@@ -13,7 +13,7 @@ A **project** is where your API keys, webhooks and records live. Most teams keep
 
 - You must be an **owner or admin** of the organization. Members cannot create projects, and if you open the address anyway the page simply says it cannot be found.
 - Your organization must have no unpaid invoice. While one is overdue, new projects are paused: see [Billing](/dashboard/organizations/billing).
-- It helps to know your plan. **Free** projects run on a shared sandbox and can only be the Small size. **Pro** and **Team** projects choose a compute size and can have a failover standby. The compute size is the strength of the server behind the project: more CPU and memory, higher price.
+- It helps to know your plan. **Free** projects run on a shared sandbox and can only be the Small size. **Pro** and **Team** projects choose a compute size and can have a failover standby. The compute size is the strength behind the project: more CPU and memory, higher price. **Small** is an isolated store on our shared production infrastructure; **Medium** and larger are a dedicated server.
 
 ## Step by step
 
@@ -42,8 +42,8 @@ A **project** is where your API keys, webhooks and records live. Most teams keep
 
     What you can pick depends on your plan:
 
-    - **Free**: only **Small**, shown as **Shared sandbox**. The other sizes carry a **Pro and Team** tag and cannot be selected. A note says "Larger sizes and a dedicated server come with Pro and Team."
-    - **Pro**: the first project includes **Small** (marked **Included**). Larger sizes show their monthly price.
+    - **Free**: only **Small**, shown as **Shared sandbox**. The other sizes carry a **Pro and Team** tag and cannot be selected. A note says "Larger sizes and a production data store come with Pro and Team."
+    - **Pro**: the first project includes **Small** (marked **Included**). On a paid plan each row also says what it runs on: **Small** is "Shared production, isolated store", and **Medium** and up are a "Dedicated server". Larger sizes show their monthly price.
     - **Team**: the first project includes **Medium**. **Small** is marked **Below the plan** and cannot be chosen for the first project.
     - Later projects on Pro or Team can use any size, each at its own price.
   </Step>
@@ -62,14 +62,14 @@ On success you go to the setup screen, which creates a **test key** and shows it
 
 ## What you'll see
 
-- A notice above the buttons: "Dedicated projects are rolling out. Your project starts on the sandbox, with test keys and synthetic data, and moves to its own server when it is ready." On a paid plan it adds "Compute is billed by the hour, and only once the server is ready." Both messages say the same thing: nothing is billed for compute until the project is on its own server, and from then it is billed by the hour at the monthly price shown.
+- A notice above the buttons: "Production projects are rolling out. Your project starts on the sandbox, with test keys and synthetic data, and moves to its production store when it is ready." On a paid plan it adds "Compute is billed by the hour, and only once the server is ready." Both messages say the same thing: nothing is billed for compute until the project is on its production store, and from then it is billed by the hour at the monthly price shown.
 - If this is your organization's first project and it still has the automatic **Default project**, setting it up renames that project (or replaces it with a new one if it is untouched) instead of adding a second. Replacing it can only be done by the owner.
 
 ## Common questions
 
 <AccordionGroup>
-  <Accordion title="What is the difference between the sandbox and a dedicated server?">
-    The sandbox is a shared practice area with invented data and test keys. A dedicated server is yours alone and is where real patient data goes, with live keys, on Pro and Team. New projects start on the sandbox and move across when their server is ready.
+  <Accordion title="What is the difference between the sandbox and a production data store?">
+    The sandbox is a shared practice area with invented data and test keys. A production data store is where real patient data goes, with live keys, on Pro and Team. On Pro it is your own isolated store on our shared production infrastructure; dedicated servers start at the Medium size, included on Team. New projects start on the sandbox and move across when their store is ready.
   </Accordion>
   <Accordion title="Can I change the size later?">
     Yes. The size on this screen is a starting point ("You can change this later"); see [Compute and disk](/dashboard/projects/compute-and-disk).
@@ -78,7 +78,7 @@ On success you go to the setup screen, which creates a **test key** and shows it
     Free is a shared sandbox, so only Small applies. Upgrade the organization from [Billing](/dashboard/organizations/billing) to unlock the others.
   </Accordion>
   <Accordion title="Why is Region greyed out?">
-    Only one region is available today, so there is nothing to choose.
+    Free and Pro projects are in the United States, so there is nothing to choose. Team and Enterprise can ask us for another region; regions open on request, and none other is open yet.
   </Accordion>
   <Accordion title="Is anything deleted if I make a mistake?">
     No. You can rename a project in its settings. Deleting one is a separate, owner-only action with a confirmation: see [Project settings](/dashboard/projects/project-settings).

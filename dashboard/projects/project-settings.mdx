@@ -15,6 +15,31 @@ description: "Rename a project, find its reference and details, and delete or re
 - Only an **owner or admin** can rename a project.
 - Only the organization **owner** can delete one.
 
+## Production data
+
+The first card on **General** is **Production data**. It says, in words, what your project's live data is doing:
+
+| State | What it means |
+|---|---|
+| **Not set up** | The project has no live data yet. Test keys work, with synthetic data only. |
+| **Setting up** | Your live data is being set up, usually within a few minutes. The page refreshes itself. |
+| **Ready** | Live requests work. |
+| **Read-only: payment needed** | An invoice is unpaid. Reading and exporting still work; saving is refused. The card and a banner across the project show how many days are left before your project's data is removed. Paying in **Billing** brings the project back. |
+| **Paused** or **Suspended: billing stopped** | Requests are refused until the project is resumed or the open invoice is paid. Nothing is deleted. |
+| **Being deleted** | The project was deleted. It shows the date until which you can restore it. |
+
+### Turn on production data
+
+Production data is rolling out and cannot be turned on yet. Until it can, a **Pro**, **Team** or **Enterprise** project that is **Not set up** shows "Production data is rolling out and is not available to turn on yet. Your project keeps working on the sandbox with test keys."
+
+When production data is available, an owner or admin of the organization sees **Turn on production data** on a **Small** project that is **Not set up**. Select it and read the confirmation: your project gets its own Small production data store, kept apart from every other project; it is billed as part of your plan; setup usually takes a few minutes; and live API keys start working when the status is **Ready**. Your test keys and test data are not changed. Select **Turn on** and the card changes to **Setting up**, then **Ready** on its own.
+
+On the Free plan the card points to **Billing** to see plans. Members are asked to contact an owner or admin. Medium and larger projects show that production data for them is coming soon. If billing for the organization has stopped, the button is refused with a message that points to the payment method on **Billing**.
+
+The card also shows the plan, the size (**Small** is shared infrastructure with your data kept apart from every other project; **Medium** and larger are dedicated servers, coming soon), the region, the live API address and the prefix of your live key.
+
+If a payment stays unpaid, the project is **read-only for 14 days**; after that the project's data is removed, and you still have **7 days to undo** that.
+
 ## Rename a project
 
 <Steps>
@@ -35,10 +60,10 @@ Renaming changes only the label. The project's reference, keys and data are unto
 
 <Steps>
   <Step title="Find the Danger zone">
-    On **General**, scroll to the red **Danger zone** card. It explains that deleting revokes all of the project's API keys at once and that its sandbox data is kept for 7 days.
+    On **General**, scroll to the red **Danger zone** card. It explains that deleting revokes all of the project's API keys at once and that its data is kept for 7 days, after which your project's data is removed for good.
   </Step>
   <Step title="Start the deletion">
-    Select **Delete project**. A panel titled "Delete (project name)" opens: "This revokes every key of the project now. You can restore the project for 7 days."
+    Select **Delete project**. A panel titled "Delete (project name)" opens: "This revokes every key of the project now. You can restore the project for 7 days." followed by what is removed after that
   </Step>
   <Step title="Type the name to confirm">
     Type the project's exact name in the box labelled "Type (name) to confirm". Capital letters and spacing must match. The red **Delete project** button stays disabled until it matches.
@@ -60,7 +85,7 @@ Under the name box is a table of facts:
 | **Organization** | The organization it belongs to. |
 | **Plan** | The organization's plan. |
 | **Compute** | **Small**, **Medium**, **Large** or **XL**. |
-| **Data** | **Sandbox (test keys)** or **Dedicated**. |
+| **Data** | **Sandbox (test keys)**, **Production (shared)** or **Dedicated**. |
 | **Region** | **United States (us-east-1)**. |
 | **Created** | The date it was created. |
 | **Status** | The same coloured status as on [Projects](/dashboard/projects/projects-home). |
@@ -77,13 +102,13 @@ If you cannot rename, the box is disabled and a line reads **Only an owner or ad
     It is the project's permanent identifier, the same in addresses and in the project switcher. It never changes.
   </Accordion>
   <Accordion title="What exactly is deleted?">
-    All keys are revoked immediately. The sandbox data is kept for 7 days in case you restore, then permanently removed.
+    All keys are revoked immediately. The project's data is kept for 7 days in case you restore, then permanently removed. The banner on a deleted project shows the last day you can restore it.
   </Accordion>
   <Accordion title="Why must I type the name to delete?">
     It is a safety check so that a stray click cannot delete a project.
   </Accordion>
   <Accordion title="Can I change the region?">
-    Not from this page. The region is shown for information.
+    Not from this page. The region is shown for information. Free and Pro projects are in the United States; Team and Enterprise can ask us for another region, and regions open on request.
   </Accordion>
 </AccordionGroup>
 

@@ -36,10 +36,10 @@ The dashboard's **API reference** page is a shortcut: pick a kind of record and 
 
 ## What you'll see
 
-- **Base URL and authentication**: the API address (`https://api.clinikapi.com/v1`) with a copy button, and the reminder: send your key in the `x-api-key` header; test keys (`clk_test_`) use the sandbox, live keys (`clk_live_`) use production; never put a key in a browser or app.
+- **Base URL and authentication**: the API address (`https://api.clinikapi.com/v1`) with a copy button, and the reminder: send your key in the `x-api-key` header; test keys (`clk_test_`) use the sandbox, live keys (`clk_live_`) are for production on a paid plan; never put a key in a browser or app. A **Test** and **Live** switch above it changes the examples to your key of that environment. On **Live**, a notice says live data isn't available yet (requests with a live key return `503`), or tells you to create a live key on **Access**, or that live keys come with Pro and Team.
 - For the chosen resource, the heading and a line like `GET https://api.clinikapi.com/v1/patients`.
 - **List** and **Create a record** examples. The create example uses a small sample (`firstName: "Jane"`, `lastName: "Doe"`); each resource has different required fields, so check the resource's guide for the real shape.
-- If you have no key yet, the examples show `clk_test_…`.
+- If you have no key yet, the examples show `clk_test_…` (or `clk_live_…` on the **Live** switch).
 
 - A link to the **API documentation** for full details.
 
@@ -59,7 +59,7 @@ The dashboard's **API reference** page is a shortcut: pick a kind of record and 
     The ClinikAPI SDK, `@clinikapi/sdk`, on your server, with the key read from an environment variable. See the [quickstart](/quickstart).
   </Accordion>
   <Accordion title="Are test and live keys used the same way?">
-    Yes, the only difference is which data they reach.
+    Yes, the only difference is which data they reach. Today live data isn't available yet, so a live key returns `503` until live storage is switched on for your project.
   </Accordion>
 </AccordionGroup>
 
