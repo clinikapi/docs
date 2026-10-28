@@ -51,11 +51,14 @@ All errors include:
 
 ## Automatic Retries
 
-The SDK retries automatically on:
+The SDK retries `GET`, `HEAD`, `PUT` and `DELETE` automatically on:
 
-- `5xx` server errors
+- `5xx` server errors, including `504 STORE_TIMEOUT` and `503 STORE_UNAVAILABLE` (not `PROJECT_PAUSED`, `PROJECT_NOT_READY` or `LIVE_STORE_UNAVAILABLE`, which waiting does not clear)
 - `429` rate limit responses
 - Network failures
+
+A `POST` or `PATCH` is never repeated automatically: the SDK sends no idempotency key, and a create or patch that timed
+out may already have been saved. Catch the error, check whether the change landed, then decide.
 
 Retry behavior uses **jittered exponential backoff** to prevent thundering herd:
 

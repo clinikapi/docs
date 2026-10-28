@@ -39,6 +39,7 @@ ClinikAPI uses standard HTTP status codes and returns structured error responses
 | `429` | Rate Limited — too many requests for your plan |
 | `500` | Internal Error — something went wrong on our end |
 | `503` | Service Unavailable — the project is paused or not ready yet, or the store is temporarily unavailable |
+| `504` | Gateway Timeout — the data store did not answer in time (`STORE_TIMEOUT`). Retry; for a create or a patch, check first |
 
 ## Error Codes
 
@@ -60,6 +61,8 @@ ClinikAPI uses standard HTTP status codes and returns structured error responses
 | `PROJECT_PAUSED` | This project is paused (`503`). Resume it in the dashboard; retrying does not help |
 | `PROJECT_NOT_READY` | This project is not ready yet (`503`), for example while it is being set up or resized. Retry shortly |
 | `LIVE_STORE_UNAVAILABLE` | Live data is not available yet (`503`). Every request with a live key returns this until live storage is switched on for your project; use a test key meanwhile. Retrying does not help |
+| `STORE_TIMEOUT` | The data store did not answer in time (`504`). Retry after the `Retry-After` seconds. A `POST`, a `PATCH` or a `PUT` with `If-Match` may still have been saved: check before you send it again |
+| `STORE_UNAVAILABLE` | The data store is temporarily unavailable (`503`). Retry after the `Retry-After` seconds; the same caution applies to a `POST`, a `PATCH` or a `PUT` with `If-Match` |
 | `NOT_FOUND` | Resource not found |
 | `TENANT_TAG_INTEGRITY` | A FHIR PATCH could not be applied safely (`409`); resend it without touching `meta` |
 | `INTERNAL_ERROR` | Unexpected server error |
@@ -80,6 +83,28 @@ Every key belongs to a project. A project that cannot serve requests refuses its
 ```
 
 A project that is being deleted answers like an unknown key (`401 INVALID_KEY`).
+
+## Temporary Store Errors
+
+When the data store is slow or briefly unreachable, the request fails with `504 STORE_TIMEOUT` or `503 STORE_UNAVAILABLE`
+and a `Retry-After` header (in seconds). Neither means your request was wrong:
+
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [{ "severity": "error", "code": "timeout", "diagnostics": "The data store did not answer in time. Retry the request." }],
+  "error": "Gateway Timeout",
+  "message": "The data store did not answer in time. Retry the request.",
+  "code": "STORE_TIMEOUT",
+  "requestId": "req_..."
+}
+```
+
+- `GET`, `PUT` and `DELETE` are safe to send again after the wait. The SDK retries them for you with its own backoff.
+  A `DELETE` that had in fact succeeded answers `404` when sent again; treat that as done.
+- A `POST`, a `PATCH`, or a `PUT` with `If-Match` may have been saved before the answer was lost, so the message says
+  to check first. Read or search for the record before you send it again; the SDK never repeats a `POST` or `PATCH` on
+  its own.
 
 ## Request Size Limit
 
