@@ -34,9 +34,6 @@ This page is opened from inside a project, but it shows your webhook endpoints f
   <Step title="Enter the Endpoint URL">
     Type the address into **Endpoint URL**. The box shows the example `https://your-api.com/webhooks/clinik`. It must start with `https://`; the panel shows a message under the box if it does not.
   </Step>
-  <Step title="Choose where events come from (only if you have sub-organizations)">
-    **Deliver events from** defaults to **All traffic (organization + every sub-org)**. Choose **Only sub-org: (name)** to receive only events produced by that sub-organization's keys. Either way, every message carries the originating tenant in `data.tenantId`.
-  </Step>
   <Step title="Choose the environment">
     **Environment** can be **Both live and test**, **Live keys only** or **Test keys only**. If your receiver does real work (sending emails, charging people), pin it to **Live keys only** so test traffic can never trigger it. Every message carries `data.environment` so your code can tell them apart.
   </Step>
@@ -113,7 +110,6 @@ To see whether a delivery succeeded, open the deliveries view in [Logs](/dashboa
 | "(host) is not a routable destination." / "(host) is an internal name, not a routable destination." | The name cannot be reached from the internet. Use a public host name. |
 | "(address) is a loopback / private / link-local address and cannot receive webhooks." | Private network addresses are refused. Use a public one. |
 | "Webhooks are available on the Pro plan and above. Upgrade to enable them." | Upgrade the organization's plan. |
-| "Unknown sub-organization." | The sub-organization you chose is not in this organization. Reload and pick again. |
 | **Could not create the webhook.** | A temporary failure. Retry. |
 | **Could not rotate the signing secret** | The secret was not changed and the old one still works. Retry; if it persists, check you are an owner or admin. |
 | **Could not delete webhook** with "That webhook could not be found, or you do not have access." | It was already deleted, or you are not an owner or admin. |
@@ -124,5 +120,4 @@ To see whether a delivery succeeded, open the deliveries view in [Logs](/dashboa
 - [Webhooks guide](/guides/webhooks) and [Webhooks in practice](/guides/webhooks-in-practice)
 - [Logs](/dashboard/data/logs)
 - [Realtime](/dashboard/data/realtime)
-- [Sub-organizations](/dashboard/organizations/sub-organizations)
 - [Glossary](/dashboard/glossary)

@@ -60,6 +60,7 @@ ClinikAPI uses standard HTTP status codes and returns structured error responses
 | `PAYMENT_REQUIRED` | Billing for this project has stopped (`402`). Settle billing in the dashboard; retrying does not help |
 | `PROJECT_PAUSED` | This project is paused (`503`). Resume it in the dashboard; retrying does not help |
 | `PROJECT_NOT_READY` | This project is not ready yet (`503`), for example while it is being set up or resized. Retry shortly |
+| `LIVE_IMPORT_UNAVAILABLE` | Bulk import is not available for live keys yet (`403`). Use FHIR create requests, or a test key. Retrying does not help |
 | `LIVE_STORE_UNAVAILABLE` | Live data is not available yet (`503`). Every request with a live key returns this until live storage is switched on for your project; use a test key meanwhile. Retrying does not help |
 | `STORE_TIMEOUT` | The data store did not answer in time (`504`). Retry after the `Retry-After` seconds. A `POST`, a `PATCH` or a `PUT` with `If-Match` may still have been saved: check before you send it again |
 | `STORE_UNAVAILABLE` | The data store is temporarily unavailable (`503`). Retry after the `Retry-After` seconds; the same caution applies to a `POST`, a `PATCH` or a `PUT` with `If-Match` |

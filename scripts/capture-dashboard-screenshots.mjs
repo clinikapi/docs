@@ -76,7 +76,6 @@ const PAGES = [
   ['fhir-server', p('fhir')],
   ['organization-settings', o('general')],
   ['members', o('members')],
-  ['sub-organizations', o('sub-organizations')],
   ['profile', '/account/profile'],
   ['security', '/account/security'],
 ];

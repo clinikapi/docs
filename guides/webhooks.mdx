@@ -75,7 +75,7 @@ fetching a test resource with a live key returns 404. Branch on it before you
 let an event drive real work: sandbox testing should not send a patient a real
 appointment reminder.
 
-`data.tenantId` identifies the tenant partition that produced the event: the sub-organization ID when the triggering API key belongs to a sub-org, otherwise your organization ID. Use it to route events per customer behind a single endpoint.
+`data.tenantId` identifies the tenant partition that produced the event: the ID of the project that produced the event (your organization ID for the Default project). Use it to route events per project behind a single endpoint.
 
 ## Environment Filtering
 
@@ -96,10 +96,6 @@ datastore, so fetching it with a live key returns 404.
 Existing webhooks are unpinned and keep receiving both, so nothing changes
 until you choose otherwise.
 
-## Sub-Organization Filtering
-
-Webhooks are registered at the organization level, and by default an endpoint receives events from **all** of your traffic — organization keys and every sub-organization. When adding an endpoint you can optionally pin it to a single sub-organization: a pinned endpoint only receives events produced by that sub-org's API keys. Either way, `data.tenantId` always carries the originating tenant.
-
 ## Headers
 
 | Header | Description |
@@ -109,6 +105,7 @@ Webhooks are registered at the organization level, and by default an endpoint re
 | `X-Clinik-Timestamp` | Unix timestamp (seconds) when the webhook was sent |
 | `X-Clinik-Event` | Event type (e.g. `patient.created`) |
 | `X-Clinik-Delivery-Id` | Unique delivery ID for deduplication |
+| `User-Agent` | `ClinikAPI-Webhooks/1` |
 
 ## Verifying Signatures
 

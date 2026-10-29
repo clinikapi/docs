@@ -866,8 +866,7 @@
         "dashboard/organizations/organization-settings",
         "dashboard/organizations/billing",
         "dashboard/organizations/members",
-        "dashboard/organizations/invitations-and-roles",
-        "dashboard/organizations/sub-organizations"
+        "dashboard/organizations/invitations-and-roles"
       ]
     },
     {
@@ -912,6 +911,9 @@
     "thumbsRating": true,
     "suggestEdit": true
   },
+  "redirects": [
+    { "source": "/dashboard/organizations/sub-organizations", "destination": "/dashboard/organizations/organization-settings" }
+  ],
   "analytics": {
     "posthog": {
       "apiKey": "phc_817t39VWvmzFeNxvLBBOVQM0CnsuX5INS2qERVGXmIY",

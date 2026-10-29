@@ -77,11 +77,11 @@ The response is the only copy: the export is not stored and `GET /v1/bulk/jobs/:
 
 ## Bulk Import
 
-Import NDJSON data — one JSON resource per line, max 10,000 records per batch:
+Import NDJSON data with a test key — one JSON resource per line, max 1,000 records per batch. Bulk import is not available for live keys yet: a live key is answered `403` with code `LIVE_IMPORT_UNAVAILABLE`, so create live records with the FHIR create requests instead.
 
 ```bash
 curl -X POST https://api.clinikapi.com/v1/bulk/import \
-  -H "x-api-key: clk_live_abc123" \
+  -H "x-api-key: clk_test_abc123" \
   -H "Content-Type: application/json" \
   -d '{
     "resourceType": "Patient",
@@ -91,7 +91,8 @@ curl -X POST https://api.clinikapi.com/v1/bulk/import \
 
 ### Import Rules
 
-- Max **10,000 records** per batch (**1,000** with a `clk_test_` key)
+- Test keys only; a live key is refused with `403` `LIVE_IMPORT_UNAVAILABLE`
+- Max **1,000 records** per batch
 - Tenant tags are automatically injected — you cannot override them
 - Invalid records are skipped and reported in the job's `errors` array
 - Rate limited to **5 bulk operations per hour** per tenant

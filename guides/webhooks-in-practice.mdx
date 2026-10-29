@@ -164,16 +164,12 @@ if (event === 'lab.created') {
 
 ### One platform, many clinics
 
-If you resell to multiple practices that already have a **sub-organization**
-(sub-organizations have been replaced by projects, and no new ones can be
-created), you have two options, and the right one depends on your architecture:
-
-- **One endpoint, route on `data.tenantId`.** It carries the sub-org id, not
-  your parent organization id, so it is a clean routing key.
-- **One endpoint per clinic, pinned to that sub-org.** Their events never reach
-  another clinic's infrastructure — useful when each customer has their own
-  deployment, or when you want the isolation to be structural rather than a
-  line of code.
+If you resell to multiple practices, give each practice its own **project**
+and route on `data.tenantId`, which carries the project's id. Webhook endpoints
+are registered for the whole organization, so one endpoint receives every
+project's events and your code routes them by that id. If a customer needs the
+events delivered to their own deployment, run a small router that forwards by
+`data.tenantId`.
 
 ### Keeping a billing system in sync
 

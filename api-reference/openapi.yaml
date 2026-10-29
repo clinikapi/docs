@@ -10248,7 +10248,7 @@ paths:
       summary: Start bulk import
       operationId: bulkImport
       tags: [Bulk]
-      description: Import NDJSON data. Max 10,000 records per batch. Tenant tags are injected automatically.
+      description: Import NDJSON data with a test key. Max 1,000 records per batch. Tenant tags are injected automatically. Live keys are refused with 403 `LIVE_IMPORT_UNAVAILABLE` (bulk import is not available for live keys yet; use FHIR create requests).
       requestBody:
         required: true
         content:
@@ -10264,6 +10264,8 @@ paths:
                   type: string
                   description: NDJSON content (one JSON resource per line)
       responses:
+        '403':
+          description: A live key was used. Bulk import is not available for live keys yet (`LIVE_IMPORT_UNAVAILABLE`).
         '413':
           $ref: '#/components/responses/PayloadTooLarge'
         '202':
